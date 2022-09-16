@@ -10,12 +10,12 @@ secret_key = "95bf02a93d0243ccfd234117c5005bf20767896b874ad226e37d4392c68629b387
 # change url to prod
 rootApiUrl = "https://api.dmarket.com"
 
+#DMarket signature prefix
 signature_prefix = "dmar ed25519 "
 
 
-def create_headers(api_url_path, body=''):
+def create_headers(api_url_path, method, body=''):
   nonce = str(round(datetime.now().timestamp()))
-  method = "GET"
   # string_to_sign = method + api_url_path + json.dumps(body) + nonce
   string_to_sign = method + api_url_path + nonce
   encoded = string_to_sign.encode('utf-8')
@@ -31,14 +31,14 @@ def create_headers(api_url_path, body=''):
 def inventory_request():
   api_url_path = "/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=1"
   headers = create_headers(api_url_path)
-  # resp = requests.post(rootApiUrl + api_url_path, json=body, headers=headers)
   resp = requests.get(rootApiUrl + api_url_path, headers=headers)
   write_content('response.txt',resp.json())
   
   
-def generic_request(api_url_path):
-  headers = create_headers(api_url_path)
-  resp = requests.get(rootApiUrl + api_url_path, headers=headers)
+def generic_request(api_url_path,method='GET'):
+  headers = create_headers(api_url_path,method=method)
+  method_lower = method.lower()
+  resp = requests.__getattribute__(method_lower)(rootApiUrl + api_url_path, headers=headers)
   write_content('response.txt',resp.json())
   
 
@@ -47,5 +47,4 @@ def write_content(file_name,content):
   f.write(str(content['Items']))
   
 if __name__ == '__main__':
-  #inventory_request()
-  generic_request("/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=1")
+  generic_request(api_url_path="/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=1",method='GET')
