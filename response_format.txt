@@ -66,7 +66,7 @@
         {'Name': 'tradeLock', 'Value': '0'}, 
         {'Name': 'depositLocked', 'Value': 'false'}, 
         {'Name': 'nameColor', 'Value': 'd2d2d2'}, 
-        {'Name': 'botId', 'Value': '76561199265468489'}, 
+        {'Name': 'botId', 'Value': '765611992654684 89'}, 
         {'Name': 'unlockDate', 'Value': '2022-07-20T07:00:00Z'}, 
         {'Name': 'itemSlug', 'Value': 'antwerp-2022-challengers-autograph-capsule'}, 
         {'Name': 'name', 'Value': 'Antwerp 2022 Challengers Autograph Capsule'}, 

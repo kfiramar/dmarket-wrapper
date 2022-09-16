@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 from nacl.bindings import crypto_sign
 import requests
@@ -6,41 +7,35 @@ import time
 from Item import *
 from connection_func import *
 
-
 # change url to prod
 rootApiUrl = "https://api.dmarket.com"
-
-
-
   
 def generic_request(api_url_path,method='GET'):
   headers = create_headers(api_url_path,method=method)
   method_lower = method.lower()
   resp = requests.__getattribute__(method_lower)(rootApiUrl + api_url_path, headers=headers)
-  create_items_list(resp.json())
-  write_content(resp.json(),method)
+  all_items = create_items_list(resp.json())
+  #write_content(resp.json(),method)
   
 def create_items_list(json_list):
   items_list = []
   for json in json_list['Items']:
-    print('\n\n\n\n\n\n')
-    print('worked!')
-    items_list += parse_json_to_item(json=json)
-    print('\n\n\n\n\n\n')
+    items_list.append(parse_json_to_item(json=json))
   return items_list
   
 
 def write_content(content,method):
-  filename = time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S")
-  f = open(f'./requests_content/{filename}',"x")
+  #f = open(os.path.join(f'',time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S"),"x"))
+  f = open(time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S"),"x")
   f.write(str(content))
   
   
 def parse_json_to_item(json):
+  print(json['Offer']['Price']['Amount'])
   item = Item(
     AssetID=json['AssetID'],Title=json['Title'],Tradable=json['Tradable'],
     tradeLock=['tradeLock'],MarketPrice=json['Offer']['Price']['Amount'])
-  
+    
   exterior = False
   itemtype = False
   tradelock = False
@@ -65,8 +60,8 @@ def parse_json_to_item(json):
       unlockDate = True
       
     if (exterior and itemtype and tradelock and unlockDate):
-      break
-
+      return item
+  
 
 
 
@@ -99,4 +94,4 @@ def main():
 
 if __name__ == '__main__':
   #main()
-  generic_request(api_url_path="/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=3",method='GET')
+  generic_request(api_url_path="/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=10",method='GET')
