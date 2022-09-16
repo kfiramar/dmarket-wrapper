@@ -10,8 +10,7 @@ from connection_func import *
 # change url to prod
 rootApiUrl = "https://api.dmarket.com"
 
-#DMarket signature prefix
-signature_prefix = "dmar ed25519 "
+
 
   
 def generic_request(api_url_path,method='GET'):
@@ -32,7 +31,8 @@ def create_items_list(json_list):
   
 
 def write_content(content,method):
-  f = open(time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S"),"x")
+  filename = time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S")
+  f = open(f'./requests_content/{filename}',"x")
   f.write(str(content))
   
   

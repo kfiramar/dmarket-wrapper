@@ -7,6 +7,8 @@ from Item import *
 public_key = "875dad0a1a7c2bf9146f24aa82cc51a6f54eb389d73342d61475b624a21575d2"
 secret_key = "95bf02a93d0243ccfd234117c5005bf20767896b874ad226e37d4392c68629b3875dad0a1a7c2bf9146f24aa82cc51a6f54eb389d73342d61475b624a21575d2"
 
+#DMarket signature prefix
+signature_prefix = "dmar ed25519 "
 
 def create_headers(api_url_path, method, body=''):
   nonce = str(round(datetime.now().timestamp()))
