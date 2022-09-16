@@ -1,9 +1,7 @@
 class Row:
-  def __init__(self,  title ,exterior ,tradable ,count):
+  def __init__(self,  title ,exterior ,count, marketPrice):
     self.title = title
     self.exterior = exterior
-    self.tradeLock = tradable
+    self.marketPrice = marketPrice
     self.count = count
     
-  def print_row(self):
-    print(f'{self.title},  {self.exterior}, {self.tradeLock}, {self.count}')

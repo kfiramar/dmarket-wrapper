@@ -1,23 +1,15 @@
-from operator import truediv
 import time
-import requests
-
-from Item import *
-from connection_func import *
+from Item import Item
 from tabulate import tabulate
-from Row import *
+from Row import Row
+import numpy as np
+from api_requests import generic_request
 
-rootApiUrl = "https://api.dmarket.com"
-  
-def generic_request(api_url_path,method='GET'):
-  headers = create_headers(api_url_path,method=method)
-  method_lower = method.lower()
-  resp = requests.__getattribute__(method_lower)(rootApiUrl + api_url_path, headers=headers)
-  #write_content(resp.json(),method)
-  return resp
+response = generic_request(api_url_path="/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=10000",method='GET')
+total = response.json()['Total']
   
 # uses parse_json_to_item to parse all the items from json
-def create_items_list(json_list):
+def parse_json_to_items(json_list):
   items_list = []
   for json in json_list['Items']:
     items_list.append(parse_json_to_item(json=json))
@@ -64,7 +56,7 @@ def parse_json_to_item(json):
     
     
     
-def get_rows(all_items):
+def parse_items_to_rows(all_items):
   rows = []
   for item in all_items:
     for row in rows:
@@ -72,26 +64,30 @@ def get_rows(all_items):
         row.count += 1
         break
     else:
-      rows.append(Row(title=item.Title,exterior = '' ,tradable = '' ,count = 1))
+      rows.append(Row(title=item.Title,exterior = item.exterior ,marketPrice = item.MarketPrice ,count = 1))
   return rows
 
 def print_table(rows):
-  table = [['name','exterior','tradeLock','count']]
+  table = [list(vars(rows[0]).keys())]
+  columns = len(list(vars(rows[0]).keys()))
   for row in rows:
-    temp_row = [row.title,  row.exterior, row.tradeLock, row.count]
-    table.append(temp_row)
+    table.append(list(vars(row).values())) 
+  list_test = list(np.full((columns),''))
+  list_test[-1] = total
+  table.append(list_test)
   print(tabulate(table))
 
 
+
 def cli_loop():
-    response = generic_request(api_url_path="/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=10000",method='GET')
-    all_items = create_items_list(response.json())
+    
+    all_items = parse_json_to_items(response.json())
     print("Welcome! this is Kfir's DMarket trading CLI! ")
     client_choice = input('\n What would you like to do?\n 1 - View inventory \n 2 - Sell items \n 3 - Buy items \n 4 - Filter inventory for a spesific item \n 9 - To quit \n ')
     while(client_choice != 9):
         
         if client_choice == '1':
-            rows = get_rows(all_items)
+            rows = parse_items_to_rows(all_items)
             print_table(rows)
             
         elif client_choice == '2':
