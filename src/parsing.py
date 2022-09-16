@@ -3,9 +3,8 @@ from item import Item
 from row import Row
 
 
-def parse_json_to_items(json_list):
+def parse_json_to_items(json_list, items_list=[]):
     '''uses parse_json_to_item to parse all the items from json'''
-    items_list = []
     for json in json_list['Items']:
         items_list.append(parse_json_to_item(json=json))
     return items_list
@@ -53,5 +52,5 @@ def parse_items_to_rows(all_items):
                 row.count += 1
                 break
         else:
-            rows.append(Row(title=item.title, exterior = item.exterior, market_price = item.market_price, count = 1))
+            rows.append(Row(title=item.title, exterior=item.exterior, market_price=item.market_price, count=1))
     return rows
