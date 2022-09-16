@@ -3,8 +3,10 @@ from item import Item
 from row import Row
 
 
-def parse_json_to_items(json_list, items_list=[]):
+def parse_json_to_items(json_list, items_list=None):
     '''uses parse_json_to_item to parse all the items from json'''
+    if (items_list is None):
+        items_list = []
     for json in json_list['Items']:
         items_list.append(parse_json_to_item(json=json))
     return items_list

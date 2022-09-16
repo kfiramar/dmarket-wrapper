@@ -8,7 +8,7 @@ INVENTORY_RESPONSE_DM = generic_request(api_url_path="/marketplace-api/v1/user-i
 INVENTORY_RESPONSE_STEAM = generic_request(api_url_path="/marketplace-api/v1/user-inventory?Limit=10000",method='GET')
 TOTAL_STEAM = INVENTORY_RESPONSE_STEAM.json()['Total']
 TOTAL_DM = INVENTORY_RESPONSE_DM.json()['Total']
-TOTAL = TOTAL_STEAM + TOTAL_DM
+TOTAL = str(int(TOTAL_STEAM) + int(TOTAL_DM))
 
 
 def print_table(rows, total):
@@ -26,22 +26,22 @@ def print_table(rows, total):
 def cli_loop():
     '''main function - it is a cli loop that uses all the other functions'''
     DM_items = parse_json_to_items(INVENTORY_RESPONSE_DM.json())
-    #STEAM_items = parse_json_to_items(INVENTORY_RESPONSE_STEAM.json())
-    #all_items = parse_json_to_items(INVENTORY_RESPONSE_STEAM.json(), DM_items.copy())
+    STEAM_items = parse_json_to_items(INVENTORY_RESPONSE_STEAM.json())
+    all_items = parse_json_to_items(INVENTORY_RESPONSE_STEAM.json(), DM_items.copy())
     print("Welcome! this is Kfir's DMarket trading CLI! ")
     client_choice = input('\n What would you like to do?\n 1 - View DMarket inventory \n 2 - View Steam inventory \n 3 - View Total inventory \n 4 - Sell items \n 5 - Buy items \n 6 - Filter inventory for a spesific item \n 9 - To quit \n ')
     while(client_choice != 9):
         if client_choice == '1':
-            rows = parse_items_to_rows(DM_items)
-            print_table(rows,TOTAL_DM)
+            dm_rows = parse_items_to_rows(DM_items)
+            print_table(dm_rows, TOTAL_DM)
 
         elif client_choice == '2':
-            rows = parse_items_to_rows(STEAM_items)
-            print_table(rows,TOTAL_STEAM)
+            steam_rows = parse_items_to_rows(STEAM_items)
+            print_table(steam_rows, TOTAL_STEAM)
 
         elif client_choice == '3':
-            rows = parse_items_to_rows(all_items)
-            print_table(rows,TOTAL)
+            all_rows = parse_items_to_rows(all_items)
+            print_table(all_rows, TOTAL)
 
         elif client_choice == '4':
             print('You choose 4')
