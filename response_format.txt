@@ -1,6 +1,5 @@
 {'Items':
 [
-
  {'AssetID': '0c518536-9514-5433-b3e5-bca432397208',
   'VariantID': '143865972:4839650840', 
   'Title': 'Antwerp 2022 Challengers Autograph Capsule', 

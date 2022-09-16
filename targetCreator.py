@@ -2,10 +2,10 @@ import json
 from datetime import datetime
 from nacl.bindings import crypto_sign
 import requests
+import time
+from Item import *
+from connection_func import *
 
-# replace with your api keys
-public_key = "875dad0a1a7c2bf9146f24aa82cc51a6f54eb389d73342d61475b624a21575d2"
-secret_key = "95bf02a93d0243ccfd234117c5005bf20767896b874ad226e37d4392c68629b3875dad0a1a7c2bf9146f24aa82cc51a6f54eb389d73342d61475b624a21575d2"
 
 # change url to prod
 rootApiUrl = "https://api.dmarket.com"
@@ -13,38 +13,90 @@ rootApiUrl = "https://api.dmarket.com"
 #DMarket signature prefix
 signature_prefix = "dmar ed25519 "
 
-
-def create_headers(api_url_path, method, body=''):
-  nonce = str(round(datetime.now().timestamp()))
-  # string_to_sign = method + api_url_path + json.dumps(body) + nonce
-  string_to_sign = method + api_url_path + nonce
-  encoded = string_to_sign.encode('utf-8')
-  signature_bytes = crypto_sign(encoded, bytes.fromhex(secret_key))
-  signature = signature_bytes[:64].hex()
-  return {
-      "X-Api-Key": public_key,
-      "X-Request-Sign": signature_prefix + signature,
-      "X-Sign-Date": nonce
-  }
-
-
-def inventory_request():
-  api_url_path = "/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=1"
-  headers = create_headers(api_url_path)
-  resp = requests.get(rootApiUrl + api_url_path, headers=headers)
-  write_content('response.txt',resp.json())
-  
   
 def generic_request(api_url_path,method='GET'):
   headers = create_headers(api_url_path,method=method)
   method_lower = method.lower()
   resp = requests.__getattribute__(method_lower)(rootApiUrl + api_url_path, headers=headers)
-  write_content('response.txt',resp.json())
+  create_items_list(resp.json())
+  write_content(resp.json(),method)
+  
+def create_items_list(json_list):
+  items_list = []
+  for json in json_list['Items']:
+    print('\n\n\n\n\n\n')
+    print('worked!')
+    items_list += parse_json_to_item(json=json)
+    print('\n\n\n\n\n\n')
+  return items_list
   
 
-def write_content(file_name,content):
-  f = open(file_name,"w")
-  f.write(str(content['Items']))
+def write_content(content,method):
+  f = open(time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S"),"x")
+  f.write(str(content))
   
+  
+def parse_json_to_item(json):
+  item = Item(
+    AssetID=json['AssetID'],Title=json['Title'],Tradable=json['Tradable'],
+    tradeLock=['tradeLock'],MarketPrice=json['Offer']['Price']['Amount'])
+  
+  exterior = False
+  itemtype = False
+  tradelock = False
+  unlockDate = False
+  
+  for attribute in json['Attributes']:
+    
+    if attribute['Name'] == 'exterior':
+      item.exterior = attribute['Value']
+      exterior = True
+      
+    elif attribute['Name'] == 'tradeLock':
+      item.tradeLock = attribute['Value']
+      itemtype = True
+      
+    elif attribute['Name'] == 'itemType':
+      item.itemType = attribute['Value']
+      tradelock = True
+      
+    elif attribute['Name'] == 'unlockDate':
+      item.itemType = attribute['Value']
+      unlockDate = True
+      
+    if (exterior and itemtype and tradelock and unlockDate):
+      break
+
+
+
+
+def main():
+  print("Welcome! this is Kfir's DMarket trading CLI! ")
+  client_choice = input('\n What would you like to do?\n 1 - View inventory \n 2 - Sell items \n 3 - Buy items \n 4 - Filter inventory for a spesific item \n 9 - To quit \n ')
+  while(client_choice != 9):
+  
+    if client_choice == '1':
+      print('You choose 1')
+      
+    elif client_choice == '2':
+      print('You choose 2')
+      
+    elif client_choice == '3':
+      print('You choose 3')
+      
+    elif client_choice == '4':
+      print('You choose 4')
+      
+    elif client_choice == '9':
+      exit()
+      
+    else:
+      print(' Wrong input, try again')
+      
+    client_choice = input('\n What would you like to do?\n 1 - View inventory \n 2 - Sell items \n 3 - Buy items \n 4 - Filter inventory for a spesific item \n 9 - To quit \n ')
+
+
+
 if __name__ == '__main__':
-  generic_request(api_url_path="/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=1",method='GET')
+  #main()
+  generic_request(api_url_path="/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=3",method='GET')
