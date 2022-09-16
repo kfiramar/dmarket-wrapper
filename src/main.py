@@ -1,4 +1,3 @@
-import time
 from Item import Item
 from tabulate import tabulate
 from Row import Row
@@ -15,23 +14,17 @@ def parse_json_to_items(json_list):
     items_list.append(parse_json_to_item(json=json))
   return items_list
   
-# Creates a file and loads all the API request result into it
-def write_content(content,method):
-  #f = open(os.path.join(f'',time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S"),"x"))
-  f = open(time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S"),"x")
-  f.write(str(content))
-  
+
 # parses a JSON into an item
 def parse_json_to_item(json):
-  
-  item = Item(
-    AssetID=json['AssetID'],Title=json['Title'],Tradable=json['Tradable'],
-    tradeLock=['tradeLock'],MarketPrice=json['Offer']['Price']['Amount'])
-    
   exterior = False
   itemtype = False
   tradelock = False
   unlockDate = False
+  
+  item = Item(
+    AssetID=json['AssetID'],Title=json['Title'],Tradable=json['Tradable'],
+    tradeLock=['tradeLock'],MarketPrice=json['Offer']['Price']['Amount'])
   
   for attribute in json['Attributes']:
     
@@ -54,8 +47,7 @@ def parse_json_to_item(json):
     if (exterior and itemtype and tradelock and unlockDate):
       return item
     
-    
-    
+# parses items from list(Items) to list(Rows)
 def parse_items_to_rows(all_items):
   rows = []
   for item in all_items:
@@ -67,6 +59,7 @@ def parse_items_to_rows(all_items):
       rows.append(Row(title=item.Title,exterior = item.exterior ,marketPrice = item.MarketPrice ,count = 1))
   return rows
 
+#Prints tables with headers and total at the end
 def print_table(rows):
   table = [list(vars(rows[0]).keys())]
   columns = len(list(vars(rows[0]).keys()))
@@ -78,7 +71,7 @@ def print_table(rows):
   print(tabulate(table))
 
 
-
+# main function - it is a cli loop that uses all the other functions
 def cli_loop():
     
     all_items = parse_json_to_items(response.json())
