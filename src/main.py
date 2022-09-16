@@ -1,8 +1,8 @@
-'''faadsfasdf'''
+'''This module contains is the main module of the function, it contains all of the parsing and the main loop of the program'''
 from tabulate import tabulate
 import numpy as np
 from item import Item
-from Row import Row
+from row import Row
 from api_requests import generic_request
 
 INVENTORY_RESPONSE = generic_request(api_url_path="/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=10000",method='GET')

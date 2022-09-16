@@ -1,8 +1,8 @@
-'''sadfasdf'''
+'''This module contains the Item class which represends a DMarket item'''
 
 
 class Item:
-    '''sadfasdf'''
+    '''This class represends a DMarket item'''
     def __init__(self, asset_id = '', title = '',tradable = '',exterior = '',trade_lock = '',item_type = '',market_price = '',unlock_date = ''):
         self.asset_id = asset_id
         self.title = title
