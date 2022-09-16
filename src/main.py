@@ -2,7 +2,7 @@
 from tabulate import tabulate
 import numpy as np
 from api_requests import generic_request
-from parsing import parse_json_to_items, parse_json_to_item, parse_items_to_rows
+from parsing import parse_json_to_items, parse_items_to_rows
 
 INVENTORY_RESPONSE = generic_request(api_url_path="/marketplace-api/v1/user-inventory?BasicFilters.InMarket=true&Limit=10000",method='GET')
 TOTAL = INVENTORY_RESPONSE.json()['Total']
