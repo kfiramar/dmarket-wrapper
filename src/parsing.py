@@ -52,8 +52,10 @@ def parse_items_to_rows(all_items):
         for row in rows:
             if item.title == row.title:
                 row.count += 1
-                row.total_price = round(row.market_price,4)*row.count
+                row.total_price += float(row.market_price)
                 break
         else:
-            rows.append(Row(title=item.title, exterior=item.exterior, market_price=item.market_price, count=1,total_price=item.market_price))
+            rows.append(Row(title=item.title, exterior=item.exterior, 
+                            market_price=str(item.market_price), 
+                            count=1,total_price=item.market_price))
     return rows
