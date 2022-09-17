@@ -3,9 +3,10 @@ from item import Item
 from row import Row
 
 
-def parse_json_to_items(json_list):
+def parse_json_to_items(json_list, items_list=None):
     '''uses parse_json_to_item to parse all the items from json'''
-    items_list = []
+    if (items_list is None):
+        items_list = []
     for json in json_list['Items']:
         items_list.append(parse_json_to_item(json=json))
     return items_list
@@ -20,7 +21,7 @@ def parse_json_to_item(json):
 
     item = Item(
       asset_id=json['AssetID'], title=json['Title'], tradable=json['Tradable'],
-      trade_lock=['tradeLock'], market_price=json['Offer']['Price']['Amount'])
+      trade_lock=['tradeLock'], market_price=json['MarketPrice']['Amount'])
 
     for attribute in json['Attributes']:
 
@@ -51,7 +52,8 @@ def parse_items_to_rows(all_items):
         for row in rows:
             if item.title == row.title:
                 row.count += 1
+                row.total_price = round(row.market_price,4)*row.count
                 break
         else:
-            rows.append(Row(title=item.title, exterior = item.exterior, market_price = item.market_price, count = 1))
+            rows.append(Row(title=item.title, exterior=item.exterior, market_price=item.market_price, count=1,total_price=item.market_price))
     return rows

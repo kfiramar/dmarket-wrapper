@@ -1,4 +1,5 @@
 '''This module sends all the API requests'''
+import time
 import requests
 from api_encryption import create_headers
 
@@ -18,5 +19,5 @@ def generic_request(api_url_path, method='GET'):
 def write_content(content, method):
     '''debugging if you recive JSON and not sure how to handle it'''
     # f = open(os.path.join(f'',time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S"),"x"))
-    file = open(time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S"),"x")
+    file = open(time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S.txt"),"x")
     file.write(str(content))
