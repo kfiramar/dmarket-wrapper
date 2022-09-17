@@ -10,3 +10,5 @@
 - run *python3 main.py* in terminal and choose any option as you wish
 - check the logs created target on *https://dmarket.com/*
 
+# Having problems with JSON returning from DMarket API
+- just pass it through this site *jsonformatter.curiousconcept.com*
