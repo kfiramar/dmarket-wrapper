@@ -1,11 +1,31 @@
 '''This module contains all the parsing done in the program'''
+import json
 from item import Item
 from row import Row
 
 
+# def string_to_asset_id(item_name):
+#     for 
+
+def buy_order_body(amount, price, asset_id):
+    '''lksjdhflasj'''
+    item_order = {"Offers": [
+                {
+                    "AssetID": asset_id,
+                    "Price": {
+                            "Currency": "USD",
+                            "Amount": price
+                            }
+                }
+            ]}
+    for i in range(amount-1):
+        item_order['Offers'].append(item_order['Offers'][0])
+    return json.dumps(item_order)
+
+
 def parse_json_to_items(json_list, items_list=None):
     '''uses parse_json_to_item to parse all the items from json'''
-    if (items_list is None):
+    if items_list is None:
         items_list = []
     for json in json_list['Items']:
         items_list.append(parse_json_to_item(json=json))
@@ -42,7 +62,8 @@ def parse_json_to_item(json):
             unlock_date = True
 
         if (exterior and itemtype and tradelock and unlock_date):
-            return item
+            break
+    return item
 
 
 def parse_items_to_rows(all_items):
@@ -55,7 +76,7 @@ def parse_items_to_rows(all_items):
                 row.total_price += float(row.market_price)
                 break
         else:
-            rows.append(Row(title=item.title, exterior=item.exterior, 
-                            market_price=str(item.market_price), 
-                            count=1,total_price=item.market_price))
+            rows.append(Row(title=item.title,asset_id=item.asset_id, exterior=item.exterior,
+                            market_price=str(item.market_price),
+                            count=1, total_price=item.market_price))
     return rows
