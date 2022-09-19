@@ -1,26 +1,45 @@
 '''This module contains all the parsing done in the program'''
-import json
 from item import Item
 from row import Row
 
 
-# def string_to_asset_id(item_name):
-#     for 
 
-def buy_order_body(amount, price, asset_id):
-    '''lksjdhflasj'''
-    item_order = {"Offers": [
-                {
-                    "AssetID": asset_id,
-                    "Price": {
-                            "Currency": "USD",
-                            "Amount": price
-                            }
+# How it should be done and doesn't work for some reason
+# def buy_order_body(amount, price, asset_id):
+#     '''creates buy order body'''
+#     item_order = {
+#   "Offers": [
+#     {
+#       "AssetID": f"{asset_id}",
+#       "Price": {
+#         "Currency": "USD",
+#         "Amount": price
+#       }
+#     }
+#   ]
+# }
+#     for i in range(amount-1):
+#         # item_order['Offers'].append(json.dumps(item_order['Offers'][0]))
+#         item_order['Offers'].append(item_order['Offers'][0])
+#     print(f'{item_order}\n')
+#     return (item_order)
+
+def buy_order_body(price, asset_id):
+    '''creates buy order body'''
+    
+    item_order =  {
+        "Offers": [
+            {
+                "AssetID": f"{asset_id}",
+                "Price": {
+                    "Currency": "USD",
+                    "Amount": price
                 }
-            ]}
-    for i in range(amount-1):
-        item_order['Offers'].append(item_order['Offers'][0])
-    return json.dumps(item_order)
+            }
+        ]
+        }
+    print(f'{item_order}\n')
+    return item_order
 
 
 def parse_json_to_items(json_list, items_list=None):

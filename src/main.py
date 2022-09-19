@@ -8,6 +8,8 @@ from api_requests import generic_request
 from api_requests import generic_request_2
 from parsing import parse_json_to_items, parse_items_to_rows, buy_order_body
 from api_requests import write_content
+from types import SimpleNamespace
+import json
 
 
 LOGGING = False
@@ -25,10 +27,10 @@ def print_table(rows, total):
     total_price = 0
     table = []
     headers = list(vars(rows[0]).keys())
-    headers.remove('asset_id')
+    # headers.remove('asset_id')
     columns = len(headers)
     for row in rows:
-        del row.asset_id
+        # del row.asset_id
         row.market_price = str('     ' + row.market_price)
         table.append(list(vars(row).values()))
         total_price += float(row.market_price)*row.count
@@ -75,9 +77,10 @@ def cli_loop():
             asset_id = choosen_row["asset_id"]
             amount = input(f'how many items? You can sell up to {choosen_row["count"]} \n')
             price = input(f'for how much? the default price is: {choosen_row["market_price"]} \n')
-            print(generic_request_2(api_url_path='/marketplace-api/v1/user-offers/create', method='POST', body=buy_order_body(int(amount), price, asset_id)))
-
-            
+            for i in range (int(amount)):
+                generic_request_2(api_url_path='/marketplace-api/v1/user-offers/create', method='POST', body=buy_order_body(price, asset_id))
+                print(i)
+            #response = json.loads(str(data.json()) , object_hook=lambda d: SimpleNamespace(**d))            
         elif client_choice == '5':
             print('You choose 5')
 
