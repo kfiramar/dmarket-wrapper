@@ -1,27 +1,20 @@
 '''This module contains all the parsing done in the program'''
-import json
 from item import Item
 from row import Row
 
-
-# def string_to_asset_id(item_name):
-#     for 
-
-def buy_order_body(amount, price, asset_id):
-    '''lksjdhflasj'''
-    item_order = {"Offers": [
-                {
-                    "AssetID": asset_id,
+def buy_order_body(amount, price, asset_ids):
+    '''generate body for buy order'''
+    item_order = {"Offers": []}
+    for i in range(amount):
+        curr_order = {
+                    "AssetID": asset_ids.pop(0),
                     "Price": {
                             "Currency": "USD",
                             "Amount": price
                             }
                 }
-            ]}
-    for i in range(amount-1):
-        item_order['Offers'].append(item_order['Offers'][0])
-    return json.dumps(item_order)
-
+        item_order['Offers'].append(curr_order)
+    return item_order
 
 def parse_json_to_items(json_list, items_list=None):
     '''uses parse_json_to_item to parse all the items from json'''
@@ -66,7 +59,7 @@ def parse_json_to_item(json):
     return item
 
 
-def parse_items_to_rows(all_items):
+def parse_items_to_rows_old(all_items):
     '''parses items from list(Items) to list(Rows)'''
     rows = []
     for item in all_items:
@@ -77,6 +70,22 @@ def parse_items_to_rows(all_items):
                 break
         else:
             rows.append(Row(title=item.title,asset_id=item.asset_id, exterior=item.exterior,
+                            market_price=str(item.market_price),
+                            count=1, total_price=item.market_price))
+    return rows
+
+def parse_items_to_rows(all_items):
+    '''parses items from list(Items) to list(Rows)'''
+    rows = []
+    for item in all_items:
+        for row in rows:
+            if item.title == row.title:
+                row.count += 1
+                row.total_price += float(row.market_price)
+                row.asset_ids.append(item.asset_id)
+                break
+        else:
+            rows.append(Row(title=item.title,asset_ids=item.asset_id, exterior=item.exterior,
                             market_price=str(item.market_price),
                             count=1, total_price=item.market_price))
     return rows
