@@ -115,7 +115,8 @@ def parse_items_to_listings_rows(all_items):
                             count=1, total_price=item.market_price))
     return rows
 
-def json_fixer(json):
+def json_fixer(json: str):
+    '''asdafaff'''
     for key, value in JSON_DICTIONARY_FIXER.items():
         json = json.replace(key, value)
     return json

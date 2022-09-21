@@ -1,30 +1,21 @@
 '''This module contains the main loop of the program and prints'''
-from ast import Raise
-from email import header
-from itertools import count
 import sys
 from tabulate import tabulate
 import numpy as np
-from api_requests import generic_request
-from api_requests import generic_request_2
-from parsing import parse_json_to_items, parse_items_to_rows, buy_order_body, parse_json_to_object, json_fixer
-from api_requests import write_content
+from api_requests import generic_request,generic_request_w_body
+from parsing import parse_json_to_items, parse_items_to_rows, \
+     buy_order_body, parse_json_to_object, json_fixer
 from typing import List
 import copy
-
+import configparser
 LOGGING = False
-BUY_ORDER_ENDOINT = '/marketplace-api/v1/user-offers/create'
-BALANCE_ENDPOINT = '/account/v1/balance'
-INVENTORY_ENDPOINT = '/marketplace-api/v1/user-inventory?Limit=10000'
-GET_SELL_LISTINGS='/marketplace-api/v1/user-offers'
-SHOW_ASSET_ID = True
+config = configparser.ConfigParser()
+config.read_file(open('config.ini'))
 
-balance = float(generic_request(api_url_path=BALANCE_ENDPOINT, method='GET').json()['usd'])/100
-inventory_response_dm = generic_request(api_url_path=f"{INVENTORY_ENDPOINT}&BasicFilters.InMarket=true",method='GET')
-inventory_response_steam = generic_request(api_url_path=INVENTORY_ENDPOINT,method='GET')
-sell_listings_response = generic_request(api_url_path=GET_SELL_LISTINGS,method='GET')
-
-
+balance = float(generic_request(api_url_path=config['ENDPOINTS']['BALANCE'], method='GET').json()['usd'])/100
+inventory_response_dm = generic_request(api_url_path=f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
+inventory_response_steam = generic_request(api_url_path=config['ENDPOINTS']['INVENTORY'],method='GET')
+sell_listings_response = generic_request(api_url_path=config['ENDPOINTS']['BUY_ORDER'],method='GET')
 
 def print_table(rows: List):
     '''Prints tables with headers and total at the end'''
@@ -46,7 +37,7 @@ def print_table(rows: List):
 def print_table_listings(rows: List):
     '''Prints tables with headers and total at the end'''
     table = []
-    title,asset_id,Price,
+    # title,asset_id,Price,
     for row in rows:
         table.append(list(vars(row).values()))
         total_price += float(row.market_price)*row.count
@@ -88,15 +79,16 @@ def cli_loop():
             choosen_row = (vars(dm_rows[int(row_number)]))
             amount = int(input(f'how many items? You can sell up to {choosen_row["count"]} \n'))
             price = input(f'for how much? the current market price is: {choosen_row["market_price"]}$ \n')
-            response = ((generic_request_2(api_url_path= BUY_ORDER_ENDOINT, method='POST', body=buy_order_body(amount, price, choosen_row["asset_ids"]))).json())['Result']
+            response = ((generic_request_w_body(api_url_path= config['ENDPOINTS']['BUY_ORDER'], method='POST', body=buy_order_body(amount, price, choosen_row["asset_ids"]))).json())['Result']
             for listing in response:
                 print(f"listing (of {choosen_row['title']}) for {listing['CreateOffer']['Price']['Amount']}$" +
                      ' was SUCCESSFUL'  if bool(listing['Successful']) else f" FAILED with error {listing['Error']}")
-                     
+
         elif client_choice == '5':
             listings_rows = parse_json_to_object(json_fixer(str(sell_listings_response.json())))
-            for listing in listings_rows.Items:
-                print(listing.Title)
+            # for listing in listings_rows.Items:
+                # print(vars(listing).items())
+                # print(listing.Title)
 
 
         elif client_choice == '6':
