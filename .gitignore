@@ -3,4 +3,5 @@
 **/node_modules/**
 **/vendor/**
 *.ini
-**/__pycache__
+*/__pycache__*
+*.pyc
