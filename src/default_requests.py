@@ -30,6 +30,22 @@ def build_target_body_from_offer(offer):
     ]}
 
 
+def buy_order_body(amount, price):
+    '''lksjdhflasj'''
+    item_order = {"Offers": [
+                {
+                    "AssetID": "string",
+                    "Price": {
+                            "Currency": "string",
+                            "Amount": price
+                            }
+                }
+            ]}
+    for i in range(amount-1):
+        item_order['Offers'].append(item_order['Offers'][0])
+    return json.dumps(item_order)
+
+
 nonce = str(round(datetime.now().timestamp()))
 api_url_path = "/exchange/v1/target/create"
 method = "POST"
