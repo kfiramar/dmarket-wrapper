@@ -9,8 +9,9 @@ from typing import List
 import copy
 import configparser
 LOGGING = False
+import os
 config = configparser.ConfigParser()
-config.read("../config.ini", encoding='utf-8')
+config.read(os.path.join(os.getcwd(), '../config.ini'),  encoding='utf-8')
 
 
 def print_table(rows: List):
@@ -26,6 +27,7 @@ def print_table(rows: List):
     headers = list(vars(rows[0]).keys())
     last_row = list(np.full((len(headers)), ''))
     last_row[-2:-1] = total_items,total_price
+    last_row[0] = "TOTAL:"
     table.append(last_row)
     print(tabulate(table, headers=headers, tablefmt='psql',
                    numalign='center', stralign='center', floatfmt=(".2f", ".2f"), showindex='always'))
