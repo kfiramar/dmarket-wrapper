@@ -1,17 +1,18 @@
 '''This module contains the main loop of the program and prints'''
 import sys
+import copy
+import os
+from typing import List
 from tabulate import tabulate
 import numpy as np
+from config import config
 from api_requests import generic_request,generic_request_w_body
 from parsing import parse_json_to_items, parse_items_to_rows, \
-     buy_order_body, parse_json_to_object, json_fixer
-from typing import List
-import copy
-import configparser
+     buy_order_body, write_content
+#import requests
+
+SRC_PATH= os.path.dirname(__file__)
 LOGGING = False
-import os
-config = configparser.ConfigParser()
-config.read(os.path.join(os.getcwd(), '../config.ini'),  encoding='utf-8')
 
 
 def print_table(rows: List):
@@ -32,22 +33,6 @@ def print_table(rows: List):
     print(tabulate(table, headers=headers, tablefmt='psql',
                    numalign='center', stralign='center', floatfmt=(".2f", ".2f"), showindex='always'))
 
-def print_table_listings(rows: List):
-    '''Prints tables with headers and total at the end'''
-    table = []
-    # title,asset_id,Price,
-    for row in rows:
-        table.append(list(vars(row).values()))
-        total_price += float(row.market_price)*row.count
-        total_items += row.count
-    headers = list(vars(rows[0]).keys())
-    last_row = list(np.full((len(headers)), ''))
-    last_row[-2:-1] = total_items,total_price
-    table.append(last_row)
-    print(tabulate(table, headers=headers, tablefmt='psql',
-                   numalign='center', stralign='center', floatfmt=(".2f", ".2f"), showindex='always'))
-
-
 def sort_rows(items: List, parse_by : str):
     '''sort rows by a paramater'''
     rows = parse_items_to_rows(items)
@@ -62,16 +47,17 @@ def cli_loop():
     print(f"Welcome! this is Kfir's DMarket trading CLI! Your balance is: {balance}$")
     print('\n What would you like to do?\n  1 - View DMarket inventory \n  2 - View Steam inventory \n  3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
     client_choice = input()
+    # response = requests.models.Response()
     while True:
-        
+
         if client_choice == '1':
-            
             inventory_response_dm = generic_request(api_url_path= f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
+            print(type(inventory_response_dm))
             dm_rows = sort_rows(parse_json_to_items(inventory_response_dm.json()),parse_by= 'total_price')
+            write_content(inventory_response_dm,'GET')
             print_table(copy.deepcopy(dm_rows))
 
         elif client_choice == '2':
-
             inventory_response_steam = generic_request(api_url_path= config['ENDPOINTS']['INVENTORY'], method='GET')
             steam_rows = sort_rows(parse_json_to_items(inventory_response_steam.json()),parse_by= 'total_price')
             print_table(copy.deepcopy(steam_rows))
@@ -115,9 +101,4 @@ def cli_loop():
         client_choice = input()
 
 if __name__ == '__main__':
-    if LOGGING:
-        # write_content(inventory_response_dm.json(), 'GET')
-        # print(balance)
-        pass
-    else:
-        cli_loop()
+    cli_loop()

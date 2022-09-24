@@ -2,54 +2,35 @@
 import json
 from datetime import datetime
 from nacl.bindings import crypto_sign
+from config import config
 
-
-# The api keys
-PUBLIC_KEY = "1e198fb8b17faad422b1c2780b2b8b4e9725e5785500589966c1e26790a71a44"
-SECRET_KEY = "26fcde3e6fe0f98c9751a629a71e798d77bb001d2235fda86f8bc5f3af41b1661e198fb8b17faad422b1c2780b2b8b4e9725e5785500589966c1e26790a71a44"
 
 # DMarket signature prefix
 SIGNATURE_PREFIX = "dmar ed25519 "
 
 
-def create_headers(api_url_path, method):
+def create_headers(api_url_path : str, method : str):
     '''this function creates the headers for the API requests'''
     nonce = str(round(datetime.now().timestamp()))
-    # string_to_sign = method + api_url_path + json.dumps(body) + nonce
     string_to_sign = method + api_url_path + nonce
     encoded = string_to_sign.encode('utf-8')
-    signature_bytes = crypto_sign(encoded, bytes.fromhex(SECRET_KEY))
+    signature_bytes = crypto_sign(encoded, bytes.fromhex(config['KEYS']['SECRET_KEY']))
     signature = signature_bytes[:64].hex()
     return {
-        "X-Api-Key": PUBLIC_KEY,
-        "X-Request-Sign": SIGNATURE_PREFIX + signature,
-        "X-Sign-Date": nonce
-    }
-    
-def create_headers_2(api_url_path, method, body):
-    '''this function creates the headers for the API requests'''
-    nonce = str(round(datetime.now().timestamp()))
-    # string_to_sign = method + api_url_path + json.dumps(body) + nonce
-    string_to_sign = method + api_url_path + json.dumps(body) + nonce
-    encoded = string_to_sign.encode('utf-8')
-    signature_bytes = crypto_sign(encoded, bytes.fromhex(SECRET_KEY))
-    signature = signature_bytes[:64].hex()
-    return {
-        "X-Api-Key": PUBLIC_KEY,
+        "X-Api-Key": config['KEYS']['PUBLIC_KEY'],
         "X-Request-Sign": SIGNATURE_PREFIX + signature,
         "X-Sign-Date": nonce
     }
 
-def create_headers_generic(api_url_path, method, body):
+def create_headers_w_body(api_url_path : str, method : str, body : str):
     '''this function creates the headers for the API requests'''
     nonce = str(round(datetime.now().timestamp()))
-    # string_to_sign = method + api_url_path + json.dumps(body) + nonce
     string_to_sign = method + api_url_path + json.dumps(body) + nonce
     encoded = string_to_sign.encode('utf-8')
-    signature_bytes = crypto_sign(encoded, bytes.fromhex(SECRET_KEY))
+    signature_bytes = crypto_sign(encoded, bytes.fromhex(config['KEYS']['SECRET_KEY']))
     signature = signature_bytes[:64].hex()
     return {
-        "X-Api-Key": PUBLIC_KEY,
+        "X-Api-Key": config['KEYS']['PUBLIC_KEY'],
         "X-Request-Sign": SIGNATURE_PREFIX + signature,
         "X-Sign-Date": nonce
     }
