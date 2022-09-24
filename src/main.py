@@ -1,20 +1,20 @@
 '''This module contains the main loop of the program and prints'''
-from pickle import TRUE
+from typing import List
 import sys
 import copy
 import os
-from typing import List
+import requests
 from tabulate import tabulate
 import numpy as np
 from config import config
 from api_requests import generic_request,generic_request_w_body
 from parsing import parse_json_to_items, parse_items_to_rows, \
      buy_order_body, write_content
-import requests
+
 
 SRC_PATH= os.path.dirname(__file__)
-LOGGING = False
-
+LOGGING = config['GENERAL']['LOGGING']
+# json_title = {'1':'Items', '2':'Items', '3':'Items', '4':'Result', '5':'Items', '6':'Items', '7':'Items', '8':'Items', }
 
 def print_table(rows: List):
     '''Prints tables with headers and total at the end'''
@@ -52,7 +52,6 @@ def cli_loop():
         response = requests.models.Response()
         if client_choice == '1':
             response = generic_request(api_url_path= f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
-            print(type(response))
             dm_rows = sort_rows(parse_json_to_items(response.json()),parse_by= 'total_price')
             print_table(copy.deepcopy(dm_rows))
 
@@ -66,18 +65,19 @@ def cli_loop():
             dm_rows = sort_rows(parse_json_to_items(response_dm.json()),parse_by= 'total_price')
             response_steam = generic_request(api_url_path= config['ENDPOINTS']['INVENTORY'], method='GET')
             steam_rows = sort_rows(parse_json_to_items(response_steam.json()),parse_by= 'total_price')
-            print_table(copy.deepcopy(dm_rows + steam_rows))
+            response = dm_rows + steam_rows
+            print_table(copy.deepcopy(response))
 
         elif client_choice == '4':
-            response = generic_request(api_url_path= f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
-            dm_rows = sort_rows(parse_json_to_items(response.json()),parse_by= 'total_price')
+            response_dm = generic_request(api_url_path= f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
+            dm_rows = sort_rows(parse_json_to_items(response_dm.json()),parse_by= 'total_price')
             print_table(copy.deepcopy(dm_rows))
             row_number = input('What item would you like to sell? choose index number\n')
             choosen_row = (vars(dm_rows[int(row_number)]))
             amount = int(input(f'how many items? You can sell up to {choosen_row["count"]} \n'))
             price = input(f'for how much? the current market price is: {choosen_row["market_price"]}$ \n')
-            response = ((generic_request_w_body(api_url_path= config['ENDPOINTS']['BUY_ORDER'], method='POST', body=buy_order_body(amount, price, choosen_row["asset_ids"]))).json())['Result']
-            for listing in response:
+            response = ((generic_request_w_body(api_url_path= config['ENDPOINTS']['BUY_ORDER'], method='POST', body=buy_order_body(amount, price, choosen_row["asset_ids"]))))
+            for listing in response.json()['Result']:
                 print(f"listing (of {choosen_row['title']}) for {listing['CreateOffer']['Price']['Amount']}$" +
                      ' was SUCCESSFUL'  if bool(listing['Successful']) else f" FAILED with error {listing['Error']}")
 

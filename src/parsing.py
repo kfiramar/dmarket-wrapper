@@ -23,7 +23,7 @@ def write_content(content):
     '''debugging if you want to know how the recived JSON is built'''
     file_name = time.strftime("request_%Y-%m-%d_%H:%M:%S.json")
     path_to_file = os.path.join(SRC_PATH, f'../logs/{file_name}')
-    fixed_json = json.loads(json_fixer(str(content.json()['Items'])))
+    fixed_json = json.loads(json_fixer(str(content.json())))
     with open(path_to_file,"wb") as file:  
         file.write((pprint.pformat(fixed_json).replace("'", '"')).encode("UTF-8"))
 
