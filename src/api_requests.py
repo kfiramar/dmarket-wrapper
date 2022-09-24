@@ -1,8 +1,7 @@
 '''This module sends all the API requests'''
 import requests
 from api_encryption import create_headers, create_headers_w_body
-
-API_URL = "https://api.dmarket.com"
+from config import API_URL
 
 
 def generic_request(api_url_path, method='GET'):
