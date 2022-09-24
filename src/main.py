@@ -5,7 +5,7 @@ import copy
 import requests
 from tabulate import tabulate
 import numpy as np
-from config import BUY_ORDER_ENDPOINT, BALANCE_ENDPOINT, INVENTORY_ENDPOINT, ALL_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, PUBLIC_KEY_ENDPOINT, SECRET_KEY_ENDPOINT, LOGGING
+from config import BUY_ORDER_ENDPOINT, BALANCE_ENDPOINT, INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING
 from api_requests import generic_request,generic_request_w_body
 from parsing import parse_json_to_items, parse_items_to_rows, \
      buy_order_body, write_content
