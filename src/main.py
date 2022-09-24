@@ -1,4 +1,5 @@
 '''This module contains the main loop of the program and prints'''
+from pickle import TRUE
 import sys
 import copy
 import os
@@ -9,7 +10,7 @@ from config import config
 from api_requests import generic_request,generic_request_w_body
 from parsing import parse_json_to_items, parse_items_to_rows, \
      buy_order_body, write_content
-#import requests
+import requests
 
 SRC_PATH= os.path.dirname(__file__)
 LOGGING = False
@@ -47,31 +48,29 @@ def cli_loop():
     print(f"Welcome! this is Kfir's DMarket trading CLI! Your balance is: {balance}$")
     print('\n What would you like to do?\n  1 - View DMarket inventory \n  2 - View Steam inventory \n  3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
     client_choice = input()
-    # response = requests.models.Response()
     while True:
-
+        response = requests.models.Response()
         if client_choice == '1':
-            inventory_response_dm = generic_request(api_url_path= f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
-            print(type(inventory_response_dm))
-            dm_rows = sort_rows(parse_json_to_items(inventory_response_dm.json()),parse_by= 'total_price')
-            write_content(inventory_response_dm,'GET')
+            response = generic_request(api_url_path= f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
+            print(type(response))
+            dm_rows = sort_rows(parse_json_to_items(response.json()),parse_by= 'total_price')
             print_table(copy.deepcopy(dm_rows))
 
         elif client_choice == '2':
-            inventory_response_steam = generic_request(api_url_path= config['ENDPOINTS']['INVENTORY'], method='GET')
-            steam_rows = sort_rows(parse_json_to_items(inventory_response_steam.json()),parse_by= 'total_price')
+            response = generic_request(api_url_path= config['ENDPOINTS']['INVENTORY'], method='GET')
+            steam_rows = sort_rows(parse_json_to_items(response.json()),parse_by= 'total_price')
             print_table(copy.deepcopy(steam_rows))
 
         elif client_choice == '3':
-            inventory_response_dm = generic_request(api_url_path= f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
-            dm_rows = sort_rows(parse_json_to_items(inventory_response_dm.json()),parse_by= 'total_price')
-            inventory_response_steam = generic_request(api_url_path= config['ENDPOINTS']['INVENTORY'], method='GET')
-            steam_rows = sort_rows(parse_json_to_items(inventory_response_steam.json()),parse_by= 'total_price')
+            response_dm = generic_request(api_url_path= f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
+            dm_rows = sort_rows(parse_json_to_items(response_dm.json()),parse_by= 'total_price')
+            response_steam = generic_request(api_url_path= config['ENDPOINTS']['INVENTORY'], method='GET')
+            steam_rows = sort_rows(parse_json_to_items(response_steam.json()),parse_by= 'total_price')
             print_table(copy.deepcopy(dm_rows + steam_rows))
 
         elif client_choice == '4':
-            inventory_response_dm = generic_request(api_url_path= f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
-            dm_rows = sort_rows(parse_json_to_items(inventory_response_dm.json()),parse_by= 'total_price')
+            response = generic_request(api_url_path= f"{config['ENDPOINTS']['INVENTORY']}&BasicFilters.InMarket=true",method='GET')
+            dm_rows = sort_rows(parse_json_to_items(response.json()),parse_by= 'total_price')
             print_table(copy.deepcopy(dm_rows))
             row_number = input('What item would you like to sell? choose index number\n')
             choosen_row = (vars(dm_rows[int(row_number)]))
@@ -91,6 +90,12 @@ def cli_loop():
         elif client_choice == '6':
             print('You choose 6')
 
+        elif client_choice == '7':
+            print('You choose 7')
+
+        elif client_choice == '8':
+            print('You choose 8')
+
         elif client_choice == '-1':
             sys.exit()
 
@@ -98,6 +103,8 @@ def cli_loop():
             print(' Wrong input, try again')
 
         print('\n What else would you like to do?\n  1 - View DMarket inventory \n  2 - View Steam inventory \n  3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
+        if LOGGING: 
+            write_content(response)
         client_choice = input()
 
 if __name__ == '__main__':

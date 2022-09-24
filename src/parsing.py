@@ -19,9 +19,9 @@ def json_fixer(json: dict):
     return json
 
 # Creates a file and loads all the API request result into it
-def write_content(content, method : str):
+def write_content(content):
     '''debugging if you want to know how the recived JSON is built'''
-    file_name = time.strftime(f"{method}_request_%Y-%m-%d_%H:%M:%S.json")
+    file_name = time.strftime("request_%Y-%m-%d_%H:%M:%S.json")
     path_to_file = os.path.join(SRC_PATH, f'../logs/{file_name}')
     fixed_json = json.loads(json_fixer(str(content.json()['Items'])))
     with open(path_to_file,"wb") as file:  
