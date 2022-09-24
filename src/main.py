@@ -41,8 +41,8 @@ def cli_loop():
     balance = float(generic_request(api_url_path=BALANCE_ENDPOINT, method='GET').json()['usd'])/100
     print(f"Welcome! this is Kfir's DMarket trading CLI! Your balance is: {balance}$")
     print('\n What would you like to do?\n  1 - View DMarket inventory \n  2 - View Steam inventory\
-        3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \n  \
-        7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
+         \n  3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \
+         \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
     client_choice = input()
     while True:
         response = requests.models.Response()
@@ -61,8 +61,8 @@ def cli_loop():
             dm_rows = sort_rows(parse_json_to_items(response_dm.json()),parse_by= 'total_price')
             response_steam = generic_request(api_url_path= INVENTORY_ENDPOINT, method='GET')
             steam_rows = sort_rows(parse_json_to_items(response_steam.json()),parse_by= 'total_price')
-            response = dm_rows + steam_rows
-            print_table(copy.deepcopy(response))
+            response = response_steam, response_dm
+            print_table(copy.deepcopy(dm_rows + steam_rows))
 
         elif client_choice == '4':
             response_dm = generic_request(api_url_path= f"{INVENTORY_ENDPOINT}&BasicFilters.InMarket=true",method='GET')
@@ -78,8 +78,8 @@ def cli_loop():
                      ' was SUCCESSFUL'  if bool(listing['Successful']) else f" FAILED with error {listing['Error']}")
 
         elif client_choice == '5':
-            dm_listings = generic_request(api_url_path= SELL_LISTINGS_ENDPOINT,method='GET')
-            listings_rows = sort_rows(parse_json_to_items(dm_listings.json(),),parse_by= 'total_price')
+            response = generic_request(api_url_path= SELL_LISTINGS_ENDPOINT,method='GET')
+            listings_rows = sort_rows(parse_json_to_items(response.json(),),parse_by= 'total_price')
             print_table(copy.deepcopy(listings_rows))
 
 
@@ -99,8 +99,8 @@ def cli_loop():
             print(' Wrong input, try again')
 
         print('\n What else would you like to do?\n  1 - View DMarket inventory \n  2 - View Steam inventory\
-         \n 3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \n  \
-        7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
+         \n  3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \
+         \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
         if LOGGING:
             write_content(response)
         client_choice = input()
