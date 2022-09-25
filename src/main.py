@@ -86,8 +86,13 @@ def cli_loop():
 
 
         elif client_choice == '6':
-
-            print('You choose 6')
+            listings_response = generic_request(api_url_path= SELL_LISTINGS_ENDPOINT,method='GET')
+            listings_rows = sort_rows(parse_json_to_items(listings_response.json(),),parse_by= 'total_price')
+            print_table(copy.deepcopy(listings_rows))
+            row_number = input('What listings would you like to delete? choose an index number\n')
+            choosen_row = (vars(dm_rows[int(row_number)]))
+            amount = int(input(f'how many items would you like to delete? You can sell up to {choosen_row["count"]} \n'))
+            
 
         elif client_choice == '7':
             print('You choose 7')

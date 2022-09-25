@@ -38,14 +38,31 @@ def buy_order_body(amount : int, price : float, asset_ids : List):
     '''generate body for buy order'''
     item_order = {"Offers": []}
     for i in range(amount):
-        curr_order = {
+        buy_order = {
                     "AssetID": asset_ids.pop(0),
                     "Price": {
                             "Currency": "USD",
                             "Amount": price
                             }
                 }
-        item_order['Offers'].append(curr_order)
+        item_order['Offers'].append(buy_order)
+    return item_order
+
+def listings_body(amount : int, price : float, asset_ids : List):
+    '''generate body for buy order'''
+    item_order = {
+         "force": True,
+         "objects": [] }
+    for i in range(amount):
+        listing = {
+                    "AssetID": asset_ids.pop(0),
+                    "Price": {
+                            "Currency": "USD",
+                            "Amount": price
+                            }
+                }
+        good_listing = 
+        item_order['objects'].append(listing)
     return item_order
 
 
