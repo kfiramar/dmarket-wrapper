@@ -5,10 +5,10 @@ import copy
 import requests
 from tabulate import tabulate
 import numpy as np
-from config import BUY_ORDER_ENDPOINT, BALANCE_ENDPOINT, INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING
+from config import BUY_ORDER_ENDPOINT, BALANCE_ENDPOINT, INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT,DELETE_LISTING_ENDPOINT, LOGGING
 from api_requests import generic_request,generic_request_w_body
 from parsing import parse_json_to_items, parse_items_to_rows, \
-     buy_order_body, write_content
+     buy_order_body, write_content, print_content, listings_body
 
 
 def print_table(rows: List):
@@ -90,10 +90,10 @@ def cli_loop():
             listings_rows = sort_rows(parse_json_to_items(listings_response.json(),),parse_by= 'total_price')
             print_table(copy.deepcopy(listings_rows))
             row_number = input('What listings would you like to delete? choose an index number\n')
-            choosen_row = (vars(dm_rows[int(row_number)]))
+            choosen_row = (vars(listings_rows[int(row_number)]))
             amount = int(input(f'how many items would you like to delete? You can sell up to {choosen_row["count"]} \n'))
-            
-
+            response = ((generic_request_w_body(api_url_path= DELETE_LISTING_ENDPOINT, method='DELETE', body=listings_body(amount, choosen_row['market_price'], choosen_row["asset_ids"], choosen_row["offer_ids"]))))
+            print_content(response.json())
         elif client_choice == '7':
             print('You choose 7')
 

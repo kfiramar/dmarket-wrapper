@@ -32,6 +32,10 @@ def write_content(content):
     with open(path_to_file,"wb") as file:  
         file.write((pprint.pformat(fixed_json).replace("'", '"')).encode("UTF-8"))
 
+def print_content(content):
+    '''debugging if you want to know how the recived JSON is built'''
+    print(json.loads(json_fixer(str(content))))
+
 
 
 def buy_order_body(amount : int, price : float, asset_ids : List):
@@ -48,20 +52,20 @@ def buy_order_body(amount : int, price : float, asset_ids : List):
         item_order['Offers'].append(buy_order)
     return item_order
 
-def listings_body(amount : int, price : float, asset_ids : List):
+def listings_body(amount : int, price : float, asset_ids : List, offer_ids : List):
     '''generate body for buy order'''
     item_order = {
          "force": True,
          "objects": [] }
     for i in range(amount):
         listing = {
-                    "AssetID": asset_ids.pop(0),
+                    "itemId": asset_ids.pop(0),
+                    "offerId": offer_ids.pop(0),
                     "Price": {
                             "Currency": "USD",
                             "Amount": price
                             }
                 }
-        good_listing = 
         item_order['objects'].append(listing)
     return item_order
 
