@@ -47,7 +47,7 @@ def listing_error_parsing(response):
 def buy_order_body(amount : int, price : float, asset_ids : List):
     '''generate body for buy order'''
     item_order = {"Offers": []}
-    for i in range(amount):
+    for _ in range(amount):
         buy_order = {
                     "AssetID": asset_ids.pop(0),
                     "Price": {
@@ -63,7 +63,7 @@ def listings_body(amount : int, price : float, asset_ids : List, offer_ids : Lis
     item_order = {
          "force": True,
          "objects": [] }
-    for i in range(amount):
+    for _ in range(amount):
         listing = {
                     "itemId": asset_ids.pop(0),
                     "offerId": offer_ids.pop(0),

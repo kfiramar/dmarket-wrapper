@@ -6,10 +6,11 @@ import json
 import requests
 from tabulate import tabulate
 import numpy as np
-from config import BUY_ORDER_ENDPOINT, BALANCE_ENDPOINT, INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT,DELETE_LISTING_ENDPOINT, LOGGING
 from api_requests import generic_request,generic_request_w_body
+from config import BUY_ORDER_ENDPOINT, BALANCE_ENDPOINT, INVENTORY_ENDPOINT, \
+    SELL_LISTINGS_ENDPOINT,DELETE_LISTING_ENDPOINT, LOGGING
 from parsing import listing_error_parsing, parse_json_to_items, parse_items_to_rows, \
-     buy_order_body, write_content, print_content, listings_body , json_fixer, \
+     buy_order_body, write_content, listings_body , json_fixer, \
      listing_error_parsing
 
 
@@ -82,21 +83,27 @@ def cli_loop():
         
         elif client_choice == '5':
             response = generic_request(api_url_path= SELL_LISTINGS_ENDPOINT,method='GET')
-            listings_rows = sort_rows(parse_json_to_items(response.json(),),parse_by= 'total_price')
-            print_table(copy.deepcopy(listings_rows))
-
+            if(response.json()['Total'] != '0'):
+                listings_rows = sort_rows(parse_json_to_items(response.json(),),parse_by= 'total_price')
+                print_table(copy.deepcopy(listings_rows))
+            else:
+                print('There are ZERO items listed')
+        
 
         elif client_choice == '6':
             listings_response = generic_request(api_url_path= SELL_LISTINGS_ENDPOINT,method='GET')
-            listings_rows = sort_rows(parse_json_to_items(listings_response.json(),),parse_by= 'total_price')
-            print_table(copy.deepcopy(listings_rows))
-            row_number = input('What listings would you like to delete? choose an index number\n')
-            choosen_row = (vars(listings_rows[int(row_number)]))
-            amount = int(input(f'how many items would you like to delete? You can sell up to {choosen_row["count"]} \n'))
-            response = ((generic_request_w_body(api_url_path= DELETE_LISTING_ENDPOINT, method='DELETE', body=listings_body(amount, choosen_row['market_price'], choosen_row["asset_ids"], choosen_row["offer_ids"]))))
-            response_dict = json.loads(json_fixer(str(response.json())))
-            print(f"SUCCESSFUL - {amount} items of {choosen_row['title']} were listed"  \
-            if response_dict['fail'] == 'None' else f'FAILED - with error:{response_dict["fail"]}')
+            if(listings_response.json()['Total'] != '0'):
+                listings_rows = sort_rows(parse_json_to_items(listings_response.json(),),parse_by= 'total_price')
+                print_table(copy.deepcopy(listings_rows))
+                row_number = input('What listings would you like to delete? choose an index number\n')
+                choosen_row = (vars(listings_rows[int(row_number)]))
+                amount = int(input(f'how many items would you like to delete? You can sell up to {choosen_row["count"]} \n'))
+                response = ((generic_request_w_body(api_url_path= DELETE_LISTING_ENDPOINT, method='DELETE', body=listings_body(amount, choosen_row['market_price'], choosen_row["asset_ids"], choosen_row["offer_ids"]))))
+                response_dict = json.loads(json_fixer(str(response.json())))
+                print(f"SUCCESSFUL - {amount} items of {choosen_row['title']} were listed"  \
+                if response_dict['fail'] == 'None' else f'FAILED - with error:{response_dict["fail"]}')
+            else:
+                print('There are ZERO items listed')
 
         elif client_choice == '7':
             print('You choose 7')
