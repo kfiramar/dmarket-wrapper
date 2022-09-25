@@ -40,7 +40,7 @@ def listing_error_parsing(response):
     error_list = []
     for listing in response.json()['Result']:
         if listing['Error'] is not None:
-            error_list.append({listing["Error"]})
+            error_list.append({listing['Error']['Message']})
     return error_list
 
 

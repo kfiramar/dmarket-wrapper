@@ -77,9 +77,11 @@ def cli_loop():
             choosen_row = (vars(dm_rows[int(row_number)]))
             amount = int(input(f'how many items? You can sell up to {choosen_row["count"]} \n'))
             price = input(f'for how much? the current market price is: {choosen_row["market_price"]}$ \n')
-            response = ((generic_request_w_body(api_url_path= BUY_ORDER_ENDPOINT, method='POST', body=buy_order_body(amount, price, choosen_row["asset_ids"]))))
+            body_test = buy_order_body(amount, price, choosen_row["asset_ids"])
+            response = generic_request_w_body(api_url_path= BUY_ORDER_ENDPOINT, method='POST', body=body_test)
+            # request_devider(api_url_path=BUY_ORDER_ENDPOINT,method='POST',amount=amount,func= generic_request_w_body, body=body_test)
             error_list = listing_error_parsing(response)
-            print(f"SUCCESSFUL - {amount} items of {choosen_row['title']} were listed" if len(error_list) == 0 else f" FAILED listing error {error_list}")
+            print(f"SUCCESSFUL - {amount} items of {choosen_row['title']} were listed" if len(error_list) == 0 else f"{len(error_list)} items FAILED (and {amount - len(error_list)} succseeded) ERROR: {error_list}")
         
         elif client_choice == '5':
             response = generic_request(api_url_path= SELL_LISTINGS_ENDPOINT,method='GET')
@@ -97,7 +99,7 @@ def cli_loop():
                 print_table(copy.deepcopy(listings_rows))
                 row_number = input('What listings would you like to delete? choose an index number\n')
                 choosen_row = (vars(listings_rows[int(row_number)]))
-                amount = int(input(f'how many items would you like to delete? You can sell up to {choosen_row["count"]} \n'))
+                amount = int(input(f'How many items would you like to delete? You can sell up to {choosen_row["count"]} \n'))
                 response = ((generic_request_w_body(api_url_path= DELETE_LISTING_ENDPOINT, method='DELETE', body=listings_body(amount, choosen_row['market_price'], choosen_row["asset_ids"], choosen_row["offer_ids"]))))
                 response_dict = json.loads(json_fixer(str(response.json())))
                 print(f"SUCCESSFUL - {amount} items of {choosen_row['title']} were listed"  \
