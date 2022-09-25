@@ -2,13 +2,15 @@
 from typing import List
 import sys
 import copy
+import json
 import requests
 from tabulate import tabulate
 import numpy as np
 from config import BUY_ORDER_ENDPOINT, BALANCE_ENDPOINT, INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT,DELETE_LISTING_ENDPOINT, LOGGING
 from api_requests import generic_request,generic_request_w_body
-from parsing import parse_json_to_items, parse_items_to_rows, \
-     buy_order_body, write_content, print_content, listings_body
+from parsing import listing_error_parsing, parse_json_to_items, parse_items_to_rows, \
+     buy_order_body, write_content, print_content, listings_body , json_fixer, \
+     listing_error_parsing
 
 
 def print_table(rows: List):
@@ -75,10 +77,9 @@ def cli_loop():
             amount = int(input(f'how many items? You can sell up to {choosen_row["count"]} \n'))
             price = input(f'for how much? the current market price is: {choosen_row["market_price"]}$ \n')
             response = ((generic_request_w_body(api_url_path= BUY_ORDER_ENDPOINT, method='POST', body=buy_order_body(amount, price, choosen_row["asset_ids"]))))
-            for listing in response.json()['Result']:
-                print(f"listing (of {choosen_row['title']}) for {listing['CreateOffer']['Price']['Amount']}$" +
-                     ' was SUCCESSFUL'  if bool(listing['Successful']) else f" FAILED with error {listing['Error']}")
-
+            error_list = listing_error_parsing(response)
+            print(f"SUCCESSFUL - {amount} items of {choosen_row['title']} were listed" if len(error_list) == 0 else f" FAILED listing error {error_list}")
+        
         elif client_choice == '5':
             response = generic_request(api_url_path= SELL_LISTINGS_ENDPOINT,method='GET')
             listings_rows = sort_rows(parse_json_to_items(response.json(),),parse_by= 'total_price')
@@ -93,7 +94,10 @@ def cli_loop():
             choosen_row = (vars(listings_rows[int(row_number)]))
             amount = int(input(f'how many items would you like to delete? You can sell up to {choosen_row["count"]} \n'))
             response = ((generic_request_w_body(api_url_path= DELETE_LISTING_ENDPOINT, method='DELETE', body=listings_body(amount, choosen_row['market_price'], choosen_row["asset_ids"], choosen_row["offer_ids"]))))
-            print_content(response.json())
+            response_dict = json.loads(json_fixer(str(response.json())))
+            print(f"SUCCESSFUL - {amount} items of {choosen_row['title']} were listed"  \
+            if response_dict['fail'] == 'None' else f'FAILED - with error:{response_dict["fail"]}')
+
         elif client_choice == '7':
             print('You choose 7')
 
@@ -109,8 +113,8 @@ def cli_loop():
         print('\n What else would you like to do?\n  1 - View DMarket inventory \n  2 - View Steam inventory\
          \n  3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \
          \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
-        if LOGGING == 'True':
-            write_content(response.json())
+        if LOGGING == 'True' and client_choice in range(0, 10) :
+            write_content(response.json(), client_choice)
         client_choice = input()
 
 if __name__ == '__main__':

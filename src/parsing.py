@@ -19,10 +19,10 @@ def json_fixer(json: dict):
     return json
 
 # Creates a file and loads all the API request result into it
-def write_content(content):
+def write_content(content, client_choice):
     '''debugging if you want to know how the recived JSON is built'''
     fixed_json = []
-    file_name = time.strftime("request_%Y-%m-%d_%H:%M:%S.json")
+    file_name = time.strftime(f"request-{client_choice}-%Y-%m-%d_%H:%M:%S.json")
     path_to_file = os.path.join(SRC_PATH, f'../logs/{file_name}')
     if isinstance(content, tuple):
         for cont in content:
@@ -36,6 +36,12 @@ def print_content(content):
     '''debugging if you want to know how the recived JSON is built'''
     print(json.loads(json_fixer(str(content))))
 
+def listing_error_parsing(response):
+    error_list = []
+    for listing in response.json()['Result']:
+        if listing['Error'] is not None:
+            error_list.append({listing["Error"]})
+    return error_list
 
 
 def buy_order_body(amount : int, price : float, asset_ids : List):
@@ -110,7 +116,6 @@ def parse_json_to_item(json: dict):
 
             if (exterior and itemtype and unlock_date):
                 return item
-    write_content(json)
     return Item(
         asset_id=json['AssetID'], title=json['Title'], tradable=json['Tradable'], \
         market_price=float(json['Offer']['Price']['Amount']), offer_id=json['Offer']['OfferID'])
