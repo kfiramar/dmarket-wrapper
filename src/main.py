@@ -10,6 +10,7 @@ from api_requests import generic_request,generic_request_w_body
 from parsing import parse_json_to_items, parse_items_to_rows, \
      buy_order_body, write_content
 
+
 def print_table(rows: List):
     '''Prints tables with headers and total at the end'''
     total_price = 0
@@ -17,6 +18,7 @@ def print_table(rows: List):
     table = []
     for row in rows:
         delattr(row,'asset_ids')
+        delattr(row,'offer_ids')
         table.append(list(vars(row).values()))
         total_price += float(row.market_price)*row.count
         total_items += row.count
@@ -84,6 +86,7 @@ def cli_loop():
 
 
         elif client_choice == '6':
+
             print('You choose 6')
 
         elif client_choice == '7':
@@ -101,8 +104,8 @@ def cli_loop():
         print('\n What else would you like to do?\n  1 - View DMarket inventory \n  2 - View Steam inventory\
          \n  3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \
          \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
-        if LOGGING:
-            write_content(response)
+        if LOGGING == 'True':
+            write_content(response.json())
         client_choice = input()
 
 if __name__ == '__main__':

@@ -26,9 +26,9 @@ def write_content(content):
     path_to_file = os.path.join(SRC_PATH, f'../logs/{file_name}')
     if isinstance(content, tuple):
         for cont in content:
-            fixed_json.append(json.loads(json_fixer(str(cont.json()))))
+            fixed_json.append(json.loads(json_fixer(str(cont))))
     else:
-        fixed_json = json.loads(json_fixer(str(content.json())))
+        fixed_json = json.loads(json_fixer(str(content)))
     with open(path_to_file,"wb") as file:  
         file.write((pprint.pformat(fixed_json).replace("'", '"')).encode("UTF-8"))
 
@@ -47,6 +47,9 @@ def buy_order_body(amount : int, price : float, asset_ids : List):
                 }
         item_order['Offers'].append(curr_order)
     return item_order
+
+
+
 
 def parse_json_to_items(json_list : dict):
     '''uses parse_json_to_item to parse all the items from json'''
@@ -67,7 +70,9 @@ def parse_json_to_item(json: dict):
     unlock_date = exterior = itemtype = False
     if json['Offer']['OfferID'] == '':
         item = Item(
-        asset_id=json['AssetID'], title=json['Title'], tradable=json['Tradable'], market_price=json['MarketPrice']['Amount'])
+        asset_id=json['AssetID'], title=json['Title'], tradable=json['Tradable'], \
+        market_price=json['MarketPrice']['Amount'])
+        
         for attribute in json['Attributes']:
 
             if attribute['Name'] == 'exterior':
@@ -84,9 +89,10 @@ def parse_json_to_item(json: dict):
 
             if (exterior and itemtype and unlock_date):
                 return item
-
+    write_content(json)
     return Item(
-        asset_id=json['AssetID'], title=json['Title'], tradable=json['Tradable'], market_price=float(json['Offer']['Price']['Amount']))
+        asset_id=json['AssetID'], title=json['Title'], tradable=json['Tradable'], \
+        market_price=float(json['Offer']['Price']['Amount']), offer_id=json['Offer']['OfferID'])
 
 
 def parse_items_to_rows(all_items : List):
@@ -98,9 +104,11 @@ def parse_items_to_rows(all_items : List):
                 row.count += 1
                 row.total_price += float(row.market_price)
                 row.asset_ids.append(item.asset_id)
+                if item.offer_id != '':
+                    row.offer_ids.append(item.offer_id)
                 break
         else:
-            rows.append(Row(title=item.title,asset_ids=item.asset_id, exterior=item.exterior,
+            rows.append(Row(title=item.title,asset_ids=[item.asset_id], exterior=item.exterior,
                             market_price=item.market_price,
-                            count=1, total_price=item.market_price))
+                            count=1, total_price=item.market_price,offer_ids = [item.offer_id]))
     return rows
