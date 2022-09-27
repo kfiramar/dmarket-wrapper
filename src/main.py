@@ -2,15 +2,14 @@
 from typing import List
 import sys
 import copy
-import json
 import requests
+import json
 from tabulate import tabulate
 import numpy as np
-from collections import Counter
-from api_requests import generic_request,generic_request_w_body, request_devider
+from api_requests import generic_request, request_devider
 from config import BUY_ORDER_ENDPOINT, BALANCE_ENDPOINT, INVENTORY_ENDPOINT, \
     SELL_LISTINGS_ENDPOINT,DELETE_LISTING_ENDPOINT, LOGGING
-from parsing import listing_error_parsing, parse_json_to_items, parse_items_to_rows, \
+from parsing import json_fixer, listing_error_parsing, parse_json_to_items, parse_items_to_rows, \
      buy_order_body, write_content, listings_body , merge_dicts
 
 
@@ -50,7 +49,7 @@ def cli_loop():
          \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n  9 - Get your current balance \n -1 - To quit \n ')
     client_choice = input('  ')
     while True:
-        response = requests.models.Response()
+        # response = requests.models.Response()
         if client_choice == '1':
             response = generic_request(api_url_path= f"{INVENTORY_ENDPOINT}&BasicFilters.InMarket=true",method='GET')
             dm_rows = sort_rows(parse_json_to_items(response.json()),parse_by= 'total_price')
@@ -66,7 +65,7 @@ def cli_loop():
             dm_rows = sort_rows(parse_json_to_items(response_dm.json()),parse_by= 'total_price')
             response_steam = generic_request(api_url_path= INVENTORY_ENDPOINT, method='GET')
             steam_rows = sort_rows(parse_json_to_items(response_steam.json()),parse_by= 'total_price')
-            response = response_steam, response_dm
+            responses = (response_steam, response_dm)
             print_table(copy.deepcopy(dm_rows + steam_rows))
 
         elif client_choice == '4':
@@ -78,6 +77,7 @@ def cli_loop():
             amount = int(input(f'how many items? You can sell up to {choosen_row["count"]} \n'))
             price = input(f'for how much? the current market price is: {choosen_row["market_price"]}$ \n')
             responses = request_devider(api_url_path=BUY_ORDER_ENDPOINT,method='POST',amount=amount, body_func=buy_order_body, price= price, asset_ids=choosen_row["asset_ids"], offer_ids=choosen_row["offer_ids"])
+            
             error_list = listing_error_parsing(responses)
             print(f"SUCCESSFUL - All {amount} items of {choosen_row['title']} were listed" if len(error_list) == 0 else f"{len(error_list)} items FAILED (and {amount - len(error_list)} succseeded) \nERROR: {error_list}")
 
@@ -103,12 +103,12 @@ def cli_loop():
                     amount=amount, body_func=listings_body, price= choosen_row['market_price'], \
                         asset_ids=choosen_row["asset_ids"], offer_ids = choosen_row["offer_ids"])
                 
-                response_dict = merge_dicts(responses)
+                merged_response = merge_dicts(responses)
                 
                 print(f"SUCCESSFUL - All {amount} items of {choosen_row['title']} were deleted" \
-                    if response_dict['fail'] is None else f"{len(response_dict['fail'])} \
-                        items FAILED (and {amount - len(response_dict['fail'])} succseeded) \
-                            \nERROR: {response_dict['fail']}")
+                    if merged_response['fail'] is None else f"{len(merged_response['fail'])} \
+                        items FAILED (and {amount - len(merged_response['fail'])} succseeded) \
+                            \nERROR: {merged_response['fail']}")
 
             else:
                 print('There are ZERO items listed')
@@ -134,6 +134,8 @@ def cli_loop():
          \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n  9 - Get your current balance \n -1 - To quit \n')
         if LOGGING == 'True' and len(client_choice) == 1 and ord(client_choice) in range(48, 57) :
             if client_choice in  ('4','6'):
+                write_content(merge_dicts(responses), client_choice)
+            elif(client_choice == '3'):
                 write_content(responses, client_choice)
             else:
                 write_content(response.json(), client_choice)

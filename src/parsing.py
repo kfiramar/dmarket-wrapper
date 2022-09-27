@@ -24,7 +24,7 @@ def write_content(content, client_choice):
     fixed_json = []
     file_name = time.strftime(f"request-{client_choice}-%Y-%m-%d_%H:%M:%S.json")
     path_to_file = os.path.join(SRC_PATH, f'../logs/{file_name}')
-    if isinstance(content, (tuple ,list)):
+    if isinstance(content, tuple):
         for cont in content:
             fixed_json.append(json.loads(json_fixer(str(cont.json()))))
     else:
