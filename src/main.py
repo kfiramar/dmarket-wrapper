@@ -6,12 +6,12 @@ import json
 import requests
 from tabulate import tabulate
 import numpy as np
-from api_requests import generic_request,generic_request_w_body
+from collections import Counter
+from api_requests import generic_request,generic_request_w_body, request_devider
 from config import BUY_ORDER_ENDPOINT, BALANCE_ENDPOINT, INVENTORY_ENDPOINT, \
     SELL_LISTINGS_ENDPOINT,DELETE_LISTING_ENDPOINT, LOGGING
 from parsing import listing_error_parsing, parse_json_to_items, parse_items_to_rows, \
-     buy_order_body, write_content, listings_body , json_fixer, \
-     listing_error_parsing
+     buy_order_body, write_content, listings_body , merge_dicts
 
 
 def print_table(rows: List):
@@ -47,8 +47,8 @@ def cli_loop():
     print(f"Welcome! this is Kfir's DMarket trading CLI! Your balance is: {balance}$")
     print('\n What would you like to do?\n  1 - View DMarket inventory \n  2 - View Steam inventory\
          \n  3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \
-         \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
-    client_choice = input()
+         \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n  9 - Get your current balance \n -1 - To quit \n ')
+    client_choice = input('  ')
     while True:
         response = requests.models.Response()
         if client_choice == '1':
@@ -77,12 +77,10 @@ def cli_loop():
             choosen_row = (vars(dm_rows[int(row_number)]))
             amount = int(input(f'how many items? You can sell up to {choosen_row["count"]} \n'))
             price = input(f'for how much? the current market price is: {choosen_row["market_price"]}$ \n')
-            body_test = buy_order_body(amount, price, choosen_row["asset_ids"])
-            response = generic_request_w_body(api_url_path= BUY_ORDER_ENDPOINT, method='POST', body=body_test)
-            # request_devider(api_url_path=BUY_ORDER_ENDPOINT,method='POST',amount=amount,func= generic_request_w_body, body=body_test)
-            error_list = listing_error_parsing(response)
-            print(f"SUCCESSFUL - {amount} items of {choosen_row['title']} were listed" if len(error_list) == 0 else f"{len(error_list)} items FAILED (and {amount - len(error_list)} succseeded) ERROR: {error_list}")
-        
+            responses = request_devider(api_url_path=BUY_ORDER_ENDPOINT,method='POST',amount=amount, body_func=buy_order_body, price= price, asset_ids=choosen_row["asset_ids"], offer_ids=choosen_row["offer_ids"])
+            error_list = listing_error_parsing(responses)
+            print(f"SUCCESSFUL - All {amount} items of {choosen_row['title']} were listed" if len(error_list) == 0 else f"{len(error_list)} items FAILED (and {amount - len(error_list)} succseeded) \nERROR: {error_list}")
+
         elif client_choice == '5':
             response = generic_request(api_url_path= SELL_LISTINGS_ENDPOINT,method='GET')
             if(response.json()['Total'] != '0'):
@@ -97,13 +95,21 @@ def cli_loop():
             if(listings_response.json()['Total'] != '0'):
                 listings_rows = sort_rows(parse_json_to_items(listings_response.json(),),parse_by= 'total_price')
                 print_table(copy.deepcopy(listings_rows))
-                row_number = input('What listings would you like to delete? choose an index number\n')
+                row_number = input('What listings would you like to remove? choose an index number')
                 choosen_row = (vars(listings_rows[int(row_number)]))
-                amount = int(input(f'How many items would you like to delete? You can sell up to {choosen_row["count"]} \n'))
-                response = ((generic_request_w_body(api_url_path= DELETE_LISTING_ENDPOINT, method='DELETE', body=listings_body(amount, choosen_row['market_price'], choosen_row["asset_ids"], choosen_row["offer_ids"]))))
-                response_dict = json.loads(json_fixer(str(response.json())))
-                print(f"SUCCESSFUL - {amount} items of {choosen_row['title']} were listed"  \
-                if response_dict['fail'] == 'None' else f'FAILED - with error:{response_dict["fail"]}')
+                amount = int(input(f'How many items would you like to delete? You can remove the listing of up to {choosen_row["count"]} \n'))
+                
+                responses = request_devider(api_url_path=DELETE_LISTING_ENDPOINT,method='DELETE', \
+                    amount=amount, body_func=listings_body, price= choosen_row['market_price'], \
+                        asset_ids=choosen_row["asset_ids"], offer_ids = choosen_row["offer_ids"])
+                
+                response_dict = merge_dicts(responses)
+                
+                print(f"SUCCESSFUL - All {amount} items of {choosen_row['title']} were deleted" \
+                    if response_dict['fail'] is None else f"{len(response_dict['fail'])} \
+                        items FAILED (and {amount - len(response_dict['fail'])} succseeded) \
+                            \nERROR: {response_dict['fail']}")
+
             else:
                 print('There are ZERO items listed')
 
@@ -112,6 +118,10 @@ def cli_loop():
 
         elif client_choice == '8':
             print('You choose 8')
+        
+        elif client_choice == '9':
+            balance = float(generic_request(api_url_path=BALANCE_ENDPOINT, method='GET').json()['usd'])/100
+            print(f'\n Your balance is: {balance}$')
 
         elif client_choice == '-1':
             sys.exit()
@@ -121,10 +131,15 @@ def cli_loop():
 
         print('\n What else would you like to do?\n  1 - View DMarket inventory \n  2 - View Steam inventory\
          \n  3 - View Total inventory \n  4 - Sell items \n  5 - View sell listings \n  6 - Delete sell listings \
-         \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n -1 - To quit \n ')
-        if LOGGING == 'True' and client_choice in range(0, 10) :
-            write_content(response.json(), client_choice)
-        client_choice = input()
+         \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n  9 - Get your current balance \n -1 - To quit \n')
+        if LOGGING == 'True' and len(client_choice) == 1 and ord(client_choice) in range(48, 57) :
+            if client_choice in  ('4','6'):
+                write_content(responses, client_choice)
+            else:
+                write_content(response.json(), client_choice)
+        client_choice = input('  ')
+
+
 
 if __name__ == '__main__':
     cli_loop()
