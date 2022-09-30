@@ -47,7 +47,6 @@ def cli_loop():
          \n  7 - Buy items \n  8 - Filter inventory for a spesific item \n  9 - Get your current balance \n -1 - To quit \n ')
     client_choice = input('  ')
     while True:
-        # response = requests.models.Response()
         if client_choice == '1':
             response = generic_request(api_url_path=f"{INVENTORY_ENDPOINT}&BasicFilters.InMarket=true", method='GET')
             dm_rows = sort_rows(parse_json_to_items(response.json()), parse_by='total_price')
