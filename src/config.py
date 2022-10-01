@@ -1,4 +1,4 @@
-'''This module contains the main loop of the program and prints'''
+'''module that loads all the variables in to the app'''
 import os
 import configparser
 

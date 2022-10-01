@@ -1,5 +1,5 @@
+'''module that loads all the variables in to the app'''
 from config import config
-
 
 API_URL = config['URLS']['API_URL']
 
