@@ -13,11 +13,11 @@ SRC_PATH = os.path.dirname(__file__)
 JSON_DICTIONARY_FIXER = {"\'": "\"", 'True': '\"True\"', ' False': '\"False\"', 'None': '\"None\"'}
 
 
-def json_fixer(json: str):
+def json_fixer(json_str: str):
     '''changes the everything to the json convention'''
     for key, value in JSON_DICTIONARY_FIXER.items():
-        json = json.replace(key, value)
-    return json
+        json_str = json_str.replace(key, value)
+    return json_str
 
 
 # Creates a file and loads all the API request result into it
@@ -87,7 +87,7 @@ def parse_json_to_items(json_list: dict):
     '''uses parse_json_to_item to parse all the items from json'''
     items_list = []
     for json_item in json_list['Items']:
-        items_list.append(parse_json_to_item(json=json_item))
+        items_list.append(parse_json_to_item(json_dict=json_item))
     return items_list
 
 
@@ -96,15 +96,15 @@ def parse_json_to_object(json_object: List):
     return json.loads(json_object, object_hook=lambda d: SimpleNamespace(**d))
 
 
-def parse_json_to_item(json: dict):
+def parse_json_to_item(json_dict: dict):
     '''parses a JSON into an item'''
     unlock_date = exterior = itemtype = False
-    if json['Offer']['OfferID'] == '':
+    if json_dict['Offer']['OfferID'] == '':
         item = Item(
-                    asset_id=json['AssetID'], title=json['Title'], tradable=json['Tradable'],
-                    market_price=json['MarketPrice']['Amount'])
+                    asset_id=json_dict['AssetID'], title=json_dict['Title'], tradable=json_dict['Tradable'],
+                    market_price=json_dict['MarketPrice']['Amount'])
 
-        for attribute in json['Attributes']:
+        for attribute in json_dict['Attributes']:
 
             if attribute['Name'] == 'exterior':
                 item.exterior = attribute['Value']
@@ -121,8 +121,8 @@ def parse_json_to_item(json: dict):
             if (exterior and itemtype and unlock_date):
                 return item
     return Item(
-                asset_id=json['AssetID'], title=json['Title'], tradable=json['Tradable'],
-                market_price=float(json['Offer']['Price']['Amount']), offer_id=json['Offer']['OfferID'])
+                asset_id=json_dict['AssetID'], title=json_dict['Title'], tradable=json_dict['Tradable'],
+                market_price=float(json_dict['Offer']['Price']['Amount']), offer_id=json_dict['Offer']['OfferID'])
 
 
 def merge_dicts(dictionaries: list):
@@ -145,7 +145,6 @@ def combine_2_dict(dict1, dict2):
                 elif (isinstance(value, str) and isinstance(value2, str)):
                     dict1[key2] += ', ' + value2[0]
     return dict1
-
 
 
 def parse_items_to_rows(all_items: List):
