@@ -11,7 +11,6 @@ from parsing import (listing_error_parsing, parse_jsons_to_listings,
                      parse_jsons_to_inventoryitems, parse_listings_to_listingrows,
                      buy_order_body, write_content, listings_body, merge_dicts,
                      parse_inventoryitems_to_inventoryitemrow)
-from item import (InventoryItem, Listing)
 from row import (InventoryItemRow, ListingRow)
 
 
@@ -23,18 +22,16 @@ def print_table(rows: List):
     is_inventory_item_row = isinstance(rows[0], InventoryItemRow)
     table = []
     for row in rows:
-        # delattr(row, 'asset_ids')
         if is_listing:
-            # delattr(row, 'offer_ids')
             total_price += float(row.listing_price)*row.total_items
         elif is_inventory_item_row:
             total_price += float(row.market_price)*row.total_items
         table.append(row.get_list())
         total_items += row.total_items
     headers = rows[0].get_keys()
-    last_row = list(np.full((len(headers)), ''))
+    last_row = list(np.full((len(headers)), '.........'))
     last_row[headers.index("total_items")] = total_items
-    last_row[headers.index("total_price")] = total_price
+    last_row[headers.index("total_price")] = str(total_price) + '$'
     last_row[0] = "TOTAL:"
     table.append(last_row)
     print(tabulate(table, headers=headers, tablefmt='psql',

@@ -28,6 +28,9 @@ class ListingRow(Row):
     def get_list(self):
         '''get list of all the items of the ListingRow'''
         listingrow_list = list(vars(self).values())
+        for i, value in enumerate(listingrow_list):
+            if isinstance(value, float):
+                listingrow_list[i] = str(round(value, 2)) + '$'
         return [listingrow_list[i] for i in LISTING_MASK]
 
     def get_keys(self):
@@ -49,19 +52,13 @@ class InventoryItemRow(Row):
     def get_list(self):
         '''get list of all of the InventoryItemRow'''
         inventoryrow_list = list(vars(self).values())
+        for i, value in enumerate(inventoryrow_list):
+            if isinstance(value, float):
+                inventoryrow_list[i] = str(round(value, 2)) + '$'
         return [inventoryrow_list[i] for i in INVENTORY_MASK]
-    
-    def get_list_tradable(self):
-        '''get list of all of the InventoryItemRow'''
-        inventoryrow_list = list(vars(self).values())
-        return [inventoryrow_list[i] for i in INVENTORY_MASK_TRADABLE]
 
     def get_keys(self):
         '''get list of the keys of the InventoryItemRow'''
         keysrow_list = list(vars(self).keys())
         return [keysrow_list[i] for i in INVENTORY_MASK]
-    
-    def get_keys_tradable(self):
-        '''get list of the keys of the InventoryItemRow'''
-        keysrow_list = list(vars(self).keys())
-        return [keysrow_list[i] for i in INVENTORY_MASK_TRADABLE]
+
