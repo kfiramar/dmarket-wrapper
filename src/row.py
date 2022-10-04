@@ -1,7 +1,7 @@
 '''This module contains the row class which represents a row in a CLI chart'''
 
 
-INVENTORY_MASK, INVENTORY_MASK_TRADABLE, LISTING_MASK = [0, 5, 3, 2, 4], [0, 7, 3, 6, 2, 4], [0, 5, 6, 3, 2, 4]
+INVENTORY_MASK, INVENTORY_MASK_TRADABLE, LISTING_MASK = [0, 5, 3, 2, 4], [0, 7, 3, 6, 2, 4], [0, 6, 3, 2, 4]
 
 
 class Row:
@@ -53,10 +53,10 @@ class InventoryItemRow(Row):
         for i, value in enumerate(inventoryrow_list):
             if isinstance(value, float):
                 inventoryrow_list[i] = str(round(value, 2)) + '$'
-        return [inventoryrow_list[i] for i in INVENTORY_MASK_TRADABLE]
+        return [inventoryrow_list[i] for i in INVENTORY_MASK]
 
     def get_keys(self):
         '''get list of the keys of the InventoryItemRow'''
         keysrow_list = list(vars(self).keys())
-        return [keysrow_list[i] for i in INVENTORY_MASK_TRADABLE]
+        return [keysrow_list[i] for i in INVENTORY_MASK]
 
