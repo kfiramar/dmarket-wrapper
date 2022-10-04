@@ -5,8 +5,8 @@ import time
 import os
 from typing import List
 from types import SimpleNamespace
-from item import Item
-from row import Row
+from item import Listing, InventoryItem
+from row import InventoryItemRow, ListingRow
 
 
 SRC_PATH = os.path.dirname(__file__)
@@ -83,12 +83,20 @@ def listing_error_parsing(responses):
     return error_list
 
 
-def parse_json_to_items(json_list: dict):
+def parse_jsons_to_inventoryitems(jsons: dict):
     '''uses parse_json_to_item to parse all the items from json'''
-    items_list = []
-    for json_item in json_list['Items']:
-        items_list.append(parse_json_to_item(json_dict=json_item))
-    return items_list
+    inventoryitem_list = []
+    for json_item in jsons['Items']:
+        inventoryitem_list.append(parse_json_to_inventoryitem(json_dict=json_item))
+    return inventoryitem_list
+
+
+def parse_jsons_to_listings(jsons: dict):
+    '''uses parse_json_to_item to parse all the items from json'''
+    listing_list = []
+    for json_item in jsons['Items']:
+        listing_list.append(parse_json_to_listing(json_dict=json_item))
+    return listing_list
 
 
 def parse_json_to_object(json_object: List):
@@ -96,33 +104,31 @@ def parse_json_to_object(json_object: List):
     return json.loads(json_object, object_hook=lambda d: SimpleNamespace(**d))
 
 
-def parse_json_to_item(json_dict: dict):
+def parse_json_from_attributes(json_dict, attributes_keys):
+    '''Parses '''
+    simplified_json_dict = {attribute['Name']: attribute['Value'] for attribute in json_dict}
+    return {key: value for key, value in simplified_json_dict.items() if key in attributes_keys}
+
+
+def parse_json_to_inventoryitem(json_dict: dict):
     '''parses a JSON into an item'''
-    unlock_date = exterior = itemtype = False
-    if json_dict['Offer']['OfferID'] == '':
-        item = Item(
-                    asset_id=json_dict['AssetID'], title=json_dict['Title'], tradable=json_dict['Tradable'],
-                    market_price=json_dict['MarketPrice']['Amount'])
+    attributes_dictionary = parse_json_from_attributes(json_dict['Attributes'], ['exterior', 'itemType', 'unlockDate'])
+    # items = [{key:item.get(key,next((item["Value"]for item in item["Attributes"]if item["Name"]==key),None))for key in("itemType","exterior","unlockDate","tradeLock","tradeLockDuration","gameId","AssetID","Title","Tradable")}for item in json_dict]
+    return InventoryItem(
+                         asset_id=json_dict['AssetID'],
+                         title=json_dict['Title'],
+                         tradable=str(json_dict['Tradable']),
+                         market_price=json_dict['MarketPrice']['Amount'],
+                         exterior=attributes_dictionary['exterior'],
+                         item_type=attributes_dictionary['itemType'],
+                         unlock_date=attributes_dictionary['unlockDate'])
 
-        for attribute in json_dict['Attributes']:
 
-            if attribute['Name'] == 'exterior':
-                item.exterior = attribute['Value']
-                exterior = True
-
-            elif attribute['Name'] == 'itemType':
-                item.itemType = attribute['Value']
-                itemtype = True
-
-            elif attribute['Name'] == 'unlockDate':
-                item.unlock_date = attribute['Value']
-                unlock_date = True
-
-            if (exterior and itemtype and unlock_date):
-                return item
-    return Item(
-                asset_id=json_dict['AssetID'], title=json_dict['Title'], tradable=json_dict['Tradable'],
-                market_price=float(json_dict['Offer']['Price']['Amount']), offer_id=json_dict['Offer']['OfferID'])
+def parse_json_to_listing(json_dict: dict):
+    '''parses a JSON into an item'''
+    return Listing(
+                asset_id=json_dict['AssetID'], title=json_dict['Title'], tradable=str(json_dict['Tradable']),
+                listing_price=float(json_dict['Offer']['Price']['Amount']), offer_id=json_dict['Offer']['OfferID'])
 
 
 def merge_dicts(dictionaries: list):
@@ -147,20 +153,45 @@ def combine_2_dict(dict1, dict2):
     return dict1
 
 
-def parse_items_to_rows(all_items: List):
+def parse_listings_to_listingrows(all_items: List):
     '''parses items from list(Items) to list(Rows)'''
     rows = []
     for item in all_items:
         for row in rows:
-            if item.title == row.title and item.market_price == row.market_price:
-                row.count += 1
-                row.total_price += float(row.market_price)
+            if item.title == row.title and item.listing_price == row.listing_price and item.tradable == row.tradable:
+                row.total_items += 1
+                row.total_price += float(item.listing_price)
                 row.asset_ids.append(item.asset_id)
-                if item.offer_id != '':
-                    row.offer_ids.append(item.offer_id)
+                row.offer_ids.append(item.offer_id)
                 break
         else:
-            rows.append(Row(title=item.title, asset_ids=[item.asset_id], exterior=item.exterior,
-                            market_price=item.market_price,
-                            count=1, total_price=item.market_price, offer_ids=[item.offer_id]))
+            rows.append(ListingRow(title=item.title,
+                                   asset_ids=[item.asset_id],
+                                   listing_price=item.listing_price,
+                                   total_items=1,
+                                   total_price=item.listing_price,
+                                   offer_ids=[item.offer_id],
+                                   tradable=item.tradable))
+    return rows
+
+
+def parse_inventoryitems_to_inventoryitemrow(all_items: List):
+    '''parses items from list(Items) to list(Rows)'''
+    rows = []
+    for item in all_items:
+        for row in rows:
+            if item.title == row.title and item.market_price == row.market_price and item.tradable == row.tradable:
+                row.total_items += 1
+                row.total_price += float(item.market_price)
+                row.asset_ids.append(item.asset_id)
+                row.total_price = float(row.total_price)
+                break
+        else:
+            rows.append(InventoryItemRow(title=item.title,
+                                         asset_ids=[item.asset_id],
+                                         exterior=item.exterior,
+                                         market_price=item.market_price,
+                                         total_items=1,
+                                         total_price=item.market_price,
+                                         tradable=item.tradable))
     return rows
