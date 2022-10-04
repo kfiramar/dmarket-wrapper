@@ -2,7 +2,7 @@
 import os
 import configparser
 
-JSON_DICTIONARY_FIXER = {"\'": "\"" ,'True': '\"True\"',' False': '\"False\"','None':'\"None\"'}
+JSON_DICTIONARY_FIXER = {"\'": "\"", 'True': '\"True\"', ' False': '\"False\"', 'None':'\"None\"'}
 
 SRC_PATH= os.path.dirname(__file__)
 config = configparser.ConfigParser()

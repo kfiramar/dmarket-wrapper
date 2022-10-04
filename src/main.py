@@ -16,11 +16,8 @@ from row import (InventoryItemRow, ListingRow)
 
 def print_table(rows: List):
     '''Prints tables with headers and total at the end'''
-    total_price = 0
-    total_items = 0
-    is_listing = isinstance(rows[0], ListingRow)
-    is_inventory_item_row = isinstance(rows[0], InventoryItemRow)
-    table = []
+    total_items, total_price, table = 0, 0, []
+    is_listing, is_inventory_item_row = isinstance(rows[0], ListingRow), isinstance(rows[0], InventoryItemRow)
     for row in rows:
         if is_listing:
             total_price += float(row.listing_price)*row.total_items
