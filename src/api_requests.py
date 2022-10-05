@@ -1,6 +1,5 @@
 '''This module sends all the API requests'''
 import requests
-import math
 from api_encryption import create_headers, create_headers_w_body
 from config import API_URL
 
@@ -8,29 +7,41 @@ from config import API_URL
 def generic_request(api_url_path, method):
     '''This is the most generic API request function'''
     headers = create_headers(api_url_path, method=method)
-    method_lower = method.lower()
-    response = requests.__getattribute__(method_lower)(API_URL + api_url_path, headers=headers)
+    response = getattr(requests, method.lower())(API_URL + api_url_path, headers=headers)
     return response
+
 
 def generic_request_w_body(api_url_path, body, method):
     '''This is the most generic API request function with a body'''
     headers = create_headers_w_body(api_url_path, body=body, method=method)
-    method_lower = method.lower()
-    response = requests.__getattribute__(method_lower)(API_URL + api_url_path, json=body, headers=headers)
+    response = getattr(requests, method.lower())(API_URL + api_url_path, json=body, headers=headers)
     return response
 
-def request_devider(api_url_path, method, amount,body_func, price, asset_ids, offer_ids):
+
+def request_devider_listing(api_url_path, method, amount, body_func, price, asset_ids, offer_ids):
     '''splits requests to up to 100 items per request'''
-    amount_array = ()
     responses = ()
-    if amount > 100:
-        for _ in range(math.floor(amount/100)):
-            amount_array += (100,)
-    amount_array += (amount%100,)
+    amount_array = split_to_100s(amount)
     for number in amount_array:
-        if (body_func.__name__ == 'listings_body'):
-            response = generic_request_w_body(api_url_path= api_url_path, method=method, body=body_func(number, price, asset_ids,offer_ids))
-        else:
-            response = generic_request_w_body(api_url_path= api_url_path, method=method, body=body_func(number, price, asset_ids))
+        response = generic_request_w_body(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids, offer_ids))
         responses += (response,)
     return responses
+
+
+def request_devider_buy_order(api_url_path, method, amount, body_func, price, asset_ids):
+    '''splits requests to up to 100 items per request'''
+    responses = ()
+    amount_array = split_to_100s(amount)
+    for number in amount_array:
+        response = generic_request_w_body(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids))
+        responses += (response,)
+    return responses
+
+
+def split_to_100s(number):
+    '''devides the number by 100 and creates a list of 100s with leftovers'''
+    amount_array = ()
+    if number > 100:
+        for _ in range(int(number/100)):
+            amount_array += (100,)
+    return amount_array + (number % 100,)
