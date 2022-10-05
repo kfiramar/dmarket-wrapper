@@ -2,22 +2,22 @@
 import json
 from datetime import datetime
 from nacl.bindings import crypto_sign
-from config import config
+from config import SECRET_KEY, PUBLIC_KEY
 
 
 # DMarket signature prefix
 SIGNATURE_PREFIX = "dmar ed25519 "
 
 
-def create_headers(api_url_path : str, method : str):
+def create_headers(api_url_path: str, method: str):
     '''this function creates the headers for the API requests'''
     nonce = str(round(datetime.now().timestamp()))
     string_to_sign = method + api_url_path + nonce
     encoded = string_to_sign.encode('utf-8')
-    signature_bytes = crypto_sign(encoded, bytes.fromhex(config['KEYS']['SECRET_KEY']))
+    signature_bytes = crypto_sign(encoded, bytes.fromhex(SECRET_KEY))
     signature = signature_bytes[:64].hex()
     return {
-        "X-Api-Key": config['KEYS']['PUBLIC_KEY'],
+        "X-Api-Key": PUBLIC_KEY,
         "X-Request-Sign": SIGNATURE_PREFIX + signature,
         "X-Sign-Date": nonce
     }
@@ -27,10 +27,10 @@ def create_headers_w_body(api_url_path : str, method : str, body : str):
     nonce = str(round(datetime.now().timestamp()))
     string_to_sign = method + api_url_path + json.dumps(body) + nonce
     encoded = string_to_sign.encode('utf-8')
-    signature_bytes = crypto_sign(encoded, bytes.fromhex(config['KEYS']['SECRET_KEY']))
+    signature_bytes = crypto_sign(encoded, bytes.fromhex(SECRET_KEY))
     signature = signature_bytes[:64].hex()
     return {
-        "X-Api-Key": config['KEYS']['PUBLIC_KEY'],
+        "X-Api-Key": PUBLIC_KEY,
         "X-Request-Sign": SIGNATURE_PREFIX + signature,
         "X-Sign-Date": nonce
     }
