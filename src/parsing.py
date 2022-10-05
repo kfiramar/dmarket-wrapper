@@ -20,19 +20,14 @@ def json_fixer(json_str: str):
     return json_str
 
 
-# Creates a file and loads all the API request result into it
 def write_content(content, client_choice):
-    '''debugging if you want to know how the recived JSON is built'''
+    '''Creates a file and loads all the API request result into it'''
     fixed_json = []
     file_name = time.strftime(f"request-{client_choice}-%Y-%m-%d_%H:%M:%S.json")
     path_to_file = os.path.join(SRC_PATH, f'../logs/{file_name}')
-    if isinstance(content, tuple):
-        for cont in content:
-            fixed_json.append(json.loads(json_fixer(str(cont.json()))))
-    else:
-        fixed_json = json.loads(json_fixer(str(content)))
+    fixed_json = json.loads(json_fixer(str(content)))
     with open(path_to_file, "wb") as file:
-        file.write((pprint.pformat(fixed_json).replace("'", '"')).encode("UTF-8"))
+        file.write((pprint.pformat(fixed_json)).encode('utf-8'))
 
 
 def print_content(content):
@@ -113,7 +108,6 @@ def parse_json_from_attributes(json_dict, attributes_keys):
 def parse_json_to_inventoryitem(json_dict: dict):
     '''parses a JSON into an item'''
     attributes_dictionary = parse_json_from_attributes(json_dict['Attributes'], ['exterior', 'itemType', 'unlockDate'])
-    # items = [{key:item.get(key,next((item["Value"]for item in item["Attributes"]if item["Name"]==key),None))for key in("itemType","exterior","unlockDate","tradeLock","tradeLockDuration","gameId","AssetID","Title","Tradable")}for item in json_dict]
     return InventoryItem(
                          asset_id=json_dict['AssetID'],
                          title=json_dict['Title'],
@@ -144,11 +138,16 @@ def combine_2_dict(dict1, dict2):
     for key, *value in dict1.items():
         for key2, *value2 in dict2.items():
             if key2 == key and value != value2:
-                if (isinstance(value, list) and isinstance(value2, list)):
+                if (isinstance(dict1[key], list) and
+                        isinstance(dict2[key2], list)):
                     dict1[key2].extend(value2[0])
-                elif (isinstance(value, int) and isinstance(value2, int)):
+
+                elif (isinstance(dict1[key], int) and
+                        isinstance(dict2[key2], int)):
                     dict1[key2] += value2[0]
-                elif (isinstance(value, str) and isinstance(value2, str)):
+
+                elif (isinstance(dict1[key], str) and
+                        isinstance(dict2[key2], str)):
                     dict1[key2] += ', ' + value2[0]
     return dict1
 

@@ -28,7 +28,7 @@ def print_table(rows: List):
     headers = rows[0].get_keys()
     last_row = list(np.full((len(headers)), '.........'))
     last_row[headers.index("total_items")] = total_items
-    last_row[headers.index("total_price")] = str(total_price) + '$'
+    last_row[headers.index("total_price")] = str(round(total_price, 2)) + '$'
     last_row[0] = "TOTAL:"
     table.append(last_row)
     print(tabulate(table, headers=headers, tablefmt='psql',
@@ -45,8 +45,6 @@ def input_from_user():
            \n  4 - Sell items \
            \n  5 - View sell listings \
            \n  6 - Delete sell listings \
-           \n  7 - Buy items \
-           \n  8 - Filter inventory for a spesific item \
            \n -1 - To quit \n")
     balance = float(generic_request(api_url_path=BALANCE_ENDPOINT, method='GET').json()['usd'])/100
     print(f"what are you willing to do with your {balance}$")
@@ -74,14 +72,14 @@ def cli_loop():
 
         elif client_choice == '3':
             dm_response = generic_request(api_url_path=f"{INVENTORY_ENDPOINT}&BasicFilters.InMarket=true", method='GET')
-            dm_items = parse_jsons_to_inventoryitems(response.json())
+            dm_items = parse_jsons_to_inventoryitems(dm_response.json())
             dm_rows = parse_inventoryitems_to_inventoryitemrow(dm_items)
             dm_rows.sort(key=lambda x: getattr(x, 'total_price'))
             steam_response = generic_request(api_url_path=INVENTORY_ENDPOINT, method='GET')
-            steam_items = parse_jsons_to_inventoryitems(response.json())
+            steam_items = parse_jsons_to_inventoryitems(steam_response.json())
             steam_rows = parse_inventoryitems_to_inventoryitemrow(steam_items)
             steam_rows.sort(key=lambda x: getattr(x, 'total_price'))
-            responses = (steam_response, dm_response)
+            responses = [steam_response, dm_response]
             print_table(copy.deepcopy(dm_rows + steam_rows))
 
         elif client_choice == '4':
@@ -111,7 +109,7 @@ def cli_loop():
         elif client_choice == '6':
             listings_response = generic_request(api_url_path=SELL_LISTINGS_ENDPOINT, method='GET')
             if listings_response.json()['Total'] != '0':
-                listings = parse_jsons_to_listings(response.json())
+                listings = parse_jsons_to_listings(listings_response.json())
                 listings_rows = parse_listings_to_listingrows(listings)
                 listings_rows.sort(key=lambda x: getattr(x, 'total_price'))
                 print_table(copy.deepcopy(listings_rows))
@@ -137,12 +135,6 @@ def cli_loop():
             else:
                 print('There are ZERO items listed')
 
-        elif client_choice == '7':
-            print('You choose 7')
-
-        elif client_choice == '8':
-            print('You choose 8')
-
         elif client_choice == '-1':
             sys.exit()
 
@@ -150,10 +142,8 @@ def cli_loop():
             print(' Wrong input, try again')
 
         if LOGGING == 'True' and len(client_choice) == 1 and ord(client_choice) in range(48, 57):
-            if client_choice in ('4', '6'):
+            if client_choice in ('3', '4', '6'):
                 write_content(merge_dicts(responses), client_choice)
-            elif client_choice == '3':
-                write_content(responses, client_choice)
             else:
                 write_content(response.json(), client_choice)
 
