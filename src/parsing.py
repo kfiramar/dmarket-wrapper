@@ -30,44 +30,6 @@ def write_content(content, func_name):
         file.write((pprint.pformat(fixed_json)).encode('utf-8'))
 
 
-def print_content(content):
-    '''debugging if you want to know how the recived JSON is built'''
-    print(json.loads(json_fixer(str(content))))
-
-
-def buy_order_body(amount: int, price: float, asset_ids: List):
-    '''generate body for buy order'''
-    item_order = {"Offers": []}
-    for _ in range(amount):
-        buy_order = {
-                    "AssetID": asset_ids.pop(0),
-                    "Price": {
-                            "Currency": "USD",
-                            "Amount": price
-                            }
-                }
-        item_order['Offers'].append(buy_order)
-    return item_order
-
-
-def listings_body(amount: int, price: float, asset_ids: List, offer_ids: List):
-    '''generate body for buy order'''
-    item_order = {
-         "force": True,
-         "objects": []}
-    for _ in range(amount):
-        listing = {
-                    "itemId": asset_ids.pop(0),
-                    "offerId": offer_ids.pop(0),
-                    "Price": {
-                            "Currency": "USD",
-                            "Amount": price
-                            }
-                }
-        item_order['objects'].append(listing)
-    return item_order
-
-
 def listing_error_parsing(responses):
     '''parse list if responses to an error list'''
     error_list = []

@@ -8,8 +8,9 @@ from api_requests import (generic_request, request_devider_listing)
 from config import (SELL_LISTINGS_ENDPOINT, DELETE_LISTING_ENDPOINT, LOGGING)
 from parsing import (parse_jsons_to_listings,
                      parse_listings_to_listingrows,
-                     write_content, listings_body, merge_dicts)
+                     write_content, merge_dicts)
 from print import print_table
+from request_body import listings_body
 
 
 @click.group()
