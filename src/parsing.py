@@ -20,10 +20,10 @@ def json_fixer(json_str: str):
     return json_str
 
 
-def write_content(content, client_choice):
+def write_content(content, func_name):
     '''Creates a file and loads all the API request result into it'''
     fixed_json = []
-    file_name = time.strftime(f"request-{client_choice}-%Y-%m-%d_%H:%M:%S.json")
+    file_name = time.strftime(f"{func_name}-%Y-%m-%d_%H:%M:%S.json")
     path_to_file = os.path.join(SRC_PATH, f'../logs/{file_name}')
     fixed_json = json.loads(json_fixer(str(content)))
     with open(path_to_file, "wb") as file:

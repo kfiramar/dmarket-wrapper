@@ -46,6 +46,30 @@ def input_from_user():
            \n  5 - View sell listings \
            \n  6 - Delete sell listings \
            \n -1 - To quit \n")
+    
+    
+    print("\n  The options are: \
+           \n  1 - View inventory \
+           \n  2 - Add/Delete Listings \
+           \n  3 - View sold items \
+           \n  4 - Deposite/Withdraw items \
+           \n -1 - To quit \n")
+    
+    print("\n  The options are: \
+           \n  1 - View DMarket inventory \
+           \n  2 - View Steam inventory\
+           \n  3 - View Total inventory \
+           \n -1 - Main menu \n")
+    
+    print("\n  The options are: \
+           \n  1 - Sell items \
+           \n  2 - View sell listings\
+           \n  3 - Delete sell listings \
+           \n -1 - Main menu \n")
+    
+    
+    
+    
     balance = float(generic_request(api_url_path=BALANCE_ENDPOINT, method='GET').json()['usd'])/100
     print(f"what are you willing to do with your {balance}$")
     return input('  ')
