@@ -53,7 +53,7 @@ def listing():
     row_number = click.prompt(f'What item would you like to sell? choose index number - up to {len(dm_rows) - 1}\n', type=str)
     choosen_row = (vars(dm_rows[int(row_number)]))
     amount = click.prompt(f'how many items? You can sell up to {choosen_row["total_items"]} \n', type=int)
-    price = click.prompt(f'for how much? the current market price is: {choosen_row["market_price"]}$ \n', type=int)
+    price = click.prompt(f'for how much? the current market price is: {choosen_row["market_price"]}$ \n', type=float)
     responses = request_devider_buy_order(api_url_path=BUY_ORDER_ENDPOINT, method='POST', amount=amount, body_func=buy_order_body, price=price, asset_ids=choosen_row["asset_ids"])
     error_list = listing_error_parsing(responses)
     print(f"SUCCESSFUL - All {amount} items of {choosen_row['title']} were listed" if len(error_list) == 0 else f"{len(error_list)} items FAILED (and {amount - len(error_list)} succseeded) \nERROR: {error_list}")
