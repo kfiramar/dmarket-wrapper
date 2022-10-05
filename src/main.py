@@ -60,14 +60,14 @@ def cli_loop():
             response = generic_request(api_url_path=f"{INVENTORY_ENDPOINT}&BasicFilters.InMarket=true", method='GET')
             items = parse_jsons_to_inventoryitems(response.json())
             dm_rows = parse_inventoryitems_to_inventoryitemrow(items)
-            dm_rows.sort(key=lambda x: getattr(x, 'total_price'))
+            dm_rows.sort(key=lambda row: getattr(row, 'total_price'))
             print_table(copy.deepcopy(dm_rows))
 
         elif client_choice == '2':
             response = generic_request(api_url_path=INVENTORY_ENDPOINT, method='GET')
             items = parse_jsons_to_inventoryitems(response.json())
             steam_rows = parse_inventoryitems_to_inventoryitemrow(items)
-            steam_rows.sort(key=lambda x: getattr(x, 'total_price'))
+            steam_rows.sort(key=lambda row: getattr(row, 'total_price'))
             print_table(copy.deepcopy(steam_rows))
 
         elif client_choice == '3':
@@ -78,7 +78,7 @@ def cli_loop():
             steam_response = generic_request(api_url_path=INVENTORY_ENDPOINT, method='GET')
             steam_items = parse_jsons_to_inventoryitems(steam_response.json())
             steam_rows = parse_inventoryitems_to_inventoryitemrow(steam_items)
-            steam_rows.sort(key=lambda x: getattr(x, 'total_price'))
+            steam_rows.sort(key=lambda row: getattr(row, 'total_price'))
             responses = [steam_response, dm_response]
             print_table(copy.deepcopy(dm_rows + steam_rows))
 
@@ -86,7 +86,7 @@ def cli_loop():
             dm_response = generic_request(api_url_path=f"{INVENTORY_ENDPOINT}&BasicFilters.InMarket=true", method='GET')
             dm_items = parse_jsons_to_inventoryitems(dm_response.json())
             dm_rows = parse_inventoryitems_to_inventoryitemrow(dm_items)
-            dm_rows.sort(key=lambda x: getattr(x, 'total_price'))
+            dm_rows.sort(key=lambda row: getattr(row, 'total_price'))
             print_table(copy.deepcopy(dm_rows))
             row_number = input(f'What item would you like to sell? choose index number - up to {len(dm_rows) - 1}\n')
             choosen_row = (vars(dm_rows[int(row_number)]))
@@ -101,7 +101,7 @@ def cli_loop():
             if response.json()['Total'] != '0':
                 listings = parse_jsons_to_listings(response.json())
                 listings_rows = parse_listings_to_listingrows(listings)
-                listings_rows.sort(key=lambda x: getattr(x, 'total_price'))
+                listings_rows.sort(key=lambda row: getattr(row, 'total_price'))
                 print_table(copy.deepcopy(listings_rows))
             else:
                 print('There are ZERO items listed')
@@ -111,7 +111,7 @@ def cli_loop():
             if listings_response.json()['Total'] != '0':
                 listings = parse_jsons_to_listings(listings_response.json())
                 listings_rows = parse_listings_to_listingrows(listings)
-                listings_rows.sort(key=lambda x: getattr(x, 'total_price'))
+                listings_rows.sort(key=lambda row: getattr(row, 'total_price'))
                 print_table(copy.deepcopy(listings_rows))
                 row_number = input(f'What listings would you like to remove? choose an index number - up to {len(listings_rows) - 1} \n')
                 choosen_row = (vars(listings_rows[int(row_number)]))
@@ -125,13 +125,11 @@ def cli_loop():
                                                     offer_ids=choosen_row["offer_ids"])
 
                 merged_response = merge_dicts(responses)
-
                 print(f"SUCCESSFUL - All {amount} items of {choosen_row['title']} were deleted"
                       if merged_response['fail'] is None else
                       f"{len(merged_response['fail'])} items FAILED (and \
                       {amount - len(merged_response['fail'])} succseeded) \
                       \nERROR: {merged_response['fail']}")
-
             else:
                 print('There are ZERO items listed')
 
