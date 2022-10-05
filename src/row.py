@@ -59,4 +59,3 @@ class InventoryItemRow(Row):
         '''get list of the keys of the InventoryItemRow'''
         keysrow_list = list(vars(self).keys())
         return [keysrow_list[i] for i in INVENTORY_MASK]
-

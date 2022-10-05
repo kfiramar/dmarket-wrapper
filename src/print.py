@@ -25,4 +25,3 @@ def print_table(rows: list):
     print(tabulate(table, headers=headers, tablefmt='psql',
                    numalign='center', stralign='center',
                    floatfmt=".2f", showindex='always'))
-

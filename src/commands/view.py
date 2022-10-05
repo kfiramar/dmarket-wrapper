@@ -1,8 +1,8 @@
 
 '''This module contains the main loop of the program and prints'''
 import inspect
-import click
 import copy
+import click
 from api_requests import (generic_request)
 from config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT,
                     STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING)
@@ -15,6 +15,7 @@ from print import print_table
 @click.group()
 def view():
     '''viewing listings, inventory -all, dm inventory and steam inventory'''
+
 
 @click.command()
 def dmarket_inventory():
@@ -69,12 +70,13 @@ def listings():
     else:
         print('There are ZERO items listed')
     if LOGGING == 'True':
-        write_content(response.json(),inspect.stack()[0][3])
+        write_content(response.json(), inspect.stack()[0][3])
+
 
 @click.command()
 def balance():
     '''View your current Dmarket balance'''
-    print('Your DMarket balance: ' + 
+    print('Your DMarket balance: ' +
           str(float(generic_request(api_url_path=BALANCE_ENDPOINT, method='GET').json()['usd'])/100) + '$')
 
 

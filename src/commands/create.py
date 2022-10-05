@@ -1,7 +1,7 @@
 '''This module contains the main loop of the program and prints'''
 import inspect
-import click
 import copy
+import click
 from api_requests import (generic_request, request_devider_buy_order)
 from config import (BUY_ORDER_ENDPOINT, DM_INVENTORY_ENDPOINT, LOGGING)
 from parsing import (listing_error_parsing,
@@ -14,6 +14,7 @@ from print import print_table
 @click.group()
 def create():
     '''creating listings,'''
+
 
 @click.command()
 def listing():
@@ -30,7 +31,7 @@ def listing():
     responses = request_devider_buy_order(api_url_path=BUY_ORDER_ENDPOINT, method='POST', amount=amount, body_func=buy_order_body, price=price, asset_ids=choosen_row["asset_ids"])
     error_list = listing_error_parsing(responses)
     print(f"SUCCESSFUL - All {amount} items of {choosen_row['title']} were listed" if len(error_list) == 0 else f"{len(error_list)} items FAILED (and {amount - len(error_list)} succseeded) \nERROR: {error_list}")
-    if LOGGING == 'True': 
+    if LOGGING == 'True':
         write_content(merge_dicts(responses), inspect.stack()[0][3])
 
 

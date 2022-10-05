@@ -22,7 +22,8 @@ def create_headers(api_url_path: str, method: str):
         "X-Sign-Date": nonce
     }
 
-def create_headers_w_body(api_url_path : str, method : str, body : str):
+
+def create_headers_w_body(api_url_path: str, method: str, body: str):
     '''this function creates the headers for the API requests'''
     nonce = str(round(datetime.now().timestamp()))
     string_to_sign = method + api_url_path + json.dumps(body) + nonce

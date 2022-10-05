@@ -2,10 +2,9 @@
 
 
 import inspect
-import click
 import copy
-
-from api_requests import (generic_request, request_devider_buy_order, request_devider_listing)
+import click
+from api_requests import (generic_request, request_devider_listing)
 from config import (SELL_LISTINGS_ENDPOINT, DELETE_LISTING_ENDPOINT, LOGGING)
 from parsing import (parse_jsons_to_listings,
                      parse_listings_to_listingrows,
@@ -40,17 +39,14 @@ def listing():
 
         merged_response = merge_dicts(responses)
         print(f"SUCCESSFUL - All {amount} items of {choosen_row['title']} were deleted"
-                if merged_response['fail'] is None else
-                f"{len(merged_response['fail'])} items FAILED (and \
-                {amount - len(merged_response['fail'])} succseeded) \
-                \nERROR: {merged_response['fail']}")
+              if merged_response['fail'] is None else
+              f"{len(merged_response['fail'])} items FAILED (and \
+              {amount - len(merged_response['fail'])} succseeded) \
+              \nERROR: {merged_response['fail']}")
     else:
         print('There are ZERO items listed')
     if LOGGING == 'True':
         write_content(merge_dicts(responses), inspect.stack()[0][3])
-
-
-
 
 
 delete.add_command(listing)
