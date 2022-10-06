@@ -4,8 +4,14 @@ import os
 import json
 import pprint
 from halo import Halo
-from parsing import json_fixer
-from config import SRC_PATH
+from config import SRC_PATH, JSON_DICTIONARY_FIXER
+
+
+def json_fixer(json_str: str):
+    '''changes the everything to the json convention'''
+    for key, value in JSON_DICTIONARY_FIXER.items():
+        json_str = json_str.replace(key, value)
+    return json_str
 
 
 def write_content(content, func_name):
