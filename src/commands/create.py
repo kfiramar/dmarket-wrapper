@@ -15,13 +15,13 @@ from print import print_table
 from request_body import buy_order_body
 from logger import log
 
-items_api_spinner = Halo(text='Attempting to get items', spinner='dots',animation='bounce', color='green')
-create_api_spinner = Halo(text='Attempting to create', spinner='dots',animation='bounce', color='green')
+items_api_spinner = Halo(text='Attempting to get items', spinner='dots', animation='bounce', color='green')
+create_api_spinner = Halo(text='Attempting to create', spinner='dots', animation='bounce', color='green')
 
 @click.group()
 def create():
     '''creating listings'''
-    
+
 
 @click.command()
 def listing():

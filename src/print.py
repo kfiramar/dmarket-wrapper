@@ -1,15 +1,14 @@
 '''This module contains the main loop of the program and prints'''
-from textwrap import indent
-from simple_chalk import chalk
+import os
+import time
 from tabulate import tabulate
 import numpy as np
 from row import InventoryItemRow, ListingRow
-import time
+from config import RAINBOW_TABLE
 
 
 # colors = ['\u001b[31;1m', '\u001b[31;1m', '\u001b[32m', '\u001b[32;1m', '\u001b[33m', '\u001b[33;1m', '\u001b[34m', '\u001b[34;1m', '\u001b[35m', '\u001b[35;1m', '\u001b[36m', '\u001b[36;1m', '\u001b[37m', , '\u001b[37m', '\u001b[37m']
 colors = ['\u001b[32;1m', '\u001b[32;1m', '\u001b[31;1m', '\u001b[31;1m', '\u001b[32;0m', '\u001b[32;0m', '\u001b[31;0m', '\u001b[31;0m']
-# colors = ['\u001b[38;5;6n6']
 
 
 def print_table(rows: list):
@@ -30,14 +29,14 @@ def print_table(rows: list):
         last_row[headers.index("total_price")] = str(round(total_price, 2)) + '$'
         last_row[0] = "TOTAL:"
         table.append(last_row)
-        if(len(table) < 10):
+        if (len(table) < 10 and RAINBOW_TABLE == 'True'):
             print_rainbow_loop(tabulate(table, headers=headers, tablefmt='psql',
-                numalign='center', stralign='center',
-                floatfmt=".2f", showindex='always'))
+                               numalign='center', stralign='center',
+                               floatfmt=".2f", showindex='always'))
         else:
             print(tabulate(table, headers=headers, tablefmt='psql',
-                numalign='center', stralign='center',
-                floatfmt=".2f", showindex='always'))
+                           numalign='center', stralign='center',
+                           floatfmt=".2f", showindex='always'))
     except IndexError as error:
         raise IndexError("The table is completely empty") from error
 
@@ -51,12 +50,12 @@ def rainbow(text, pos):
     return rainbow_text
 
 
-
-
-def print_rainbow_loop(text): 
+def print_rainbow_loop(text):
+    '''prints rainbow loop for 3 seconds'''
     count = 0
-    while count < 20:  # Main program loop.
-        print(rainbow(text, count % (len(colors)-1)))
-        print('\n\n\n')
-        time.sleep(0.1)  # Add a slight pause.
+    while count < 60:
+        table = rainbow(text, count % (len(colors)-1))
+        os.system('clear')
+        print(table)
         count += 1
+        time.sleep(0.05)

@@ -16,9 +16,6 @@ def json_fixer(json_str: str):
     return json_str
 
 
-
-
-
 def listing_error_parsing(responses):
     '''parse list if responses to an error list'''
     error_list = []
@@ -46,6 +43,7 @@ def parse_jsons_to_listings(jsons: dict):
 
 
 def parse_jsons_to_rows(json_object, json_to_items_func, items_to_rows_func, sort_by):
+    '''This function is used to parse jsons to sorted rows'''
     dm_items = json_to_items_func(jsons=json_object)
     dm_rows = items_to_rows_func(dm_items)
     dm_rows.sort(key=lambda row: getattr(row, sort_by))

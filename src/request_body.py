@@ -1,3 +1,5 @@
+'''Creates json body for API request'''
+
 
 def buy_order_body(amount: int, price: float, asset_ids: list):
     '''generate body for buy order'''
@@ -30,4 +32,3 @@ def listings_body(amount: int, price: float, asset_ids: list, offer_ids: list):
                 }
         item_order['objects'].append(listing)
     return item_order
-

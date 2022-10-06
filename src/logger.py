@@ -1,4 +1,4 @@
-import imp
+'''This module Is used to log the API requests'''
 import time
 import os
 import json

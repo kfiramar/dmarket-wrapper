@@ -16,13 +16,14 @@ from request_body import listings_body
 from logger import log
 
 
+items_api_spinner = Halo(text='Attempting to get your items', spinner='dots', animation='bounce', color='green')
+create_api_spinner = Halo(text='Attempting to delete items', spinner='dots', animation='bounce', color='green')
 
-items_api_spinner = Halo(text='Attempting to get your items', spinner='dots',animation='bounce', color='green')
-create_api_spinner = Halo(text='Attempting to delete items', spinner='dots',animation='bounce', color='green')
 
 @click.group()
 def delete():
     '''deleting listings,'''
+
 
 @click.command()
 def listing():
@@ -36,9 +37,9 @@ def listing():
                                             'total_price')
         items_api_spinner.succeed(text='Recived your items sucsessfully')
         print_table(copy.deepcopy(listings_rows))
-        row_number = click.prompt(chalk.cyan(f'What listings would you like to remove? choose an index number - up to {len(listings_rows) - 1} \n'))
+        row_number = click.prompt(chalk.cyan(f'What listings would you like to remove? choose an index number - up to {len(listings_rows) - 1}'))
         choosen_row = (vars(listings_rows[int(row_number)]))
-        amount = int(click.prompt(chalk.cyan(f'How many items would you like to delete? You can remove the listing of up to {choosen_row["total_items"]} \n')))
+        amount = int(click.prompt(chalk.cyan(f'How many items would you like to delete? You can remove the listing of up to {choosen_row["total_items"]}')))
         create_api_spinner.start()
         responses = request_devider_listing(api_url_path=DELETE_LISTING_ENDPOINT,
                                             method='DELETE', amount=amount,

@@ -11,11 +11,11 @@ from config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT,
 from parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems,
                      parse_listings_to_listingrows, merge_dicts,
                      parse_inventoryitems_to_inventoryitemrow, parse_jsons_to_rows)
-from print import  print_table
+from print import print_table
 from logger import log
 
 
-api_spinner = Halo(text='Attempting to get your items', spinner='dots',animation='bounce', color='green')
+api_spinner = Halo(text='Attempting to get your items', spinner='dots', animation='bounce', color='green')
 
 
 @click.group()
@@ -33,7 +33,6 @@ def dm_inventory():
     print_table(copy.deepcopy(dm_rows))
     if LOGGING == 'True':
         log(response.json(), inspect.stack()[0][3])
-    
 
 
 @click.command()
@@ -42,7 +41,7 @@ def steam_inventory():
     api_spinner.start()
     response = generic_request(api_url_path=STEAM_INVENTORY_ENDPOINT, method='GET')
     steam_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_inventoryitems,
-                                 parse_inventoryitems_to_inventoryitemrow, 'total_price')
+                                     parse_inventoryitems_to_inventoryitemrow, 'total_price')
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(steam_rows))
     if LOGGING == 'True':
@@ -72,7 +71,6 @@ def listings():
     api_spinner.start()
     response = generic_request(api_url_path=SELL_LISTINGS_ENDPOINT, method='GET')
     if response.json()['Total'] != '0':
-        
         listings_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_listings,
                                             parse_listings_to_listingrows, 'total_price')
         api_spinner.succeed(text="Recived and pared API request")
@@ -87,8 +85,9 @@ def listings():
 def balance():
     '''View your current Dmarket balance'''
     click.echo(chalk.cyan('Your DMarket balance: ' +
-                 str(float(generic_request(api_url_path=BALANCE_ENDPOINT,
-                     method='GET').json()['usd'])/100) + '$'))
+               str(float(generic_request(api_url_path=BALANCE_ENDPOINT,
+                   method='GET').json()['usd'])/100) + '$'))
+
 
 view.add_command(dm_inventory)
 view.add_command(steam_inventory)
