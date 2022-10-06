@@ -1,4 +1,5 @@
 '''This module contains the main loop of the program and prints'''
+import os
 import inspect
 import copy
 import click
@@ -44,7 +45,7 @@ def listing():
     else:
         create_api_spinner.fail(text=f"{len(error_list)} items FAILED (and {amount - len(error_list)} succseeded) \nERROR: {error_list}")
     if LOGGING == 'True':
-        log(merge_dicts(responses), inspect.stack()[0][3])
+        log(merge_dicts(responses), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
 
 
 create.add_command(listing)

@@ -1,5 +1,6 @@
 
 '''This module contains the main loop of the program and prints'''
+import os
 import inspect
 import copy
 import click
@@ -32,7 +33,7 @@ def dm_inventory():
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(dm_rows))
     if LOGGING == 'True':
-        log(response.json(), inspect.stack()[0][3])
+        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
 
 
 @click.command()
@@ -45,7 +46,7 @@ def steam_inventory():
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(steam_rows))
     if LOGGING == 'True':
-        log(response.json(), inspect.stack()[0][3])
+        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
 
 
 @click.command()
@@ -62,7 +63,7 @@ def inventory():
     responses = [steam_response, dm_response]
     print_table(copy.deepcopy(dm_rows + steam_rows))
     if LOGGING == 'True':
-        log(merge_dicts(responses), inspect.stack()[0][3])
+        log(merge_dicts(responses), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
 
 
 @click.command()
@@ -78,7 +79,7 @@ def listings():
     else:
         click.prompt(chalk.cyan('There are ZERO items listed'))
     if LOGGING == 'True':
-        log(response.json(), inspect.stack()[0][3])
+        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
 
 
 @click.command()

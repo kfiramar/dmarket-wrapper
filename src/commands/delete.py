@@ -1,6 +1,5 @@
 '''This module contains the main loop of the program and prints'''
-
-
+import os
 import inspect
 import copy
 import click
@@ -58,7 +57,7 @@ def listing():
     else:
         raise Exception("There are no items")
     if LOGGING == 'True':
-        log(merge_dicts(responses), inspect.stack()[0][3])
+        log(merge_dicts(responses), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
 
 
 delete.add_command(listing)

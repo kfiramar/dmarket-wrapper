@@ -2,6 +2,7 @@
 import os
 import configparser
 
+JSON_QOUTES_FIXER = {"\'": "\""}
 JSON_DICTIONARY_FIXER = {"\'": "\"", 'True': '\"True\"', ' False': '\"False\"', 'None': '\"None\"'}
 
 SRC_PATH = os.path.dirname(__file__)
