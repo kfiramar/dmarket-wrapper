@@ -1,7 +1,6 @@
 '''This module contains the main loop of the program and prints'''
 
 import click
-
 from commands.view import view
 from commands.delete import delete
 from commands.create import create

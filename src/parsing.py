@@ -1,10 +1,6 @@
 '''This module contains all the parsing done in the program'''
-import json
-import pprint
-import time
 import os
 from typing import List
-from types import SimpleNamespace
 from item import Listing, InventoryItem
 from row import InventoryItemRow, ListingRow
 
@@ -20,14 +16,7 @@ def json_fixer(json_str: str):
     return json_str
 
 
-def write_content(content, func_name):
-    '''Creates a file and loads all the API request result into it'''
-    fixed_json = []
-    file_name = time.strftime(f"{func_name}-%Y-%m-%d_%H:%M:%S.json")
-    path_to_file = os.path.join(SRC_PATH, f'../logs/{file_name}')
-    fixed_json = json.loads(json_fixer(str(content)))
-    with open(path_to_file, "wb") as file:
-        file.write((pprint.pformat(fixed_json)).encode('utf-8'))
+
 
 
 def listing_error_parsing(responses):
@@ -56,9 +45,11 @@ def parse_jsons_to_listings(jsons: dict):
     return listing_list
 
 
-def parse_json_to_object(json_object: List):
-    '''used to parse from json to item'''
-    return json.loads(json_object, object_hook=lambda d: SimpleNamespace(**d))
+def parse_jsons_to_rows(json_object, json_to_items_func, items_to_rows_func, sort_by):
+    dm_items = json_to_items_func(jsons=json_object)
+    dm_rows = items_to_rows_func(dm_items)
+    dm_rows.sort(key=lambda row: getattr(row, sort_by))
+    return dm_rows
 
 
 def parse_json_from_attributes(json_dict, attributes_keys):
