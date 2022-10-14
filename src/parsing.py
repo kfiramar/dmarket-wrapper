@@ -1,6 +1,7 @@
 '''This module contains all the parsing done in the program'''
-from item import Listing, InventoryItem
-from row import InventoryItemRow, ListingRow
+import time
+from item import Listing, InventoryItem, Purchase
+from row import InventoryItemRow, ListingRow, PurcheseRow
 
 
 def parse_jsons_to_rows(json_object, json_to_items_func, items_to_rows_func, sort_by):
@@ -19,11 +20,57 @@ def parse_jsons_to_listings(jsons: dict):
     return listing_list
 
 
+def parse_jsons_to_purchases(jsons: dict):
+    '''uses parse_json_to_item to parse all the items from json'''
+    listing_list = []
+    for json_item in jsons['Trades']:
+        listing_list.append(parse_json_to_purchase(json_dict=json_item))
+    return listing_list
+
+
+def parse_json_to_purchase(json_dict: dict):
+    '''sefdqad'''
+    return Purchase(
+                asset_id=json_dict['AssetID'],
+                title=json_dict['Title'],
+                offer_id=json_dict['OfferID'],
+                sold_price=float(json_dict['Price']['Amount']),
+                offer_closed_at=time.strftime('%Y-%m-%d', time.localtime(int(json_dict['OfferClosedAt']))),
+                offer_created_at=time.strftime('%Y-%m-%d', time.localtime(int(json_dict['OfferCreatedAt']))))
+    
+    
+def parse_purchases_to_purcheserows(all_items: list):
+    '''parses items from list(Items) to list(Rows)'''
+    rows = []
+    for item in all_items:
+        for row in rows:
+            if item.title == row.title and item.sold_price == row.sold_price and item.offer_closed_at == row.offer_closed_at:
+                row.total_items += 1
+                row.total_price += float(item.sold_price)
+                row.asset_ids.append(item.asset_id)
+                row.offer_ids.append(item.offer_id)
+                break
+        else:
+            rows.append(PurcheseRow(title=item.title,
+                                    asset_ids=[item.asset_id],
+                                    sold_price=item.sold_price,
+                                    offer_closed_at=item.offer_closed_at,
+                                    offer_created_at=item.offer_created_at,
+                                    total_items=1,
+                                    total_price=item.sold_price,
+                                    offer_ids=[item.offer_id]
+                                    ))
+    return rows
+
+
 def parse_json_to_listing(json_dict: dict):
     '''parses a JSON into an item'''
     return Listing(
-                asset_id=json_dict['AssetID'], title=json_dict['Title'], tradable=str(json_dict['Tradable']),
-                listing_price=float(json_dict['Offer']['Price']['Amount']), offer_id=json_dict['Offer']['OfferID'])
+                   asset_id=json_dict['AssetID'],
+                   title=json_dict['Title'],
+                   tradable=str(json_dict['Tradable']),
+                   listing_price=float(json_dict['Offer']['Price']['Amount']),
+                   offer_id=json_dict['Offer']['OfferID'])
 
 
 def parse_listings_to_listingrows(all_items: list):
@@ -56,10 +103,9 @@ def parse_jsons_to_inventoryitems(jsons: dict):
     return inventoryitem_list
 
 
-
 def parse_json_to_inventoryitem(json_dict: dict):
     '''parses a JSON into an item'''
-    attributes_dictionary = parse_json_to_attributes(json_dict['Attributes'], ['exterior', 'itemType', 'unlockDate'])
+    attributes_dictionary = parse_json_to_attributes(json_dict['Attributes'])
     return InventoryItem(
                          asset_id=json_dict['AssetID'],
                          title=json_dict['Title'],
@@ -70,10 +116,11 @@ def parse_json_to_inventoryitem(json_dict: dict):
                          unlock_date=attributes_dictionary['unlockDate'])
 
 
-def parse_json_to_attributes(json_dict, attributes_keys):
-    '''Parses '''
-    simplified_json_dict = {attribute['Name']: attribute['Value'] for attribute in json_dict}
-    return {key: value for key, value in simplified_json_dict.items() if key in attributes_keys}
+def parse_json_to_attributes(json_dict):
+    '''Parses a list of dictionaries from:
+                        {key - "Name":"tradeLock", value - "Value":"0"}, ...
+                    to: {key:"tradeLock":"0"} '''
+    return {attribute['Name']: attribute['Value'] for attribute in json_dict}
 
 
 def parse_inventoryitems_to_inventoryitemrow(all_items: list):

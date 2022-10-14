@@ -7,11 +7,12 @@ import click
 from halo import Halo
 from simple_chalk import chalk
 from api_requests import (generic_request)
-from config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT,
+from config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
                     STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING)
 from parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems,
                      parse_listings_to_listingrows, merge_dicts,
-                     parse_inventoryitems_to_inventoryitemrow, parse_jsons_to_rows)
+                     parse_inventoryitems_to_inventoryitemrow, parse_jsons_to_rows,
+                     parse_jsons_to_purchases, parse_purchases_to_purcheserows)
 from print import print_table
 from logger import log
 
@@ -32,6 +33,19 @@ def dm_inventory():
                                   parse_inventoryitems_to_inventoryitemrow, 'total_price')
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(dm_rows))
+    if LOGGING == 'True':
+        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        
+        
+@click.command()
+def purchase_history():
+    '''Prints the purchases history'''
+    api_spinner.start()
+    response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
+    purchase_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_purchases,
+                                  parse_purchases_to_purcheserows, 'offer_closed_at')
+    api_spinner.succeed(text="Recived and pared API request")
+    print_table(copy.deepcopy(purchase_rows))
     if LOGGING == 'True':
         log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
 
@@ -95,6 +109,7 @@ view.add_command(steam_inventory)
 view.add_command(inventory)
 view.add_command(listings)
 view.add_command(balance)
+view.add_command(purchase_history)
 
 
 if __name__ == '__main__':

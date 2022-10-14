@@ -5,8 +5,8 @@ import copy
 import click
 from simple_chalk import chalk
 from halo import Halo
-from api_requests import (generic_request, request_devider_buy_order)
-from config import (BUY_ORDER_ENDPOINT, DM_INVENTORY_ENDPOINT, LOGGING)
+from api_requests import generic_request, request_devider_buy_order
+from config import BUY_ORDER_ENDPOINT, DM_INVENTORY_ENDPOINT, LOGGING
 from parsing import (listing_error_parsing,
                      parse_jsons_to_inventoryitems,
                      merge_dicts,

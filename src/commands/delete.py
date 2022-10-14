@@ -5,8 +5,8 @@ import copy
 import click
 from simple_chalk import chalk
 from halo import Halo
-from api_requests import (generic_request, request_devider_listing)
-from config import (SELL_LISTINGS_ENDPOINT, DELETE_LISTING_ENDPOINT, LOGGING)
+from api_requests import generic_request, request_devider_listing
+from config import SELL_LISTINGS_ENDPOINT, DELETE_LISTING_ENDPOINT, LOGGING
 from parsing import (parse_jsons_to_listings,
                      parse_listings_to_listingrows,
                      merge_dicts, parse_jsons_to_rows)

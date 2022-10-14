@@ -15,13 +15,9 @@ def print_table(rows: list):
     '''Prints tables with headers and total at the end'''
     total_items, total_price, table = 0, 0, []
     try:
-        is_listing, is_inventory_item_row = isinstance(rows[0], ListingRow), isinstance(rows[0], InventoryItemRow)
         for row in rows:
-            if is_listing:
-                total_price += float(row.listing_price)*row.total_items
-            elif is_inventory_item_row:
-                total_price += float(row.market_price)*row.total_items
             table.append(row.get_list())
+            total_price += row.total_price
             total_items += row.total_items
         headers = rows[0].get_keys()
         last_row = list(np.full((len(headers)), '.........'))
