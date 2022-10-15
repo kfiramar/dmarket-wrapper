@@ -1,5 +1,5 @@
 '''This module contains all the parsing done in the program'''
-import datetime
+from datetime import datetime
 from item import Listing, InventoryItem, Purchase
 from row import InventoryItemRow, ListingRow, PurcheseRow
 TIME_TABLE = {'minute': -3, 'hour': -6, 'day': -9, 'month': -12, 'year': -15}
@@ -12,10 +12,10 @@ def parse_jsons_to_rows(json_object, json_to_items_func, items_to_rows_func, sor
     return dm_rows
 
 
-def parse_jsons_to_purcheserows(json_object, json_to_items_func, items_to_rows_func, sort_by, merge_by):
+def parse_jsons_to_purcheserows(json_object, json_to_items_func, items_to_rows_func, sort_by, param):
     '''This function is used to parse jsons to sorted rows'''
     dm_items = json_to_items_func(jsons=json_object)
-    dm_rows = items_to_rows_func(dm_items, merge_by)
+    dm_rows = items_to_rows_func(dm_items, param)
     dm_rows.sort(key=lambda row: getattr(row, sort_by))
     return dm_rows
 
@@ -50,11 +50,11 @@ def parse_json_to_purchase(json_dict: dict):
 def epoch_time_convertor(epoch_time):
     '''afsdf'''
     if epoch_time == '-62135596800':
-        return '0000-00-00 00:00:00'
-    return datetime.datetime.fromtimestamp(int(epoch_time)).strftime('%Y-%m-%d %H:%M:%S')
+        return '0001-01-01 00:00:01'
+    return datetime.fromtimestamp(int(epoch_time)).strftime('%Y-%m-%d %H:%M:%S')
 
 
-def parse_purchases_to_purcheserows(all_items: list, merge_by):
+def parse_purchases_to_purcheserows_merge(all_items: list, merge_by):
     '''parses items from list(Items) to list(Rows)'''
     rows = []
     for item in all_items:
@@ -75,6 +75,32 @@ def parse_purchases_to_purcheserows(all_items: list, merge_by):
                                     total_price=item.sold_price,
                                     offer_ids=[item.offer_id]
                                     ))
+    return rows
+
+
+def parse_purchases_to_purcheserows_by_date(all_items: list, date):
+    '''parses items from list(Items) to list(Rows)'''
+    rows = []
+    for item in all_items:
+        item_date = datetime.strptime(item.offer_closed_at, '%Y-%m-%d %H:%M:%S')
+        if (item_date >= date):
+            for row in rows:
+                if item.title == row.title and item.sold_price == row.sold_price:
+                    row.total_items += 1
+                    row.total_price += float(item.sold_price)
+                    row.asset_ids.append(item.asset_id)
+                    row.offer_ids.append(item.offer_id)
+                    break
+            else:
+                rows.append(PurcheseRow(title=item.title,
+                                        asset_ids=[item.asset_id],
+                                        sold_price=item.sold_price,
+                                        offer_closed_at=item.offer_closed_at,
+                                        offer_created_at=item.offer_created_at,
+                                        total_items=1,
+                                        total_price=item.sold_price,
+                                        offer_ids=[item.offer_id]
+                                        ))
     return rows
 
 

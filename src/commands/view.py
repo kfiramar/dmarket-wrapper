@@ -1,5 +1,6 @@
 
 '''This module contains the main loop of the program and prints'''
+from datetime import datetime
 import os
 import inspect
 import copy
@@ -12,7 +13,7 @@ from config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HISTORY_EN
 from parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems, parse_jsons_to_purcheserows,
                      parse_listings_to_listingrows, merge_dicts,
                      parse_inventoryitems_to_inventoryitemrow, parse_jsons_to_rows,
-                     parse_jsons_to_purchases, parse_purchases_to_purcheserows)
+                     parse_jsons_to_purchases, parse_purchases_to_purcheserows_by_date, parse_purchases_to_purcheserows_merge)
 from print import print_table, print_table_w_date_headers
 from logger import log
 
@@ -44,7 +45,7 @@ def purchase_history(merge_by):
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
     purchase_rows = parse_jsons_to_purcheserows(response.json(), parse_jsons_to_purchases,
-                                  parse_purchases_to_purcheserows, 'offer_closed_at', merge_by)
+                                  parse_purchases_to_purcheserows_merge, 'offer_closed_at', merge_by)
     api_spinner.succeed(text="Recived and pared API request")
     print_table_w_date_headers(copy.deepcopy(purchase_rows), merge_by)
     if LOGGING == 'True':
@@ -52,13 +53,14 @@ def purchase_history(merge_by):
         
         
 @click.command()
-@click.option('--from', default='1/01/01', help='Date from which you want to see your purchase_history.')
-def purchase_history_from():
+@click.option('--date',default='2022-10-10', help='Date from which you want to see your purchase_history.')
+def purchase_history_from(date):
     '''Prints the purchases history'''
+    date = datetime.strptime(date, '%Y-%m-%d')
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
-    purchase_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_purchases,
-                                  parse_purchases_to_purcheserows, 'offer_closed_at')
+    purchase_rows = parse_jsons_to_purcheserows(response.json(), parse_jsons_to_purchases,
+                                  parse_purchases_to_purcheserows_by_date, 'offer_closed_at', date)
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(purchase_rows))
     if LOGGING == 'True':
@@ -125,6 +127,7 @@ view.add_command(inventory)
 view.add_command(listings)
 view.add_command(balance)
 view.add_command(purchase_history)
+view.add_command(purchase_history_from)
 
 
 if __name__ == '__main__':
