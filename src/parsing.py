@@ -2,12 +2,20 @@
 import datetime
 from item import Listing, InventoryItem, Purchase
 from row import InventoryItemRow, ListingRow, PurcheseRow
-
+TIME_TABLE = {'minute': -3, 'hour': -6, 'day': -9, 'month': -12, 'year': -15}
 
 def parse_jsons_to_rows(json_object, json_to_items_func, items_to_rows_func, sort_by):
     '''This function is used to parse jsons to sorted rows'''
     dm_items = json_to_items_func(jsons=json_object)
     dm_rows = items_to_rows_func(dm_items)
+    dm_rows.sort(key=lambda row: getattr(row, sort_by))
+    return dm_rows
+
+
+def parse_jsons_to_purcheserows(json_object, json_to_items_func, items_to_rows_func, sort_by, merge_by):
+    '''This function is used to parse jsons to sorted rows'''
+    dm_items = json_to_items_func(jsons=json_object)
+    dm_rows = items_to_rows_func(dm_items, merge_by)
     dm_rows.sort(key=lambda row: getattr(row, sort_by))
     return dm_rows
 
@@ -46,12 +54,12 @@ def epoch_time_convertor(epoch_time):
     return datetime.datetime.fromtimestamp(int(epoch_time)).strftime('%Y-%m-%d %H:%M:%S')
 
 
-def parse_purchases_to_purcheserows(all_items: list):
+def parse_purchases_to_purcheserows(all_items: list, merge_by):
     '''parses items from list(Items) to list(Rows)'''
     rows = []
     for item in all_items:
         for row in rows:
-            if item.title == row.title and item.sold_price == row.sold_price and item.offer_closed_at == row.offer_closed_at:
+            if item.title == row.title and item.sold_price == row.sold_price and item.offer_closed_at[:TIME_TABLE[merge_by]] == row.offer_closed_at[:TIME_TABLE[merge_by]]:
                 row.total_items += 1
                 row.total_price += float(item.sold_price)
                 row.asset_ids.append(item.asset_id)

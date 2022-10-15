@@ -2,11 +2,7 @@
 import json
 from datetime import datetime
 from nacl.bindings import crypto_sign
-from config import SECRET_KEY, PUBLIC_KEY
-
-
-# DMarket signature prefix
-SIGNATURE_PREFIX = "dmar ed25519 "
+from config import SECRET_KEY, PUBLIC_KEY, SIGNATURE_PREFIX
 
 
 def create_headers(api_url_path: str, method: str):

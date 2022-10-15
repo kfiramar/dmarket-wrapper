@@ -9,7 +9,7 @@ from simple_chalk import chalk
 from api_requests import (generic_request)
 from config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
                     STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING)
-from parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems,
+from parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems, parse_jsons_to_purcheserows,
                      parse_listings_to_listingrows, merge_dicts,
                      parse_inventoryitems_to_inventoryitemrow, parse_jsons_to_rows,
                      parse_jsons_to_purchases, parse_purchases_to_purcheserows)
@@ -43,11 +43,10 @@ def purchase_history(merge_by):
     '''Prints the purchases history'''
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
-    purchase_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_purchases,
-                                  parse_purchases_to_purcheserows, 'offer_closed_at')
+    purchase_rows = parse_jsons_to_purcheserows(response.json(), parse_jsons_to_purchases,
+                                  parse_purchases_to_purcheserows, 'offer_closed_at', merge_by)
     api_spinner.succeed(text="Recived and pared API request")
     print_table_w_date_headers(copy.deepcopy(purchase_rows), merge_by)
-    # print_table(copy.deepcopy(purchase_rows))
     if LOGGING == 'True':
         log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
         
