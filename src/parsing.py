@@ -1,5 +1,5 @@
 '''This module contains all the parsing done in the program'''
-import time
+import datetime
 from item import Listing, InventoryItem, Purchase
 from row import InventoryItemRow, ListingRow, PurcheseRow
 
@@ -29,16 +29,23 @@ def parse_jsons_to_purchases(jsons: dict):
 
 
 def parse_json_to_purchase(json_dict: dict):
-    '''sefdqad'''
+    '''parses a JSON into a Purchase item'''
     return Purchase(
                 asset_id=json_dict['AssetID'],
                 title=json_dict['Title'],
                 offer_id=json_dict['OfferID'],
                 sold_price=float(json_dict['Price']['Amount']),
-                offer_closed_at=time.strftime('%Y-%m-%d', time.localtime(int(json_dict['OfferClosedAt']))),
-                offer_created_at=time.strftime('%Y-%m-%d', time.localtime(int(json_dict['OfferCreatedAt']))))
-    
-    
+                offer_closed_at=epoch_time_convertor(json_dict['OfferClosedAt']),
+                offer_created_at=epoch_time_convertor(json_dict['OfferCreatedAt']))
+
+
+def epoch_time_convertor(epoch_time):
+    '''afsdf'''
+    if epoch_time == '-62135596800':
+        return '0000-00-00 00:00:00'
+    return datetime.datetime.fromtimestamp(int(epoch_time)).strftime('%Y-%m-%d %H:%M:%S')
+
+
 def parse_purchases_to_purcheserows(all_items: list):
     '''parses items from list(Items) to list(Rows)'''
     rows = []

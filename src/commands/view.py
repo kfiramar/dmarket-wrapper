@@ -13,7 +13,7 @@ from parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems,
                      parse_listings_to_listingrows, merge_dicts,
                      parse_inventoryitems_to_inventoryitemrow, parse_jsons_to_rows,
                      parse_jsons_to_purchases, parse_purchases_to_purcheserows)
-from print import print_table
+from print import print_table, print_table_w_date_headers
 from logger import log
 
 
@@ -38,7 +38,23 @@ def dm_inventory():
         
         
 @click.command()
-def purchase_history():
+@click.option('--merge_by', default='day', help='a period of time which you want to merge your purcheses by.')
+def purchase_history(merge_by):
+    '''Prints the purchases history'''
+    api_spinner.start()
+    response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
+    purchase_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_purchases,
+                                  parse_purchases_to_purcheserows, 'offer_closed_at')
+    api_spinner.succeed(text="Recived and pared API request")
+    print_table_w_date_headers(copy.deepcopy(purchase_rows), merge_by)
+    # print_table(copy.deepcopy(purchase_rows))
+    if LOGGING == 'True':
+        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        
+        
+@click.command()
+@click.option('--from', default='1/01/01', help='Date from which you want to see your purchase_history.')
+def purchase_history_from():
     '''Prints the purchases history'''
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
