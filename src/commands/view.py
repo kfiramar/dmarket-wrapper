@@ -53,7 +53,7 @@ def purchase_history(merge_by):
         
         
 @click.command()
-@click.option('--date',default='2022-10-10', help='Date from which you want to see your purchase_history.')
+@click.option('--date', required=True, prompt=True, help='Date from which you want to see your purchase history (%Y-%m-%d).')
 def purchase_history_from(date):
     '''Prints the purchases history'''
     date = datetime.strptime(date, '%Y-%m-%d')
