@@ -3,12 +3,7 @@ import copy
 import os
 import time
 from tabulate import tabulate
-import numpy as np
-from config import RAINBOW_TABLE
-
-
-COLORS = ['\u001b[32;1m', '\u001b[32;1m', '\u001b[31;1m', '\u001b[31;1m', '\u001b[32;0m', '\u001b[32;0m', '\u001b[31;0m', '\u001b[31;0m']
-TIME_TABLE = {'minute': -3, 'hour': -6, 'day': -9, 'month': -12, 'year': -15}
+from config import RAINBOW_TABLE, COLORS, TIME_TABLE
 
 
 def print_table(rows: list):

@@ -1,7 +1,6 @@
 '''This module contains the row class which represents a row in a CLI chart'''
 
-
-PRINT_MASKS = {'InventoryItemRow': [0, 5, 3, 2, 4], 'ListingRow': [0, 6, 3, 2, 4], 'PurcheseRow': [0, 6, 2, 4]}
+from config import ROW_PRINT_MASKS
 
 
 class Row:
@@ -19,12 +18,12 @@ class Row:
         for i, value in enumerate(listingrow_list):
             if isinstance(value, float):
                 listingrow_list[i] = f"{value:0.2f}$"
-        return [listingrow_list[i] for i in PRINT_MASKS[self.__class__.__name__]]
+        return [listingrow_list[i] for i in ROW_PRINT_MASKS[self.__class__.__name__]]
 
     def get_keys(self):
         '''get list of the keys of the ListingRow'''
         listingrow_list = list(vars(self).keys())
-        return [listingrow_list[i] for i in PRINT_MASKS[self.__class__.__name__]]
+        return [listingrow_list[i] for i in ROW_PRINT_MASKS[self.__class__.__name__]]
 
 
 class ListingRow(Row):

@@ -2,7 +2,8 @@
 from datetime import datetime
 from item import Listing, InventoryItem, Purchase
 from row import InventoryItemRow, ListingRow, PurcheseRow
-TIME_TABLE = {'minute': -3, 'hour': -6, 'day': -9, 'month': -12, 'year': -15}
+from config import TIME_TABLE
+
 
 def parse_jsons_to_rows(json_object, json_to_items_func, items_to_rows_func, sort_by):
     '''This function is used to parse jsons to sorted rows'''
