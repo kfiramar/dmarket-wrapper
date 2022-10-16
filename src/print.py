@@ -16,7 +16,7 @@ def print_table(rows: list):
     try:
         total_items, total_price, table = 0, 0, []
         headers = rows[0].get_keys()
-        empty_list, dash_list = list(np.full((len(headers)), '')), list(np.full((len(headers)), '------------')) 
+        empty_list, dash_list = ['']*len(headers), ['------------']*len(headers)
         for row in rows:
             table.append(row.get_list())
             total_price += row.total_price
@@ -43,7 +43,7 @@ def print_table_w_date_headers(rows: list, merge_by):
     '''Prints tables with date headers and totals at the end'''
     try:
         total_items, total_price, table, headers = 0, 0, [], rows[0].get_keys()
-        empty_list, dash_list = list(np.full((len(headers)), '')), list(np.full((len(headers)), '------------')) 
+        empty_list, dash_list = ['']*len(headers), ['------------']*len(headers)
         for i, row in enumerate(rows):
             if (rows[i-1].offer_closed_at[:TIME_TABLE[merge_by]] != row.offer_closed_at[:TIME_TABLE[merge_by]]):
                 date_header_list = copy.deepcopy(empty_list)
