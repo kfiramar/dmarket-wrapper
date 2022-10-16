@@ -34,6 +34,6 @@ def request_devider_buy_order(api_url_path, method, amount, body_func, price, as
 
 def split_to_100s(number):
     '''devides the number by 100 and creates a list of 100s with leftovers'''
-    amount_array = [100]*(number/100)
+    amount_array = [100]*int(number/100)
     amount_array.append(number%100)
     return amount_array
