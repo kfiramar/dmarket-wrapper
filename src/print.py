@@ -23,7 +23,7 @@ def print_table(rows: list):
             total_items += row.total_items
         last_row = copy.deepcopy(empty_list)
         last_row[headers.index("total_items")] = total_items
-        last_row[headers.index("total_price")] = str(round(total_price, 2)) + '$'
+        last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
         last_row[0] = "TOTAL:"
         table.append(dash_list)
         table.append(last_row)
@@ -56,7 +56,7 @@ def print_table_w_date_headers(rows: list, merge_by):
             total_items += row.total_items
         last_row = copy.deepcopy(empty_list)
         last_row[headers.index("total_items")] = total_items
-        last_row[headers.index("total_price")] = str(round(total_price, 2)) + '$'
+        last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
         last_row[0] = "TOTAL:"
         table.append(dash_list)
         table.append(last_row)

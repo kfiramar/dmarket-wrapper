@@ -18,7 +18,7 @@ class Row:
         listingrow_list = list(vars(self).values())
         for i, value in enumerate(listingrow_list):
             if isinstance(value, float):
-                listingrow_list[i] = str(round(value, 2)) + '$'
+                listingrow_list[i] = f"{value:0.2f}$"
         return [listingrow_list[i] for i in PRINT_MASKS[self.__class__.__name__]]
 
     def get_keys(self):

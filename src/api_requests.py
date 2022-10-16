@@ -20,21 +20,15 @@ def generic_request_w_body(api_url_path, body, method):
 
 def request_devider_listing(api_url_path, method, amount, body_func, price, asset_ids, offer_ids):
     '''splits requests to up to 100 items per request'''
-    responses = ()
     amount_array = split_to_100s(int(amount))
-    for number in amount_array:
-        response = generic_request_w_body(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids, offer_ids))
-        responses += (response,)
+    responses = [generic_request_w_body(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids, offer_ids)) for number in amount_array]
     return responses
 
 
 def request_devider_buy_order(api_url_path, method, amount, body_func, price, asset_ids):
     '''splits requests to up to 100 items per request'''
-    responses = ()
     amount_array = split_to_100s(int(amount))
-    for number in amount_array:
-        response = generic_request_w_body(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids))
-        responses += (response,)
+    responses = [generic_request_w_body(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids)) for number in amount_array]
     return responses
 
 
