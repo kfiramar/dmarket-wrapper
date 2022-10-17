@@ -1,6 +1,7 @@
 
 '''This module contains the main loop of the program and prints'''
 from datetime import datetime
+from email.policy import default
 import os
 import inspect
 import copy
@@ -8,7 +9,7 @@ import click
 from halo import Halo
 from simple_chalk import chalk
 from api_requests import (generic_request)
-from config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
+from config import (ACTIVE_TARGETS_ENDPOINT, BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, INACTIVE_TARGETS_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
                     STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING)
 from parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems, parse_jsons_to_purcheserows,
                      parse_listings_to_listingrows,
@@ -26,17 +27,23 @@ def view():
     '''viewing listings, inventory -all, dm inventory and steam inventory'''
 
 
+
+
+
 @click.command()
-def dm_inventory():
+@click.option('--active-target', required=True, prompt=True, help='a period of time which you want to merge your purcheses by.')
+def targets(active_target):
     '''Prints all the inventory found on DMarket'''
+    target = ACTIVE_TARGETS_ENDPOINT if active_target != 'False' else INACTIVE_TARGETS_ENDPOINT
+    print(target)
     api_spinner.start()
-    response = generic_request(api_url_path=f"{DM_INVENTORY_ENDPOINT}", method='GET')
-    dm_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_inventoryitems,
-                                  parse_inventoryitems_to_inventoryitemrow, 'total_price')
+    response = generic_request(api_url_path=f"{target}", method='GET')
+    # dm_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_inventoryitems,
+    #                               parse_inventoryitems_to_inventoryitemrow, 'total_price')
     api_spinner.succeed(text="Recived and pared API request")
-    print_table(copy.deepcopy(dm_rows))
+    # print_table(copy.deepcopy(dm_rows))
     if LOGGING == 'True':
-        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")        
 
 
 @click.command()
@@ -64,6 +71,19 @@ def purchase_history_from(date: str):
                                                 parse_purchases_to_purcheserows_by_date, 'offer_closed_at', date)
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(purchase_rows))
+    if LOGGING == 'True':
+        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+
+
+@click.command()
+def dm_inventory():
+    '''Prints all the inventory found on DMarket'''
+    api_spinner.start()
+    response = generic_request(api_url_path=f"{DM_INVENTORY_ENDPOINT}", method='GET')
+    dm_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_inventoryitems,
+                                  parse_inventoryitems_to_inventoryitemrow, 'total_price')
+    api_spinner.succeed(text="Recived and pared API request")
+    print_table(copy.deepcopy(dm_rows))
     if LOGGING == 'True':
         log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
 
@@ -129,6 +149,7 @@ view.add_command(listings)
 view.add_command(balance)
 view.add_command(purchase_history)
 view.add_command(purchase_history_from)
+view.add_command(targets)
 
 
 if __name__ == '__main__':
