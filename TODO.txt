@@ -1,0 +1,22 @@
+*TASKS*
+* Get the best price of item X
+* Create a buy order
+* Get the market price of an item when displaying listings
+* Depositing items
+* Withdrawing items
+* Selling items seperately with asyncio
+
+
+*DONE*
+* add delete listing
+* fix listing print (to note print a line for every item)
+* print response error when occours
+* the ability to send more than 100 items at a time
+* add $ sign
+* create a child class to row and item 
+* fix logging for option 3
+* Make it a CLI
+* change navigation system
+* fix logging
+* add rainbow charts
+* View purchase history in X time
