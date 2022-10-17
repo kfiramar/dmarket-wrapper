@@ -40,4 +40,3 @@ class Purchase(Item):
         self.offer_created_at = offer_created_at
         self.sold_price = sold_price
         super().__init__(asset_id, title, market_price)
-

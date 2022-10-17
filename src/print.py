@@ -3,17 +3,17 @@ import copy
 import os
 import time
 from tabulate import tabulate
-from config import RAINBOW_TABLE, COLORS, TIME_TABLE
+from config import RAINBOW_TABLE, COLORS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION
 
 
 def print_table(rows: list):
     '''Prints tables with headers and totals at the end'''
     try:
         total_items, total_price, table = 0, 0, []
-        headers = rows[0].get_keys()
+        headers = rows[0].get_keys_list()
         empty_list, dash_list = ['']*len(headers), ['------------']*len(headers)
         for row in rows:
-            table.append(row.get_list())
+            table.append(row.get_values_list())
             total_price += row.total_price
             total_items += row.total_items
         last_row = copy.deepcopy(empty_list)
@@ -34,19 +34,19 @@ def print_table(rows: list):
         raise IndexError("The table is completely empty") from error
 
 
-def print_table_w_date_headers(rows: list, merge_by):
+def print_table_w_date_headers(rows: list, merge_by: str):
     '''Prints tables with date headers and totals at the end'''
     try:
-        total_items, total_price, table, headers = 0, 0, [], rows[0].get_keys()
+        total_items, total_price, table, headers = 0, 0, [], rows[0].get_keys_list()
         empty_list, dash_list = ['']*len(headers), ['------------']*len(headers)
         for i, row in enumerate(rows):
-            if (rows[i-1].offer_closed_at[:TIME_TABLE[merge_by]] != row.offer_closed_at[:TIME_TABLE[merge_by]]):
+            if rows[i-1].offer_closed_at[:TIME_TABLE[merge_by]] != row.offer_closed_at[:TIME_TABLE[merge_by]]:
                 date_header_list = copy.deepcopy(empty_list)
                 date_header_list[0] = row.offer_closed_at[:TIME_TABLE[merge_by]]
                 table.append(dash_list)
                 table.append(date_header_list)
                 table.append(dash_list)
-            table.append(row.get_list())
+            table.append(row.get_values_list())
             total_price += row.total_price
             total_items += row.total_items
         last_row = copy.deepcopy(empty_list)
@@ -67,7 +67,7 @@ def print_table_w_date_headers(rows: list, merge_by):
         raise IndexError("The table is completely empty") from error
 
 
-def rainbow(text, pos):
+def rainbow(text: str, pos: int) -> str:
     '''paint rainbow fumction'''
     rainbow_text = ""
     for char in text:
@@ -76,12 +76,12 @@ def rainbow(text, pos):
     return rainbow_text
 
 
-def print_rainbow_loop(text):
+def print_rainbow_loop(text: str):
     '''prints rainbow loop for 3 seconds'''
     count = 0
-    while count < 60:
+    while count < RAINBOW_SPEED*RAINBOW_DURATION:
         table = rainbow(text, count % (len(COLORS)-1))
         os.system('clear')
         print(table)
         count += 1
-        time.sleep(0.05)
+        time.sleep(1/RAINBOW_SPEED)

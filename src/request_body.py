@@ -1,7 +1,7 @@
 '''Creates json body for API request'''
 
 
-def buy_order_body(amount: int, price: float, asset_ids: list):
+def buy_order_body(amount: int, price: float, asset_ids: list) -> str:
     '''generate body for buy order'''
     item_order = {"Offers": []}
     for _ in range(amount):
@@ -16,7 +16,7 @@ def buy_order_body(amount: int, price: float, asset_ids: list):
     return item_order
 
 
-def listings_body(amount: int, price: float, asset_ids: list, offer_ids: list):
+def listings_body(amount: int, price: float, asset_ids: list, offer_ids: list) -> str:
     '''generate body for buy order'''
     item_order = {
          "force": True,

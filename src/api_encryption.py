@@ -5,7 +5,7 @@ from nacl.bindings import crypto_sign
 from config import SECRET_KEY, PUBLIC_KEY, SIGNATURE_PREFIX
 
 
-def create_headers(api_url_path: str, method: str):
+def create_headers(api_url_path: str, method: str) -> dict:
     '''this function creates the headers for the API requests'''
     nonce = str(round(datetime.now().timestamp()))
     string_to_sign = method + api_url_path + nonce
@@ -19,7 +19,7 @@ def create_headers(api_url_path: str, method: str):
     }
 
 
-def create_headers_w_body(api_url_path: str, method: str, body: str):
+def create_headers_w_body(api_url_path: str, method: str, body: str) -> dict:
     '''this function creates the headers for the API requests'''
     nonce = str(round(datetime.now().timestamp()))
     string_to_sign = method + api_url_path + json.dumps(body) + nonce

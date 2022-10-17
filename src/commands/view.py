@@ -11,11 +11,11 @@ from api_requests import (generic_request)
 from config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
                     STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING)
 from parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems, parse_jsons_to_purcheserows,
-                     parse_listings_to_listingrows, merge_dicts,
+                     parse_listings_to_listingrows,
                      parse_inventoryitems_to_inventoryitemrow, parse_jsons_to_rows,
                      parse_jsons_to_purchases, parse_purchases_to_purcheserows_by_date, parse_purchases_to_purcheserows_merge)
 from print import print_table, print_table_w_date_headers
-from logger import log
+from logger import log, merge_dicts
 
 
 api_spinner = Halo(text='Attempting to get your items', spinner='dots', animation='bounce', color='green')
@@ -24,6 +24,7 @@ api_spinner = Halo(text='Attempting to get your items', spinner='dots', animatio
 @click.group()
 def view():
     '''viewing listings, inventory -all, dm inventory and steam inventory'''
+
 
 @click.command()
 def dm_inventory():
@@ -36,31 +37,31 @@ def dm_inventory():
     print_table(copy.deepcopy(dm_rows))
     if LOGGING == 'True':
         log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
-        
-        
+
+
 @click.command()
 @click.option('--merge_by', default='day', help='a period of time which you want to merge your purcheses by.')
-def purchase_history(merge_by):
+def purchase_history(merge_by: str):
     '''Prints the purchases history'''
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
     purchase_rows = parse_jsons_to_purcheserows(response.json(), parse_jsons_to_purchases,
-                                  parse_purchases_to_purcheserows_merge, 'offer_closed_at', merge_by)
+                                                parse_purchases_to_purcheserows_merge, 'offer_closed_at', merge_by)
     api_spinner.succeed(text="Recived and pared API request")
     print_table_w_date_headers(copy.deepcopy(purchase_rows), merge_by)
     if LOGGING == 'True':
         log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
-        
-        
+
+
 @click.command()
 @click.option('--date', required=True, prompt=True, help='Date from which you want to see your purchase history (%Y-%m-%d).')
-def purchase_history_from(date):
+def purchase_history_from(date: str):
     '''Prints the purchases history'''
     date = datetime.strptime(date, '%Y-%m-%d')
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
     purchase_rows = parse_jsons_to_purcheserows(response.json(), parse_jsons_to_purchases,
-                                  parse_purchases_to_purcheserows_by_date, 'offer_closed_at', date)
+                                                parse_purchases_to_purcheserows_by_date, 'offer_closed_at', date)
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(purchase_rows))
     if LOGGING == 'True':
