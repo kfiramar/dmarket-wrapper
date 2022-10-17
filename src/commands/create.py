@@ -25,7 +25,7 @@ def create():
 
 
 @click.command()
-def listing():
+def listing() -> None:
     '''Creates listing on Dmarket'''
     items_api_spinner.start()
     dm_response = generic_request(api_url_path=f"{DM_INVENTORY_ENDPOINT}", method='GET')

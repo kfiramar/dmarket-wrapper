@@ -32,10 +32,9 @@ def view():
 
 @click.command()
 @click.option('--active-target', required=True, prompt=True, help='a period of time which you want to merge your purcheses by.')
-def targets(active_target):
+def targets(active_target) -> None:
     '''Prints all the inventory found on DMarket'''
     target = ACTIVE_TARGETS_ENDPOINT if active_target != 'False' else INACTIVE_TARGETS_ENDPOINT
-    print(target)
     api_spinner.start()
     response = generic_request(api_url_path=f"{target}", method='GET')
     # dm_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_inventoryitems,
@@ -48,7 +47,7 @@ def targets(active_target):
 
 @click.command()
 @click.option('--merge_by', default='day', help='a period of time which you want to merge your purcheses by.')
-def purchase_history(merge_by: str):
+def purchase_history(merge_by: str) -> None:
     '''Prints the purchases history'''
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
@@ -62,7 +61,7 @@ def purchase_history(merge_by: str):
 
 @click.command()
 @click.option('--date', required=True, prompt=True, help='Date from which you want to see your purchase history (%Y-%m-%d).')
-def purchase_history_from(date: str):
+def purchase_history_from(date: str) -> None:
     '''Prints the purchases history'''
     date = datetime.strptime(date, '%Y-%m-%d')
     api_spinner.start()
@@ -76,7 +75,7 @@ def purchase_history_from(date: str):
 
 
 @click.command()
-def dm_inventory():
+def dm_inventory() -> None:
     '''Prints all the inventory found on DMarket'''
     api_spinner.start()
     response = generic_request(api_url_path=f"{DM_INVENTORY_ENDPOINT}", method='GET')
@@ -89,7 +88,7 @@ def dm_inventory():
 
 
 @click.command()
-def steam_inventory():
+def steam_inventory() -> None:
     '''Prints all of your inventory found on Steam'''
     api_spinner.start()
     response = generic_request(api_url_path=STEAM_INVENTORY_ENDPOINT, method='GET')
@@ -102,7 +101,7 @@ def steam_inventory():
 
 
 @click.command()
-def inventory():
+def inventory() -> None:
     '''Prints all of your inventory'''
     api_spinner.start()
     dm_response = generic_request(api_url_path=f"{DM_INVENTORY_ENDPOINT}", method='GET')
@@ -118,8 +117,19 @@ def inventory():
         log(merge_dicts(responses), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
 
 
+
+
+
+
+
+
+
+
+
+
+
 @click.command()
-def listings():
+def listings() -> None:
     '''Prints all the listings on Dmarket'''
     api_spinner.start()
     response = generic_request(api_url_path=SELL_LISTINGS_ENDPOINT, method='GET')
@@ -135,7 +145,7 @@ def listings():
 
 
 @click.command()
-def balance():
+def balance() -> None:
     '''View your current Dmarket balance'''
     click.echo(chalk.cyan('Your DMarket balance: ' +
                str(float(generic_request(api_url_path=BALANCE_ENDPOINT,

@@ -24,7 +24,7 @@ def delete():
 
 
 @click.command()
-def listing():
+def listing() -> None:
     '''Delete a listings on Dmarket'''
     items_api_spinner.start()
     response = generic_request(api_url_path=SELL_LISTINGS_ENDPOINT, method='GET')

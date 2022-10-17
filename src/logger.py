@@ -14,7 +14,7 @@ def json_fixer(json_str: str, fixer: dict) -> str:
     return json_str
 
 
-def write_content(content: dict, func_name: str):
+def write_content(content: dict, func_name: str) -> None:
     '''Creates a file and loads all the json content into it'''
     fixed_json = []
     file_name = time.strftime(f"{func_name}-%Y-%m-%d_%H:%M:%S.json")
@@ -24,7 +24,7 @@ def write_content(content: dict, func_name: str):
         file.write((json_fixer(pprint.pformat(fixed_json), JSON_QOUTES_FIXER)).encode("UTF-8"))
 
 
-def log(response: dict, func_name: str):
+def log(response: dict, func_name: str) -> None:
     '''logging of an API json with animation wrapping'''
     logging_spinner = Halo(text='Logging API request', spinner='dots', color='green')
     logging_spinner.start()

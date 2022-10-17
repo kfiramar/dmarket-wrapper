@@ -6,7 +6,7 @@ from tabulate import tabulate
 from config import RAINBOW_TABLE, COLORS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION
 
 
-def print_table(rows: list):
+def print_table(rows: list) -> None:
     '''Prints tables with headers and totals at the end'''
     try:
         total_items, total_price, table = 0, 0, []
@@ -34,7 +34,7 @@ def print_table(rows: list):
         raise IndexError("The table is completely empty") from error
 
 
-def print_table_w_date_headers(rows: list, merge_by: str):
+def print_table_w_date_headers(rows: list, merge_by: str) -> None:
     '''Prints tables with date headers and totals at the end'''
     try:
         total_items, total_price, table, headers = 0, 0, [], rows[0].get_keys_list()
@@ -76,7 +76,7 @@ def rainbow(text: str, pos: int) -> str:
     return rainbow_text
 
 
-def print_rainbow_loop(text: str):
+def print_rainbow_loop(text: str) -> None:
     '''prints rainbow loop for 3 seconds'''
     count = 0
     while count < RAINBOW_SPEED*RAINBOW_DURATION:
