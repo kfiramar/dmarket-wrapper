@@ -9,11 +9,10 @@ from api_requests import generic_request, request_devider_listing
 from config import SELL_LISTINGS_ENDPOINT, DELETE_LISTING_ENDPOINT, LOGGING
 from parsing import (parse_jsons_to_listings,
                      parse_listings_to_listingrows,
-                     merge_dicts, parse_jsons_to_rows)
-from print import  print_table
+                     parse_jsons_to_rows)
+from print import print_table
 from request_body import listings_body
-from logger import log
-
+from logger import log, merge_dicts
 
 items_api_spinner = Halo(text='Attempting to get your items', spinner='dots', animation='bounce', color='green')
 create_api_spinner = Halo(text='Attempting to delete items', spinner='dots', animation='bounce', color='green')
@@ -41,7 +40,7 @@ def listing():
         amount = int(click.prompt(chalk.cyan(f'How many items would you like to delete? You can remove the listing of up to {choosen_row["total_items"]}')))
         create_api_spinner.start()
         responses = request_devider_listing(api_url_path=DELETE_LISTING_ENDPOINT,
-                                            method='DELETE', amount=amount,
+                                            method='DELETE', amount=int(amount),
                                             body_func=listings_body,
                                             price=choosen_row['market_price'],
                                             asset_ids=choosen_row["asset_ids"],
