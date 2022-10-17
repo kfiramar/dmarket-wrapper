@@ -1,0 +1,11 @@
+[TODO]
+* Withdraw items (and cancel withdraws)
+* Deposit items (and cancel deposits)
+* Get best offer for a certian item
+* Add best offer to "market price" in listings
+* Add Async
+* View targets
+* Create targets
+* Remove targets
+
+[DONE]
