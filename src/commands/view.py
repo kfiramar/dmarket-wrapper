@@ -75,44 +75,26 @@ def purchase_history_from(date: str) -> None:
 
 
 @click.command()
-def dm_inventory() -> None:
-    '''Prints all the inventory found on DMarket'''
-    api_spinner.start()
-    response = generic_request(api_url_path=f"{DM_INVENTORY_ENDPOINT}", method='GET')
-    dm_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_inventoryitems,
-                                  parse_inventoryitems_to_inventoryitemrow, 'total_price')
-    api_spinner.succeed(text="Recived and pared API request")
-    print_table(copy.deepcopy(dm_rows))
-    if LOGGING == 'True':
-        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
-
-
-@click.command()
-def steam_inventory() -> None:
-    '''Prints all of your inventory found on Steam'''
-    api_spinner.start()
-    response = generic_request(api_url_path=STEAM_INVENTORY_ENDPOINT, method='GET')
-    steam_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_inventoryitems,
-                                     parse_inventoryitems_to_inventoryitemrow, 'total_price')
-    api_spinner.succeed(text="Recived and pared API request")
-    print_table(copy.deepcopy(steam_rows))
-    if LOGGING == 'True':
-        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
-
-
-@click.command()
-def inventory() -> None:
+@click.option('--source', required=True, prompt=True, help='a period of time which you want to merge your purcheses by.')
+def inventory(source) -> None:
     '''Prints all of your inventory'''
+    responses = []
+    rows = []
     api_spinner.start()
-    dm_response = generic_request(api_url_path=f"{DM_INVENTORY_ENDPOINT}", method='GET')
-    dm_rows = parse_jsons_to_rows(dm_response.json(), parse_jsons_to_inventoryitems,
-                                  parse_inventoryitems_to_inventoryitemrow, 'total_price')
-    steam_response = generic_request(api_url_path=STEAM_INVENTORY_ENDPOINT, method='GET')
-    steam_rows = parse_jsons_to_rows(steam_response.json(), parse_jsons_to_inventoryitems,
-                                     parse_inventoryitems_to_inventoryitemrow, 'total_price')
+    if source in ('dm', 'all'):
+        dm_response = generic_request(api_url_path=f"{DM_INVENTORY_ENDPOINT}", method='GET')
+        dm_rows = parse_jsons_to_rows(dm_response.json(), parse_jsons_to_inventoryitems,
+                                      parse_inventoryitems_to_inventoryitemrow, 'total_price')
+        responses.append(dm_response)
+        rows.extend(dm_rows)
+    if source in ('steam', 'all'):
+        steam_response = generic_request(api_url_path=STEAM_INVENTORY_ENDPOINT, method='GET')
+        steam_rows = parse_jsons_to_rows(steam_response.json(), parse_jsons_to_inventoryitems,
+                                         parse_inventoryitems_to_inventoryitemrow, 'total_price')
+        responses.append(steam_response)
+        rows.extend(steam_rows)
     api_spinner.succeed(text="Recived and pared API request")
-    responses = [steam_response, dm_response]
-    print_table(copy.deepcopy(dm_rows + steam_rows))
+    print_table(copy.deepcopy(rows))
     if LOGGING == 'True':
         log(merge_dicts(responses), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
 
@@ -152,8 +134,6 @@ def balance() -> None:
                    method='GET').json()['usd'])/100) + '$'))
 
 
-view.add_command(dm_inventory)
-view.add_command(steam_inventory)
 view.add_command(inventory)
 view.add_command(listings)
 view.add_command(balance)

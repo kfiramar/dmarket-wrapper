@@ -2,8 +2,8 @@
 .idea/*
 **/node_modules/**
 **/vendor/**
-*.ini
 *__pycache__*
+keys*
 /logs/*
 .VSCodeCounter*
-test.py
+test*

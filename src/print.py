@@ -77,11 +77,7 @@ def rainbow(text: str, pos: int) -> str:
 
 
 def print_rainbow_loop(text: str) -> None:
-    '''prints rainbow loop for 3 seconds'''
-    count = 0
-    while count < RAINBOW_SPEED*RAINBOW_DURATION:
-        table = rainbow(text, count % (len(COLORS)-1))
-        os.system('clear')
-        print(table)
-        count += 1
+    '''prints rainbow loop for X seconds'''
+    for count in range(int(RAINBOW_SPEED*RAINBOW_DURATION)):
+        print("\033[H\033[J" + rainbow(text, count % (len(COLORS)-1)))
         time.sleep(1/RAINBOW_SPEED)
