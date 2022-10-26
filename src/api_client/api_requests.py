@@ -1,8 +1,8 @@
 '''This module sends all the API requests'''
 from typing import Callable
 import requests
-from api_encryption import create_headers, create_headers_w_body
-from config import API_URL
+from api_client.api_encryption import create_headers, create_headers
+from common.config import API_URL
 
 
 def generic_request(api_url_path: str, method: str) -> requests.models.Response:
@@ -14,7 +14,7 @@ def generic_request(api_url_path: str, method: str) -> requests.models.Response:
 
 def generic_request_w_body(api_url_path: str, body: str, method: str) -> requests.models.Response:
     '''This is the most generic API request function with a body'''
-    headers = create_headers_w_body(api_url_path, body=body, method=method)
+    headers = create_headers(api_url_path, body=body, method=method)
     response = getattr(requests, method.lower())(API_URL + api_url_path, json=body, headers=headers)
     return response
 

@@ -5,14 +5,14 @@ import copy
 import click
 from simple_chalk import chalk
 from halo import Halo
-from api_requests import generic_request, request_devider_listing
-from config import SELL_LISTINGS_ENDPOINT, DELETE_LISTING_ENDPOINT, LOGGING
-from parsing import (parse_jsons_to_listings,
+from api_client.api_requests import generic_request, request_devider_listing
+from common.config import SELL_LISTINGS_ENDPOINT, DELETE_LISTING_ENDPOINT, LOGGING
+from common.parsing import (parse_jsons_to_listings,
                      parse_listings_to_listingrows,
                      parse_jsons_to_rows)
-from print import print_table
-from request_body import listings_body
-from logger import log, merge_dicts
+from table.print import print_table
+from api_client.request_body import listings_body
+from common.logger import log, merge_dicts
 
 items_api_spinner = Halo(text='Attempting to get your items', spinner='dots', animation='bounce', color='green')
 create_api_spinner = Halo(text='Attempting to delete items', spinner='dots', animation='bounce', color='green')

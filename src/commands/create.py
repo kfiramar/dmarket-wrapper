@@ -5,15 +5,15 @@ import copy
 import click
 from simple_chalk import chalk
 from halo import Halo
-from api_requests import generic_request, request_devider_buy_order
-from config import BUY_ORDER_ENDPOINT, DM_INVENTORY_ENDPOINT, LOGGING
-from parsing import (listing_error_parsing,
+from api_client.api_requests import generic_request, request_devider_buy_order
+from common.config import BUY_ORDER_ENDPOINT, DM_INVENTORY_ENDPOINT, LOGGING
+from common.parsing import (listing_error_parsing,
                      parse_jsons_to_inventoryitems,
                      parse_inventoryitems_to_inventoryitemrow,
                      parse_jsons_to_rows)
-from print import print_table
-from request_body import buy_order_body
-from logger import log, merge_dicts
+from table.print import print_table
+from api_client.request_body import buy_order_body
+from common.logger import log, merge_dicts
 
 items_api_spinner = Halo(text='Attempting to get items', spinner='dots', animation='bounce', color='green')
 create_api_spinner = Halo(text='Attempting to create', spinner='dots', animation='bounce', color='green')

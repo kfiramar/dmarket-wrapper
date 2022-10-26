@@ -1,9 +1,13 @@
 '''This module contains all the parsing done in the program'''
 from typing import Callable
 from datetime import datetime
-from item import Listing, InventoryItem, Purchase
-from row import InventoryItemRow, ListingRow, PurcheseRow
-from config import TIME_TABLE
+from items.ListingItem import ListingItem
+from items.InventoryItem import InventoryItem
+from items.PurchaseItem import PurchaseItem
+from table.rows.PurcheseRow import PurcheseRow
+from table.rows.ListingRow import ListingRow
+from table.rows.InventoryItemRow import InventoryItemRow 
+from common.config import TIME_TABLE
 
 
 def parse_jsons_to_rows(content: dict, json_to_items_func: Callable, items_to_rows_func: Callable, sort_by: str) -> list:
@@ -38,9 +42,9 @@ def parse_jsons_to_purchases(jsons: dict) -> list:
     return listing_list
 
 
-def parse_json_to_purchase(json_dict: dict) -> Purchase:
-    '''parses a JSON into a Purchase item'''
-    return Purchase(
+def parse_json_to_purchase(json_dict: dict) -> PurchaseItem:
+    '''parses a JSON into a PurchaseItem item'''
+    return PurchaseItem(
                 asset_id=json_dict['AssetID'],
                 title=json_dict['Title'],
                 offer_id=json_dict['OfferID'],
@@ -106,9 +110,9 @@ def parse_purchases_to_purcheserows_by_date(all_items: list, date: datetime) -> 
     return rows
 
 
-def parse_json_to_listing(json_dict: dict) -> Listing:
+def parse_json_to_listing(json_dict: dict) -> ListingItem:
     '''parses a JSON into an item'''
-    return Listing(
+    return ListingItem(
                    asset_id=json_dict['AssetID'],
                    title=json_dict['Title'],
                    tradable=str(json_dict['Tradable']),

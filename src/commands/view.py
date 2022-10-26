@@ -7,15 +7,15 @@ import copy
 import click
 from halo import Halo
 from simple_chalk import chalk
-from api_requests import (generic_request)
-from config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
+from api_client.api_requests import (generic_request)
+from common.config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
                     STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING)
-from parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems, parse_jsons_to_purcheserows,
+from common.parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems, parse_jsons_to_purcheserows,
                      parse_listings_to_listingrows,
                      parse_inventoryitems_to_inventoryitemrow, parse_jsons_to_rows,
                      parse_jsons_to_purchases, parse_purchases_to_purcheserows_by_date, parse_purchases_to_purcheserows_merge)
-from print import print_table, print_table_w_date_headers
-from logger import log, merge_dicts
+from table.print import print_table, print_table_w_date_headers
+from common.logger import log, merge_dicts
 
 
 api_spinner = Halo(text='Attempting to get your items', spinner='dots', animation='bounce', color='green')
