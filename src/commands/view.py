@@ -1,7 +1,8 @@
 
 '''This module contains the main loop of the program and prints'''
 from datetime import datetime
-import os
+
+from pathlib import Path
 import inspect
 import copy
 import click
@@ -17,7 +18,7 @@ from common.parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryite
 from table.print import print_table, print_table_w_date_headers
 from common.logger import log, merge_dicts
 
-
+func_name = Path(__file__).stem
 api_spinner = Halo(text='Attempting to get your items', spinner='dots', animation='bounce', color='green')
 
 
@@ -36,7 +37,8 @@ def dm_inventory():
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(dm_rows))
     if LOGGING == 'True':
-        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        print(f"{func_name}_{inspect.stack()[0][3]}")
+        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 @click.command()
@@ -50,7 +52,7 @@ def purchase_history(merge_by: str):
     api_spinner.succeed(text="Recived and pared API request")
     print_table_w_date_headers(copy.deepcopy(purchase_rows), merge_by)
     if LOGGING == 'True':
-        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 @click.command()
@@ -65,7 +67,7 @@ def purchase_history_from(date: str):
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(purchase_rows))
     if LOGGING == 'True':
-        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 @click.command()
@@ -78,7 +80,7 @@ def steam_inventory():
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(steam_rows))
     if LOGGING == 'True':
-        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 @click.command()
@@ -95,7 +97,7 @@ def inventory():
     responses = [steam_response, dm_response]
     print_table(copy.deepcopy(dm_rows + steam_rows))
     if LOGGING == 'True':
-        log(merge_dicts(responses), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 @click.command()
@@ -111,15 +113,16 @@ def listings():
     else:
         click.prompt(chalk.cyan('There are ZERO items listed'))
     if LOGGING == 'True':
-        log(response.json(), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 @click.command()
 def balance():
     '''View your current Dmarket balance'''
-    click.echo(chalk.cyan('Your DMarket balance: ' +
-               str(float(generic_request(api_url_path=BALANCE_ENDPOINT,
-                   method='GET').json()['usd'])/100) + '$'))
+    response = generic_request(api_url_path=BALANCE_ENDPOINT, method='GET')
+    click.echo(chalk.cyan('Your DMarket balance: ' + str(float(response.json()['usd'])/100) + '$'))
+    if LOGGING == 'True':
+        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 view.add_command(dm_inventory)

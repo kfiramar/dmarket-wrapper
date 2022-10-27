@@ -1,5 +1,6 @@
 '''This module contains the main loop of the program and prints'''
-import os
+
+from pathlib import Path
 import inspect
 import copy
 import click
@@ -15,6 +16,7 @@ from table.print import print_table
 from api_client.request_body import buy_order_body
 from common.logger import log, merge_dicts
 
+func_name = Path(__file__).stem
 items_api_spinner = Halo(text='Attempting to get items', spinner='dots', animation='bounce', color='green')
 create_api_spinner = Halo(text='Attempting to create', spinner='dots', animation='bounce', color='green')
 
@@ -45,7 +47,7 @@ def listing():
     else:
         create_api_spinner.fail(text=f"{len(error_list)} items FAILED (and {amount - len(error_list)} succseeded) \nERROR: {error_list}")
     if LOGGING == 'True':
-        log(merge_dicts(responses), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 create.add_command(listing)

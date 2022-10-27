@@ -1,5 +1,5 @@
 '''This module contains the main loop of the program and prints'''
-import os
+from pathlib import Path
 import inspect
 import copy
 import click
@@ -14,6 +14,7 @@ from table.print import print_table
 from api_client.request_body import listings_body
 from common.logger import log, merge_dicts
 
+func_name = Path(__file__).stem
 items_api_spinner = Halo(text='Attempting to get your items', spinner='dots', animation='bounce', color='green')
 create_api_spinner = Halo(text='Attempting to delete items', spinner='dots', animation='bounce', color='green')
 
@@ -56,7 +57,7 @@ def listing():
     else:
         raise Exception("There are no items")
     if LOGGING == 'True':
-        log(merge_dicts(responses), f"{os.path.basename(__file__)[:-3]}_{inspect.stack()[0][3]}")
+        log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 delete.add_command(listing)

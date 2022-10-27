@@ -1,6 +1,6 @@
 '''This module contains the main loop of the program and prints'''
 import copy
-import os
+
 import time
 from tabulate import tabulate
 from common.config import RAINBOW_TABLE, COLORS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION

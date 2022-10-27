@@ -1,5 +1,5 @@
 '''module that loads all the variables in to the app'''
-import os
+
 import configparser
 from pathlib import Path
 
