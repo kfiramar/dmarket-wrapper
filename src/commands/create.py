@@ -6,7 +6,7 @@ import copy
 import click
 from simple_chalk import chalk
 from halo import Halo
-from api_client.api_requests import generic_request, request_devider_buy_order
+from api_client.api_requests import generic_request, request_devider
 from common.config import BUY_ORDER_ENDPOINT, DM_INVENTORY_ENDPOINT, LOGGING
 from common.parsing import (listing_error_parsing,
                      parse_jsons_to_inventoryitems,
@@ -40,7 +40,7 @@ def listing():
     amount = click.prompt(chalk.cyan(f'how many items? You can sell up to {choosen_row["total_items"]}'))
     price = click.prompt(chalk.cyan(f'for how much? the current market price is: {choosen_row["market_price"]}$'))
     create_api_spinner.start()
-    responses = request_devider_buy_order(api_url_path=BUY_ORDER_ENDPOINT, method='POST', amount=int(amount), body_func=buy_order_body, price=price, asset_ids=choosen_row["asset_ids"])
+    responses = request_devider(api_url_path=BUY_ORDER_ENDPOINT, method='POST', amount=int(amount), body_func=buy_order_body, price=price, asset_ids=choosen_row["asset_ids"])
     error_list = listing_error_parsing(responses)
     if len(error_list) == 0:
         create_api_spinner.succeed(text=f"SUCCESSFUL - {amount} items of {choosen_row['title']} were listed")

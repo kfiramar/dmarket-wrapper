@@ -5,7 +5,7 @@ import copy
 import click
 from simple_chalk import chalk
 from halo import Halo
-from api_client.api_requests import generic_request, request_devider_listing
+from api_client.api_requests import generic_request, request_devider
 from common.config import SELL_LISTINGS_ENDPOINT, DELETE_LISTING_ENDPOINT, LOGGING
 from common.parsing import (parse_jsons_to_listings,
                      parse_listings_to_listingrows,
@@ -40,7 +40,7 @@ def listing():
         choosen_row = (vars(listings_rows[int(row_number)]))
         amount = int(click.prompt(chalk.cyan(f'How many items would you like to delete? You can remove the listing of up to {choosen_row["total_items"]}')))
         create_api_spinner.start()
-        responses = request_devider_listing(api_url_path=DELETE_LISTING_ENDPOINT,
+        responses = request_devider(api_url_path=DELETE_LISTING_ENDPOINT,
                                             method='DELETE', amount=int(amount),
                                             body_func=listings_body,
                                             price=choosen_row['market_price'],
