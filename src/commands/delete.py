@@ -30,10 +30,12 @@ def listing():
     items_api_spinner.start()
     response = generic_request(api_url_path=SELL_LISTINGS_ENDPOINT, method='GET')
     if response.json()['Total'] != '0':
-        listings_rows = parse_jsons_to_rows(response.json(),
-                                            parse_jsons_to_listings,
-                                            parse_listings_to_listingrows,
-                                            'total_price')
+        listings_rows = parse_jsons_to_rows(
+            response.json(),
+            parse_jsons_to_listings,
+            parse_listings_to_listingrows,
+            'total_price'
+        )
         items_api_spinner.succeed(text='Recived your items sucsessfully')
         print_table(copy.deepcopy(listings_rows))
         row_number = click.prompt(chalk.cyan(f'What listings would you like to remove? choose an index number - up to {len(listings_rows) - 1}'))

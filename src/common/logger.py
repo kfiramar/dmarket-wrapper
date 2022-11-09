@@ -28,7 +28,7 @@ def log(response: dict, func_name: str):
     logging_spinner = Halo(text='Logging API request', spinner='dots', color='green')
     logging_spinner.start()
     write_content(response, func_name)
-    logging_spinner.succeed(text="SUCCESSFUL - the API request was logged")
+    logging_spinner.info(text="API request was logged")
 
 
 def merge_dicts(responses: list) -> dict:
