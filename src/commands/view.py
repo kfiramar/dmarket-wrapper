@@ -6,6 +6,7 @@ from importlib.metadata import requires
 from pathlib import Path
 import inspect
 import copy
+from types import NoneType
 import click
 from halo import Halo
 from simple_chalk import chalk
@@ -39,6 +40,19 @@ def inventory(inventory_source: str):
 
 
 @click.command()
+def listings():
+    '''Prints all the inventory found on DMarket'''
+    api_spinner.start()
+    current_listings = get_listings()
+    if not isinstance(current_listings, NoneType):
+        print_table(copy.deepcopy(current_listings))
+        api_spinner.succeed(text="Recived and pared API request")
+    else:
+        api_spinner.fail(text="There are ZERO items listed")
+
+
+
+@click.command()
 @click.option('--merge_by', default='day',type=click.Choice(['minute', 'hour', 'day', 'month', 'year']), help='a period of time which you want to merge your purcheses by.')
 def purchase_history(merge_by: str):
     '''Prints the purchases history'''
@@ -67,7 +81,7 @@ def purchase_history_from(date: str):
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
-def get_inventory(inventory_source='steam'):
+def get_inventory(inventory_source='dm'):
     '''Prints all of your inventory'''
     returned_rows, responses = [], []
     if inventory_source in ('dm', 'all'):
@@ -86,21 +100,15 @@ def get_inventory(inventory_source='steam'):
         log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")
     return returned_rows
 
-@click.command()
-def listings():
+
+def get_listings():
     '''Prints all the listings on Dmarket'''
-    api_spinner.start()
     response = generic_request(api_url_path=SELL_LISTINGS_ENDPOINT, method='GET')
-    if response.json()['Total'] != '0':
-        listings_rows = parse_jsons_to_rows(response.json(), parse_jsons_to_listings,
-                                            parse_listings_to_listingrows, 'total_price')
-        api_spinner.succeed(text="Recived and pared API request")
-        print_table(copy.deepcopy(listings_rows))
-    else:
-        api_spinner.fail(text="There are ZERO items listed")
     if LOGGING == 'True':
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
-
+    if response.json()['Total'] != '0':
+        return parse_jsons_to_rows(response.json(), parse_jsons_to_listings,
+                                            parse_listings_to_listingrows, 'total_price')
 
 @click.command()
 def balance():

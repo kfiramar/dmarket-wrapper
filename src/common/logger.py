@@ -36,7 +36,6 @@ def merge_dicts(responses: list) -> dict:
     merged_dictionary = responses[0].json()
     for response in responses[1:]:
         merged_dictionary = combine_2_dict(merged_dictionary, response.json())
-        # merged_dictionary.update(response.json())
     return merged_dictionary
 
 

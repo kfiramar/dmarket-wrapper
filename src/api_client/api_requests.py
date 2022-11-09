@@ -16,7 +16,7 @@ def request_devider(api_url_path: str, method: str, amount: int, body_func: Call
     '''splits requests to up to 100 items per request'''
     amount_array = devide_number_to_array(amount, devider= 100)
     responses =  [generic_request(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids)) for number in amount_array] \
-            if offer_ids else \
+            if not offer_ids else \
                  [generic_request(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids, offer_ids)) for number in amount_array]
     return responses
 
