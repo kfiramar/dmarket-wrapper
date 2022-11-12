@@ -10,3 +10,31 @@ class InventoryItem(BasicItem):
         self.unlock_date = unlock_date
         self.exterior = exterior
         super().__init__(asset_id, title, market_price)
+
+    @classmethod
+    def parse_json_to_item(cls, json_dict: dict):
+        '''parses a JSON into an InventoryItem'''
+        attributes_dictionary = parse_name_dict_to_dict(json_dict['Attributes'])
+        return cls(
+                   asset_id=json_dict['AssetID'],
+                   title=json_dict['Title'],
+                   tradable=str(json_dict['Tradable']),
+                   market_price=json_dict['MarketPrice']['Amount'],
+                   exterior=attributes_dictionary['exterior'],
+                   item_type=attributes_dictionary['itemType'],
+                   unlock_date=attributes_dictionary['unlockDate'])
+
+
+def parse_jsons_to_items_list(json_items):
+    '''bla'''
+    inventoryitem_list = []
+    for json_item in json_items['Items']:
+        inventoryitem_list.append(InventoryItem.parse_json_to_item(json_dict=json_item))
+    return inventoryitem_list
+
+
+def parse_name_dict_to_dict(json_dict) -> dict:
+    '''Parses a list of dictionaries from:
+                        {key - "Name":"tradeLock", value - "Value":"0"}, ...
+                    to: {key:"tradeLock":"0"} '''
+    return {attribute['Name']: attribute['Value'] for attribute in json_dict}

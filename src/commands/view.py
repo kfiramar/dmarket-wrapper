@@ -13,10 +13,13 @@ from simple_chalk import chalk
 from api_client.api_requests import (generic_request)
 from common.config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
                     STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING)
-from common.parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems, parse_jsons_to_purcheserows,
-                     parse_listings_to_listingrows,
-                     parse_inventoryitems_to_inventoryitemrow, parse_jsons_to_rows,
-                     parse_jsons_to_purchases, parse_purchases_to_purcheserows_by_date, parse_purchases_to_purcheserows_merge)
+from table.tables.ListingTable import ListingTable
+from table.tables.InventoryItemTable import InventoryItemTable
+from table.tables.PurcheseTable import PurcheseTable
+# # from common.parsing import (parse_jsons_to_listings, parse_jsons_to_inventoryitems, parse_jsons_to_purcheserows,
+# #                      parse_listings_to_listingrows,
+# #                      parse_inventoryitems_to_inventoryitemrow, parse_jsons_to_rows,
+#                      parse_jsons_to_purchases, parse_purchases_to_purcheserows_by_date, parse_purchases_to_purcheserows_merge)
 from table.print import print_table, print_table_w_date_headers
 from common.logger import log, merge_dicts
 
@@ -44,8 +47,8 @@ def listings():
     '''Prints all the inventory found on DMarket'''
     api_spinner.start()
     current_listings = get_listings()
-    if not isinstance(current_listings, NoneType):
-        print_table(copy.deepcopy(current_listings))
+    if not isinstance(current_listings.rows, NoneType):
+        print_table(copy.deepcopy(current_listings.rows))
         api_spinner.succeed(text="Recived and pared API request")
     else:
         api_spinner.fail(text="There are ZERO items listed")
@@ -54,47 +57,47 @@ def listings():
 
 @click.command()
 @click.option('--merge_by', default='day',type=click.Choice(['minute', 'hour', 'day', 'month', 'year']), help='a period of time which you want to merge your purcheses by.')
-def purchase_history(merge_by: str):
+def purchases(merge_by: str):
     '''Prints the purchases history'''
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
-    purchase_rows = parse_jsons_to_purcheserows(response.json(), parse_jsons_to_purchases,
-                                                parse_purchases_to_purcheserows_merge, 'offer_closed_at', merge_by)
+    # purchase_rows = parse_jsons_to_purcheserows(response.json(), parse_jsons_to_purchases,
+    #                                             parse_purchases_to_purcheserows_merge, 'offer_closed_at', merge_by)
+    purchase_rows = PurcheseTable.parse_jsons_to_table(response.json())
     api_spinner.succeed(text="Recived and pared API request")
-    print_table_w_date_headers(copy.deepcopy(purchase_rows), merge_by)
+    print_table_w_date_headers(copy.deepcopy(purchase_rows.rows), merge_by)
     if LOGGING == 'True':
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 @click.command()
 @click.option('--date', required=True, prompt=True, help='Date from which you want to see your purchase history (%Y-%m-%d).')
-def purchase_history_from(date: str):
+def purchases_from(date: str):
     '''Prints the purchases history'''
     date = datetime.strptime(date, '%Y-%m-%d')
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
     purchase_rows = parse_jsons_to_purcheserows(response.json(), parse_jsons_to_purchases,
                                                 parse_purchases_to_purcheserows_by_date, 'offer_closed_at', date)
+    purchase_rows = PurcheseTable.parse_jsons_to_table(response.json())
     api_spinner.succeed(text="Recived and pared API request")
     print_table(copy.deepcopy(purchase_rows))
     if LOGGING == 'True':
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
-def get_inventory(inventory_source='dm'):
+def get_inventory(inventory_source: str):
     '''Prints all of your inventory'''
     returned_rows, responses = [], []
     if inventory_source in ('dm', 'all'):
         dm_response = generic_request(api_url_path=f"{DM_INVENTORY_ENDPOINT}", method='GET')
-        dm_rows = parse_jsons_to_rows(dm_response.json(), parse_jsons_to_inventoryitems,
-                                    parse_inventoryitems_to_inventoryitemrow, 'total_price')
-        returned_rows.extend(dm_rows)
+        dm_rows = InventoryItemTable.parse_jsons_to_table(dm_response.json())
+        returned_rows.extend(dm_rows.rows)
         responses.append(dm_response)
     if inventory_source in ('steam', 'all'):
         steam_response = generic_request(api_url_path=STEAM_INVENTORY_ENDPOINT, method='GET')
-        steam_rows = parse_jsons_to_rows(steam_response.json(), parse_jsons_to_inventoryitems,
-                                        parse_inventoryitems_to_inventoryitemrow, 'total_price')
-        returned_rows.extend(steam_rows)
+        steam_rows = InventoryItemTable.parse_jsons_to_table(steam_response.json())
+        returned_rows.extend(steam_rows.rows)
         responses.append(steam_response)
     if LOGGING == 'True':
         log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")
@@ -107,8 +110,9 @@ def get_listings():
     if LOGGING == 'True':
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
     if response.json()['Total'] != '0':
-        return parse_jsons_to_rows(response.json(), parse_jsons_to_listings,
-                                            parse_listings_to_listingrows, 'total_price')
+        # return parse_jsons_to_rows(response.json(), parse_jsons_to_listings,
+        #                                     parse_listings_to_listingrows, 'total_price')
+        return ListingTable.parse_jsons_to_table(response.json())
 
 @click.command()
 def balance():
@@ -122,8 +126,8 @@ def balance():
 view.add_command(inventory)
 view.add_command(listings)
 view.add_command(balance)
-view.add_command(purchase_history)
-view.add_command(purchase_history_from)
+view.add_command(purchases)
+view.add_command(purchases_from)
 
 
 if __name__ == '__main__':

@@ -7,3 +7,13 @@ class BasicItem:
         self.asset_id = asset_id
         self.title = title
         self.market_price = market_price
+
+    @classmethod
+    def from_json_to_item(cls):
+        '''parse json to item'''
+        raise NotImplementedError
+
+    @classmethod
+    def parse_jsons_to_items(cls, json_items):
+        '''parses json items to items'''
+        raise NotImplementedError

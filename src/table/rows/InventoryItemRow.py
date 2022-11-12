@@ -10,3 +10,36 @@ class InventoryItemRow(BasicRow):
                          market_price, total_price)
         self.exterior = exterior
         self.tradable = tradable
+
+    @classmethod
+    def item_to_row(cls, item):
+        return cls(title=item.title,
+                   asset_ids=[item.asset_id],
+                   exterior=item.exterior,
+                   market_price=item.market_price,
+                   total_items=1,
+                   total_price=item.market_price,
+                   tradable=item.tradable)
+
+
+    def add_to_row(self, item):
+        self.total_items += 1
+        self.total_price += float(item.market_price)
+        self.asset_ids.append(item.asset_id)
+        self.total_price = float(self.total_price)
+
+
+    def similar_to_item(self, item):
+        return item.title == self.title and item.market_price == self.market_price and item.tradable == self.tradable
+
+def parse_items_list_to_rows(all_items: list) -> list:
+    '''parses items from list(Items) to list(Rows)'''
+    rows = []
+    for item in all_items:
+        for row in rows:
+            if row.similar_to_item(item):
+                row.add_to_row(item)
+                break
+        else:
+            rows.append(InventoryItemRow.item_to_row(item))
+    return rows

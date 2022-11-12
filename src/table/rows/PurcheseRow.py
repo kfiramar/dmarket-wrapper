@@ -1,3 +1,5 @@
+from datetime import datetime
+from common.config import TIME_TABLE
 from table.rows.BasicRow import BasicRow
 
 
@@ -10,3 +12,53 @@ class PurcheseRow(BasicRow):
         self.sold_price = sold_price
         self.offer_closed_at = offer_closed_at
         self.offer_created_at = offer_created_at
+
+    @classmethod
+    def item_to_row(cls, item):
+        '''blas'''
+        return cls(title=item.title,
+                   asset_ids=[item.asset_id],
+                   sold_price=item.sold_price,
+                   offer_closed_at=item.offer_closed_at,
+                   offer_created_at=item.offer_created_at,
+                   total_items=1,
+                   total_price=item.sold_price,
+                   offer_ids=[item.offer_id]
+                    )
+
+    def add_to_row(self, item):
+        self.total_items += 1
+        self.total_price += float(item.sold_price)
+        self.asset_ids.append(item.asset_id)
+        self.offer_ids.append(item.offer_id)
+
+
+    def similar_to_item(self, item):
+        return item.title == self.title and item.sold_price == self.sold_price
+
+def parse_items_list_to_rows_from_date(all_items: list, date: datetime) -> list:
+    '''parses items from list(Items) to list(Rows)'''
+    rows = []
+    for item in all_items:
+        item_date = datetime.strptime(item.offer_closed_at, '%Y-%m-%d %H:%M:%S')
+        if item_date >= date:
+            for row in rows:
+                if row.similar_to_item(item):
+                    row.add_to_row(item)
+                    break
+            else:
+                rows.append(PurcheseRow.item_to_row(item))
+    return rows
+
+
+def parse_items_list_to_rows(all_items: list, merge_by: str  = 'day') -> list:
+    '''parses items from list(Items) to list(Rows)'''
+    rows = []
+    for item in all_items:
+        for row in rows:
+            if row.similar_to_item(item) and item.offer_closed_at[:TIME_TABLE[merge_by]] == row.offer_closed_at[:TIME_TABLE[merge_by]]:
+                row.add_to_row(item)
+                break
+        else:
+            rows.append(PurcheseRow.item_to_row(item))
+    return rows
