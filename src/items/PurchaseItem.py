@@ -26,6 +26,12 @@ class PurchaseItem(BasicItem):
                     offer_created_at=epoch_time_convertor(json_dict['OfferCreatedAt']))
 
 
+def epoch_time_convertor(epoch_time: str) -> str:
+    '''convert epoch time to normal format time, and take handle cases where epoch time is -62135596800'''
+    if epoch_time == '-62135596800':
+        return '0001-01-01 00:00:01'
+    return datetime.fromtimestamp(int(epoch_time)).strftime('%Y-%m-%d %H:%M:%S')
+
 
 def parse_jsons_to_items_list(json_purchases: dict) -> list:
     '''uses parse_json_to_item to parse all the items from json'''
@@ -33,10 +39,3 @@ def parse_jsons_to_items_list(json_purchases: dict) -> list:
     for json_purchase in json_purchases['Trades']:
         purchase_list.append(PurchaseItem.parse_json_to_item(json_dict=json_purchase))
     return purchase_list
-    
-    
-def epoch_time_convertor(epoch_time: str) -> str:
-    '''convert epoch time to normal format time, and take handle cases where epoch time is -62135596800'''
-    if epoch_time == '-62135596800':
-        return '0001-01-01 00:00:01'
-    return datetime.fromtimestamp(int(epoch_time)).strftime('%Y-%m-%d %H:%M:%S')

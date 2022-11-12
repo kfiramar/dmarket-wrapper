@@ -1,7 +1,7 @@
 '''This module contains the main loop of the program and prints'''
 
 import click
-from commands.view import inventory, listings, view
+from commands.view import view
 from commands.delete import delete
 from commands.create import create
 
@@ -17,5 +17,4 @@ commands.add_command(delete)
 commands.add_command(create)
 
 if __name__ == '__main__':
-    # listings()
     commands()

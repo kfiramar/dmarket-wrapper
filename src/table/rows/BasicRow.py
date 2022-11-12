@@ -24,3 +24,15 @@ class BasicRow:
         listingrow_list = list(vars(self).keys())
         return [listingrow_list[i] for i in ROW_PRINT_MASKS[self.__class__.__name__]]
 
+    @classmethod
+    def item_to_row(cls, item):
+        raise NotImplementedError
+
+    def add_to_row(self, item):
+        raise NotImplementedError
+
+    def similar_to_item(self, item):
+        raise NotImplementedError
+
+def parse_items_list_to_rows(all_items: list, merge_by: str):
+    raise NotImplementedError

@@ -10,3 +10,8 @@ class BasicTable:
     @classmethod
     def parse_jsons_to_table(cls, content) -> list:
         raise NotImplementedError
+
+    @classmethod
+    def parse_jsons_to_purchese_table_from_date(cls, content: dict, date: str) -> list:
+        raise NotImplementedError
+    

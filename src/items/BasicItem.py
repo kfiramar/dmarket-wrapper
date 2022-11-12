@@ -1,6 +1,5 @@
 '''This module contains the BasicItem class which represends a DMarket item'''
 
-
 class BasicItem:
     '''This class represends a DMarket item'''
     def __init__(self, asset_id, title, market_price):
@@ -13,7 +12,13 @@ class BasicItem:
         '''parse json to item'''
         raise NotImplementedError
 
-    @classmethod
-    def parse_jsons_to_items(cls, json_items):
-        '''parses json items to items'''
-        raise NotImplementedError
+def parse_jsons_to_items_list(json_items):
+    '''parses json items to items'''
+    raise NotImplementedError
+
+def parse_name_dict_to_dict(json_dict):
+    raise NotImplementedError
+
+def listing_error_parsing(responses: list) -> list:
+    raise NotImplementedError
+
