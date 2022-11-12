@@ -1,8 +1,6 @@
 
 '''This module contains the main loop of the program and prints'''
 from datetime import datetime
-from importlib.metadata import requires
-
 from pathlib import Path
 import inspect
 import copy

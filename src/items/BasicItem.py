@@ -21,4 +21,3 @@ def parse_name_dict_to_dict(json_dict):
 
 def listing_error_parsing(responses: list) -> list:
     raise NotImplementedError
-
