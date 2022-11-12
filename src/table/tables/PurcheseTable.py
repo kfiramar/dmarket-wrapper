@@ -16,7 +16,7 @@ class PurcheseTable(BasicTable):
         '''This function is used to parse jsons to sorted rows'''
         dm_items = parse_jsons_to_items_list(content)
         dm_rows = parse_items_list_to_rows(dm_items)
-        dm_rows.sort(key=lambda row: getattr(row, 'total_price'))
+        dm_rows.sort(key=lambda row: getattr(row, 'offer_closed_at'))
         return cls(dm_rows)
 
 
@@ -25,6 +25,6 @@ class PurcheseTable(BasicTable):
         '''This function is used to parse jsons to sorted rows'''
         dm_items = parse_jsons_to_items_list(content)
         dm_rows = parse_items_list_to_rows(dm_items)
-        dm_rows.sort(key=lambda row: getattr(row, 'total_price'))
+        dm_rows.sort(key=lambda row: getattr(row, 'offer_closed_at'))
         return cls(dm_rows)
     
