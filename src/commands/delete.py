@@ -27,7 +27,7 @@ def delete():
 def listing():
     '''Delete a listings on Dmarket'''
     items_api_spinner.start()
-    listings_rows = get_listings()
+    listings_rows = get_listings().rows
     if not isinstance(listings_rows, NoneType):
         items_api_spinner.succeed(text='Recived your items sucsessfully')
         print_table(copy.deepcopy(listings_rows))
