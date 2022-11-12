@@ -40,7 +40,7 @@ def parse_items_list_to_rows_from_date(all_items: list, date: datetime) -> list:
     '''parses items from list(Items) to list(Rows)'''
     rows = []
     for item in all_items:
-        item_date = datetime.strptime(item.offer_closed_at, '%Y-%m-%d %H:%M:%S')
+        item_date = datetime.strptime(item.offer_closed_at, '%d/%m/%Y %H:%M:%S')
         if item_date >= date:
             for row in rows:
                 if row.similar_to_item(item):
