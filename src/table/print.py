@@ -4,7 +4,7 @@ import copy
 import time
 from types import NoneType
 from tabulate import tabulate
-from common.config import RAINBOW_TABLE, COLORS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION
+from common.config import MAXIMUM_ROWS, RAINBOW_TABLE, COLORS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION
 
 
 def print_table(rows: list):
@@ -18,13 +18,14 @@ def print_table(rows: list):
                 table.append(row.get_values_list())
                 total_price += row.total_price
                 total_items += row.total_items
+            table.append(dash_list)
+            table.append(create_last_row(headers, total_items, total_price))
             last_row = copy.deepcopy(empty_list)
             last_row[headers.index("total_items")] = total_items
             last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
             last_row[0] = "TOTAL:"
-            table.append(dash_list)
             table.append(last_row)
-            if (len(table) < 15 and RAINBOW_TABLE == 'True'):
+            if (len(table) < MAXIMUM_ROWS and RAINBOW_TABLE):
                 print_rainbow_loop(tabulate(table, headers=headers, tablefmt='psql',
                                 numalign='center', stralign='center',
                                 floatfmt=".2f", showindex='always'))
@@ -35,6 +36,15 @@ def print_table(rows: list):
         except IndexError as error:
             raise IndexError("The table is completely empty") from error
 
+def create_dash_list(headers):
+    return ['------------']*len(headers)
+
+def create_last_row(headers, total_items, total_price):
+    last_row = ['']*len(headers)
+    last_row[0] = "TOTAL:"  
+    last_row[headers.index("total_items")] = total_items
+    last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
+    return last_row  
 
 def print_table_w_date_headers(rows: list, merge_by: str):
     '''Prints tables with date headers and totals at the end'''
@@ -57,7 +67,7 @@ def print_table_w_date_headers(rows: list, merge_by: str):
         last_row[0] = "TOTAL:"
         table.append(dash_list)
         table.append(last_row)
-        if (len(table) < 15 and RAINBOW_TABLE == 'True'):
+        if (len(table) < MAXIMUM_ROWS and RAINBOW_TABLE):
             print_rainbow_loop(tabulate(table, headers=headers, tablefmt='psql',
                                numalign='center', stralign='center',
                                floatfmt=".2f"))
@@ -70,7 +80,7 @@ def print_table_w_date_headers(rows: list, merge_by: str):
 
 
 def rainbow(text: str, pos: int) -> str:
-    '''paint rainbow fumction'''
+    '''turns text to rainbow text'''
     rainbow_text = ""
     for char in text:
         rainbow_text += COLORS[pos] + char
@@ -79,7 +89,7 @@ def rainbow(text: str, pos: int) -> str:
 
 
 def print_rainbow_loop(text: str):
-    '''prints rainbow loop for 3 seconds'''
+    '''loop function that prints rainbow text'''
     count = 0
     for count in range(int(RAINBOW_SPEED*RAINBOW_DURATION)):
         print("\033[H\033[J" + rainbow(text, count % (len(COLORS)-1)))

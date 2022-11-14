@@ -7,15 +7,15 @@ import click
 from simple_chalk import chalk
 from halo import Halo
 from api_client.api_requests import request_devider
-from common.config import DELETE_LISTING_ENDPOINT, LOGGING
+from common.config import DELETE_LISTING_ENDPOINT, LOGGING, CREATE_LISTINGS_ITEMS, REMOVE_LISTINGS_AMOUNT ,SUCSESSFULLY_DELETED ,UNSUCSESSFULLY_DELETED ,RECIVED_ITEMS ,ZERO_ITEMS, ATTEMPTING_GET_ITEMS, ATTEMPTING_DELETE
 from commands.view import get_listings
 from table.print import print_table
 from api_client.request_body import delete_listing_body
 from common.logger import log, merge_dicts
 
 func_name = Path(__file__).stem
-items_api_spinner = Halo(text='Attempting to get your items', spinner='dots', animation='bounce', color='green')
-create_api_spinner = Halo(text='Attempting to delete items', spinner='dots', animation='bounce', color='green')
+items_api_spinner = Halo(text=ATTEMPTING_GET_ITEMS, spinner='dots', animation='bounce', color='green')
+create_api_spinner = Halo(text=ATTEMPTING_DELETE, spinner='dots', animation='bounce', color='green')
 
 
 @click.group()
@@ -29,11 +29,11 @@ def listing():
     items_api_spinner.start()
     listings_rows = get_listings().rows
     if not isinstance(listings_rows, NoneType):
-        items_api_spinner.succeed(text='Recived your items sucsessfully')
+        items_api_spinner.succeed(text=RECIVED_ITEMS)
         print_table(copy.deepcopy(listings_rows))
-        row_number = click.prompt(chalk.cyan(f'What listings would you like to remove? choose an index number - up to {len(listings_rows) - 1}'))
+        row_number = click.prompt(CREATE_LISTINGS_ITEMS.format(len(listings_rows) - 1))
         choosen_row = (vars(listings_rows[int(row_number)]))
-        amount = int(click.prompt(chalk.cyan(f'How many items would you like to delete? You can remove the listing of up to {choosen_row["total_items"]}')))
+        amount = int(click.prompt(REMOVE_LISTINGS_AMOUNT.format(choosen_row["total_items"])))
         create_api_spinner.start()
         responses = request_devider(
                 api_url_path=DELETE_LISTING_ENDPOINT,
@@ -43,16 +43,14 @@ def listing():
                 asset_ids=choosen_row["asset_ids"],
                 offer_ids=choosen_row["offer_ids"])
         merged_response = merge_dicts(responses)
-        if LOGGING == 'True':
+        if LOGGING:
             log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")
         if merged_response['fail'] is None:
-            create_api_spinner.succeed(text=f"SUCCESSFUL - All {amount} items of {choosen_row['title']} were deleted")
+            create_api_spinner.succeed(text=SUCSESSFULLY_DELETED.format(amount, choosen_row['title']))
         else:
-            create_api_spinner.fail(text=f"{len(merged_response['fail'])} items FAILED (and \
-            {amount - len(merged_response['fail'])} succseeded) \
-            \nERROR: {merged_response['fail']}")
+            create_api_spinner.fail(text=UNSUCSESSFULLY_DELETED.format(len(merged_response['fail']), amount))
     else:
-        items_api_spinner.fail(text="There are ZERO items listed")
+        items_api_spinner.fail(text=ZERO_ITEMS)
 
 
 delete.add_command(listing)

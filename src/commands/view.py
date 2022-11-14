@@ -10,7 +10,7 @@ from halo import Halo
 from simple_chalk import chalk
 from api_client.api_requests import (generic_request)
 from common.config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
-                    STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING)
+                    STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING, RECIVED_ITEMS, ZERO_ITEMS, BALANCE_TEXT, ATTEMPTING_GET_ITEMS )
 from table.tables.ListingTable import ListingTable
 from table.tables.InventoryItemTable import InventoryItemTable
 from table.tables.PurcheseTable import PurcheseTable
@@ -18,13 +18,12 @@ from table.print import print_table, print_table_w_date_headers
 from common.logger import log, merge_dicts
 
 func_name = Path(__file__).stem
-api_spinner = Halo(text='Attempting to get your items', spinner='dots', animation='bounce', color='green')
+api_spinner = Halo(text=ATTEMPTING_GET_ITEMS, spinner='dots', animation='bounce', color='green')
 
 
 @click.group()
 def view():
     '''viewing listings, inventory -all, dm inventory and steam inventory'''
-
 
 
 @click.command()
@@ -33,7 +32,7 @@ def inventory(inventory_source: str):
     '''Prints all the inventory found on DMarket'''
     api_spinner.start()
     print_table(copy.deepcopy(get_inventory(inventory_source)))
-    api_spinner.succeed(text="Recived and pared API request")
+    api_spinner.succeed(text=RECIVED_ITEMS)
 
 
 @click.command()
@@ -43,10 +42,9 @@ def listings():
     current_listings = get_listings()
     if not isinstance(current_listings.rows, NoneType):
         print_table(copy.deepcopy(current_listings.rows))
-        api_spinner.succeed(text="Recived and pared API request")
+        api_spinner.succeed(text=RECIVED_ITEMS)
     else:
-        api_spinner.fail(text="There are ZERO items listed")
-
+        api_spinner.fail(text=ZERO_ITEMS)
 
 
 @click.command()
@@ -56,23 +54,23 @@ def purchases(merge_by: str):
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
     purchase_rows = PurcheseTable.parse_jsons_to_table(response.json())
-    api_spinner.succeed(text="Recived and pared API request")
+    api_spinner.succeed(text=RECIVED_ITEMS)
     print_table_w_date_headers(copy.deepcopy(purchase_rows.rows), merge_by)
-    if LOGGING == 'True':
+    if LOGGING:
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 @click.command()
-@click.option('--date', required=True, prompt=True, help='Date from which you want to see your purchase history (%Y-%m-%d).')
+@click.option('--date', required=True, prompt=True, help='Date from which you want to see your purchase history (%d/%m/%Y).')
 def purchases_from(date: str):
     '''Prints the purchases history'''
     date = datetime.strptime(date, '%d/%m/%Y')
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
     purchase_rows = PurcheseTable.parse_jsons_to_purchese_table_from_date(response.json(), date)
-    api_spinner.succeed(text="Recived and pared API request")
+    api_spinner.succeed(text=RECIVED_ITEMS)
     print_table(copy.deepcopy(purchase_rows.rows))
-    if LOGGING == 'True':
+    if LOGGING:
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
@@ -89,7 +87,7 @@ def get_inventory(inventory_source: str):
         steam_rows = InventoryItemTable.parse_jsons_to_table(steam_response.json())
         returned_rows.extend(steam_rows.rows)
         responses.append(steam_response)
-    if LOGGING == 'True':
+    if LOGGING:
         log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")
     return returned_rows
 
@@ -97,19 +95,18 @@ def get_inventory(inventory_source: str):
 def get_listings():
     '''Prints all the listings on Dmarket'''
     response = generic_request(api_url_path=SELL_LISTINGS_ENDPOINT, method='GET')
-    if LOGGING == 'True':
+    if LOGGING:
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
     if response.json()['Total'] != '0':
-        # return parse_jsons_to_rows(response.json(), parse_jsons_to_listings,
-        #                                     parse_listings_to_listingrows, 'total_price')
         return ListingTable.parse_jsons_to_table(response.json())
+
 
 @click.command()
 def balance():
     '''View your current Dmarket balance'''
     response = generic_request(api_url_path=BALANCE_ENDPOINT, method='GET')
-    click.echo(chalk.cyan('Your DMarket balance: ' + str(float(response.json()['usd'])/100) + '$'))
-    if LOGGING == 'True':
+    click.echo(BALANCE_TEXT.format(str(float(response.json()['usd'])/100)))
+    if LOGGING:
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
