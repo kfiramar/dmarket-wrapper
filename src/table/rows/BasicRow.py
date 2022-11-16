@@ -26,13 +26,17 @@ class BasicRow:
 
     @classmethod
     def item_to_row(cls, item):
+        '''creates a new row from an item'''
         raise NotImplementedError
 
     def add_to_row(self, item):
+        '''adds an item to an existing Row'''
         raise NotImplementedError
 
     def similar_to_item(self, item):
+        '''returns wether an Item has the same relevent attributes as the Row'''
         raise NotImplementedError
 
 def parse_items_list_to_rows(all_items: list, merge_by: str):
+    '''parses items from list(Items) to list(Rows)'''
     raise NotImplementedError

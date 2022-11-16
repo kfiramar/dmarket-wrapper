@@ -30,6 +30,7 @@ SECRET_KEY = keys_config['KEYS']['SECRET_KEY']
 SIGNATURE_PREFIX = "dmar ed25519 "
 
 LOGGING = general_config.getboolean('GENERAL', 'LOGGING')
+TABLE_LINE = general_config['GENERAL']['TABLE_LINE']
 
 CREATE_LISTINGS_ITEMS = general_config['QUESTIONS_TEXT']['REMOVE_LISTINGS_ITEMS']
 REMOVE_LISTINGS_AMOUNT = general_config['QUESTIONS_TEXT']['REMOVE_LISTINGS_AMOUNT']
@@ -52,4 +53,4 @@ BALANCE_TEXT = general_config['NORMAL_TEXT']['BALANCE_TEXT']
 RAINBOW_TABLE = general_config.getboolean('RAINBOW', 'RAINBOW_TABLE')
 RAINBOW_SPEED = float(general_config['RAINBOW']['RAINBOW_SPEED'])
 RAINBOW_DURATION = float(general_config['RAINBOW']['RAINBOW_DURATION'])
-MAXIMUM_ROWS = general_config['RAINBOW']['MAXIMUM_ROWS']
+MAXIMUM_ROWS = general_config.getint('RAINBOW', 'MAXIMUM_ROWS')

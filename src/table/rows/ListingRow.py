@@ -1,7 +1,8 @@
+'''ListingRow represents a certain amount of CS:GO item which is listed in DMarket'''
 from table.rows.BasicRow import BasicRow
 
 class ListingRow(BasicRow):
-    '''ListingRow represents a certain amount of CS:GO item which is listed in DMarket'''
+    '''ListingRow represents a certain amount of CS:GO item which are listed in DMarket'''
     def __init__(self, title, asset_ids, offer_ids, total_items, total_price,
                  listing_price, tradable, market_price=''):
         super().__init__(title, asset_ids, total_items, market_price, total_price)
@@ -11,6 +12,7 @@ class ListingRow(BasicRow):
 
     @classmethod
     def item_to_row(cls, item):
+        '''creates a new ListingRow from an ListingItem'''
         return cls(title=item.title,
                          asset_ids=[item.asset_id],
                          listing_price=item.listing_price,
@@ -20,13 +22,14 @@ class ListingRow(BasicRow):
                          tradable=item.tradable)
 
     def add_to_row(self, item):
-        '''dfd'''
+        '''adds a ListingItem to an existing ListingRow'''
         self.total_items += 1
         self.total_price += float(item.listing_price)
         self.asset_ids.append(item.asset_id)
         self.offer_ids.append(item.offer_id)
 
     def similar_to_item(self, item):
+        '''returns wether an ListingItem has the same relevent attributes as the ListignRow'''
         return item.title == self.title and item.listing_price == self.listing_price and item.tradable == self.tradable
 
 def parse_items_list_to_rows(all_items: list) -> list:

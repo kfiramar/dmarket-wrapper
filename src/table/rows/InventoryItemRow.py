@@ -13,6 +13,7 @@ class InventoryItemRow(BasicRow):
 
     @classmethod
     def item_to_row(cls, item):
+        '''creates a new InventoryItemRow from an InventoryItem'''
         return cls(title=item.title,
                    asset_ids=[item.asset_id],
                    exterior=item.exterior,
@@ -23,6 +24,7 @@ class InventoryItemRow(BasicRow):
 
 
     def add_to_row(self, item):
+        '''adds an InventoryItem to an existing InventoryItemRow'''
         self.total_items += 1
         self.total_price += float(item.market_price)
         self.asset_ids.append(item.asset_id)
@@ -30,6 +32,7 @@ class InventoryItemRow(BasicRow):
 
 
     def similar_to_item(self, item):
+        '''returns wether an InventoryItem has the same relevent attributes as the InventoryItemRow'''
         return item.title == self.title and item.market_price == self.market_price and item.tradable == self.tradable
 
 def parse_items_list_to_rows(all_items: list) -> list:

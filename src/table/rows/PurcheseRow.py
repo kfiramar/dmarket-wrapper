@@ -4,7 +4,7 @@ from table.rows.BasicRow import BasicRow
 
 
 class PurcheseRow(BasicRow):
-    '''ListingRow represents a certain amount of CS:GO item which is listed in DMarket'''
+    '''PurceseRow represents past purchese of a CS:GO item(s) which on DMarket'''
     def __init__(self, title, asset_ids, offer_ids, total_items, total_price,
                  sold_price, offer_closed_at, offer_created_at, market_price=''):
         super().__init__(title, asset_ids, total_items, market_price, total_price)
@@ -15,7 +15,7 @@ class PurcheseRow(BasicRow):
 
     @classmethod
     def item_to_row(cls, item):
-        '''blas'''
+        '''creates a new PurcheseRow from an PurcheseItem'''
         return cls(title=item.title,
                    asset_ids=[item.asset_id],
                    sold_price=item.sold_price,
@@ -27,6 +27,7 @@ class PurcheseRow(BasicRow):
                     )
 
     def add_to_row(self, item):
+        '''adds an item to an existing row'''
         self.total_items += 1
         self.total_price += float(item.sold_price)
         self.asset_ids.append(item.asset_id)
@@ -34,6 +35,7 @@ class PurcheseRow(BasicRow):
 
 
     def similar_to_item(self, item):
+        '''returns wether an PurcheseItem has the same relevent attributes as the Purcheserow'''
         return item.title == self.title and item.sold_price == self.sold_price
 
 def parse_items_list_to_rows_from_date(all_items: list, date: datetime) -> list:
@@ -52,7 +54,7 @@ def parse_items_list_to_rows_from_date(all_items: list, date: datetime) -> list:
 
 
 def parse_items_list_to_rows(all_items: list, merge_by: str  = 'day') -> list:
-    '''parses items from list(Items) to list(Rows)'''
+    '''parses items from list(PurcheseItem) to list(PurcheseRow)'''
     rows = []
     for item in all_items:
         for row in rows:
