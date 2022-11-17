@@ -41,7 +41,6 @@ def print_table_with_date_headers(rows: list, merge_by: str) -> None:
     else:
         total_items, total_price, table = 0, 0, []
         headers = rows[0].get_keys_list()
-        print(type(headers))
         devider_line = [TABLE_LINE]*len(headers)
         for i, row in enumerate(rows):
             if rows[i-1].offer_closed_at[:TIME_TABLE[merge_by]] != row.offer_closed_at[:TIME_TABLE[merge_by]]:
