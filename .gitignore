@@ -2,7 +2,7 @@
 .idea/*
 **/node_modules/**
 **/vendor/**
-*.ini
+keys.ini
 **__pycache__**
 /logs/*
 TODO.txt
