@@ -14,7 +14,7 @@ from common.config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HIS
 from table.tables.ListingTable import ListingTable
 from table.tables.InventoryItemTable import InventoryItemTable
 from table.tables.PurcheseTable import PurcheseTable
-from table.print import print_table, print_table_w_date_headers
+from table.print import print_table, print_table_with_date_headers
 from common.logger import log, merge_dicts
 
 func_name = Path(__file__).stem
@@ -22,26 +22,26 @@ api_spinner = Halo(text=ATTEMPTING_GET_ITEMS, spinner='dots', animation='bounce'
 
 
 @click.group()
-def view():
+def view() -> None:
     '''viewing listings, inventory -all, dm inventory and steam inventory'''
 
 
 @click.command()
 @click.option('--inventory_source', required = True, type=click.Choice(['dm', 'steam','all']), prompt=True, help='choose inventory_source: dm, steamm, all.')
-def inventory(inventory_source: str):
+def inventory(inventory_source: str) -> None:
     '''Prints all the inventory found on DMarket'''
     api_spinner.start()
-    print_table(copy.deepcopy(get_inventory(inventory_source)))
+    print_table(get_inventory(inventory_source))
     api_spinner.succeed(text=RECIVED_ITEMS)
 
 
 @click.command()
-def listings():
+def listings() -> None:
     '''Prints all the inventory found on DMarket'''
     api_spinner.start()
     current_listings = get_listings()
     if not isinstance(current_listings.rows, NoneType):
-        print_table(copy.deepcopy(current_listings.rows))
+        print_table(current_listings.rows)
         api_spinner.succeed(text=RECIVED_ITEMS)
     else:
         api_spinner.fail(text=ZERO_ITEMS)
@@ -49,32 +49,32 @@ def listings():
 
 @click.command()
 @click.option('--merge_by', default='day',type=click.Choice(['minute', 'hour', 'day', 'month', 'year']), help='a period of time which you want to merge your purcheses by.')
-def purchases(merge_by: str):
+def purchases(merge_by: str) -> None:
     '''Prints the purchases history'''
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
     purchase_rows = PurcheseTable.parse_jsons_to_table(response.json())
     api_spinner.succeed(text=RECIVED_ITEMS)
-    print_table_w_date_headers(copy.deepcopy(purchase_rows.rows), merge_by)
+    print_table_with_date_headers(purchase_rows.rows, merge_by)
     if LOGGING:
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
 @click.command()
 @click.option('--date', required=True, prompt=True, help='Date from which you want to see your purchase history (%d/%m/%Y).')
-def purchases_from(date: str):
+def purchases_from(date: str) -> None:
     '''Prints the purchases history'''
     date = datetime.strptime(date, '%d/%m/%Y')
     api_spinner.start()
     response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
     purchase_rows = PurcheseTable.parse_jsons_to_purchese_table_from_date(response.json(), date)
     api_spinner.succeed(text=RECIVED_ITEMS)
-    print_table(copy.deepcopy(purchase_rows.rows))
+    print_table(purchase_rows.rows)
     if LOGGING:
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
 
 
-def get_inventory(inventory_source: str):
+def get_inventory(inventory_source: str) -> list:
     '''Prints all of your inventory'''
     returned_rows, responses = [], []
     if inventory_source in ('dm', 'all'):
@@ -92,7 +92,7 @@ def get_inventory(inventory_source: str):
     return returned_rows
 
 
-def get_listings():
+def get_listings() -> None:
     '''Prints all the listings on Dmarket'''
     response = generic_request(api_url_path=SELL_LISTINGS_ENDPOINT, method='GET')
     if LOGGING:
@@ -102,7 +102,7 @@ def get_listings():
 
 
 @click.command()
-def balance():
+def balance() -> None:
     '''View your current Dmarket balance'''
     response = generic_request(api_url_path=BALANCE_ENDPOINT, method='GET')
     click.echo(BALANCE_TEXT.format(str(float(response.json()['usd'])/100)))

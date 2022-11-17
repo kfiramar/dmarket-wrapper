@@ -1,3 +1,4 @@
+from src.items.InventoryItem import InventoryItem
 from table.rows.BasicRow import BasicRow
 
 
@@ -12,7 +13,7 @@ class InventoryItemRow(BasicRow):
         self.tradable = tradable
 
     @classmethod
-    def item_to_row(cls, item):
+    def item_to_row(cls, item: InventoryItem):
         '''creates a new InventoryItemRow from an InventoryItem'''
         return cls(title=item.title,
                    asset_ids=[item.asset_id],
@@ -23,7 +24,7 @@ class InventoryItemRow(BasicRow):
                    tradable=item.tradable)
 
 
-    def add_to_row(self, item):
+    def add_to_row(self, item: InventoryItem):
         '''adds an InventoryItem to an existing InventoryItemRow'''
         self.total_items += 1
         self.total_price += float(item.market_price)
@@ -31,7 +32,7 @@ class InventoryItemRow(BasicRow):
         self.total_price = float(self.total_price)
 
 
-    def similar_to_item(self, item):
+    def similar_to_item(self, item: InventoryItem):
         '''returns wether an InventoryItem has the same relevent attributes as the InventoryItemRow'''
         return item.title == self.title and item.market_price == self.market_price and item.tradable == self.tradable
 

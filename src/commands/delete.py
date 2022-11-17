@@ -30,7 +30,7 @@ def listing():
     listings_rows = get_listings().rows
     if not isinstance(listings_rows, NoneType):
         items_api_spinner.succeed(text=RECIVED_ITEMS)
-        print_table(copy.deepcopy(listings_rows))
+        print_table(listings_rows)
         row_number = click.prompt(CREATE_LISTINGS_ITEMS.format(len(listings_rows) - 1))
         choosen_row = (vars(listings_rows[int(row_number)]))
         amount = int(click.prompt(REMOVE_LISTINGS_AMOUNT.format(choosen_row["total_items"])))

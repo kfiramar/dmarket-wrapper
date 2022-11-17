@@ -25,7 +25,7 @@ class InventoryItem(BasicItem):
                    unlock_date=attributes_dictionary['unlockDate'])
 
 
-def parse_jsons_to_items_list(json_items):
+def parse_jsons_to_items_list(json_items: dict) -> list:
     '''bla'''
     inventoryitem_list = []
     for json_item in json_items['Items']:
@@ -33,7 +33,7 @@ def parse_jsons_to_items_list(json_items):
     return inventoryitem_list
 
 
-def parse_name_dict_to_dict(json_dict) -> dict:
+def parse_name_dict_to_dict(json_dict: dict) -> dict:
     '''Parses a list of dictionaries from:
                         {key - "Name":"tradeLock", value - "Value":"0"}, ...
                     to: {key:"tradeLock":"0"} '''

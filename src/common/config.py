@@ -8,7 +8,8 @@ JSON_DICTIONARY_FIXER = {"\'": "\"", 'True': '\"True\"', ' False': '\"False\"', 
 TIME_TABLE = {'minute': -3, 'hour': -6, 'day': -9, 'month': -12, 'year': -15}
 COLORS = ['\u001b[32;1m', '\u001b[32;1m', '\u001b[31;1m', '\u001b[31;1m', '\u001b[32;0m', '\u001b[32;0m', '\u001b[31;0m', '\u001b[31;0m']
 ROW_PRINT_MASKS = {'InventoryItemRow': [0, 5, 3, 2, 4], 'ListingRow': [0, 6, 3, 2, 4], 'PurcheseRow': [0, 6, 2, 4]}
-
+SIGNATURE_PREFIX = "dmar ed25519 "
+CLEAR_SHELL = "\033[H\033[J"
 
 general_config = keys_config = configparser.ConfigParser()
 PROJECT_PATH = Path(__file__).parents[2]
@@ -27,10 +28,17 @@ PURCHASE_HISTORY_ENDPOINT = general_config['ENDPOINTS']['PURCHASE_HISTORY']
 
 PUBLIC_KEY = keys_config['KEYS']['PUBLIC_KEY']
 SECRET_KEY = keys_config['KEYS']['SECRET_KEY']
-SIGNATURE_PREFIX = "dmar ed25519 "
+
 
 LOGGING = general_config.getboolean('GENERAL', 'LOGGING')
-TABLE_LINE = general_config['GENERAL']['TABLE_LINE']
+
+TABLEFMT =  general_config['TABLE']['TABLEFMT']
+NUMALIGN = general_config['TABLE']['NUMALIGN']
+STRALIGN = general_config['TABLE']['STRALIGN']
+FLOATFMT = general_config['TABLE']['FLOATFMT']
+SHOWINDEX = general_config['TABLE']['SHOWINDEX']
+
+TABLE_LINE = general_config['TABLE']['TABLE_LINE']
 
 CREATE_LISTINGS_ITEMS = general_config['QUESTIONS_TEXT']['REMOVE_LISTINGS_ITEMS']
 REMOVE_LISTINGS_AMOUNT = general_config['QUESTIONS_TEXT']['REMOVE_LISTINGS_AMOUNT']
@@ -49,8 +57,10 @@ ATTEMPTING_CREATE_ITEMS = general_config['SPINNER_TEXT']['ATTEMPTING_CREATE_ITEM
 ATTEMPTING_DELETE = general_config['SPINNER_TEXT']['ATTEMPTING_DELETE']
 
 BALANCE_TEXT = general_config['NORMAL_TEXT']['BALANCE_TEXT']
+EMPTY_TABLE = general_config['NORMAL_TEXT']['EMPTY_TABLE']
 
 RAINBOW_TABLE = general_config.getboolean('RAINBOW', 'RAINBOW_TABLE')
-RAINBOW_SPEED = float(general_config['RAINBOW']['RAINBOW_SPEED'])
-RAINBOW_DURATION = float(general_config['RAINBOW']['RAINBOW_DURATION'])
+RAINBOW_SPEED = general_config.getfloat('RAINBOW', 'RAINBOW_SPEED')
+RAINBOW_DURATION = general_config.getfloat('RAINBOW', 'RAINBOW_DURATION')
 MAXIMUM_ROWS = general_config.getint('RAINBOW', 'MAXIMUM_ROWS')
+

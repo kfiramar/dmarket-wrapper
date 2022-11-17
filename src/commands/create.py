@@ -28,7 +28,7 @@ def create():
 def listing():
     '''Creates listing on Dmarket'''
     dm_rows = get_inventory(inventory_source='dm')
-    print_table(copy.deepcopy(dm_rows))
+    print_table(dm_rows)
     row_number = click.prompt(CREATE_LISTINGS_ITEMS.format(len(dm_rows) - 1))
     choosen_row = (vars(dm_rows[int(row_number)]))
     amount = click.prompt(CREATE_LISTINGS_AMOUNT.format(choosen_row["total_items"]))

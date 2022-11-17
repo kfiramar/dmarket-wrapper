@@ -1,5 +1,6 @@
 from datetime import datetime
 from common.config import TIME_TABLE
+from src.items.PurchaseItem import PurchaseItem
 from table.rows.BasicRow import BasicRow
 
 
@@ -14,7 +15,7 @@ class PurcheseRow(BasicRow):
         self.offer_created_at = offer_created_at
 
     @classmethod
-    def item_to_row(cls, item):
+    def item_to_row(cls, item: PurchaseItem):
         '''creates a new PurcheseRow from an PurcheseItem'''
         return cls(title=item.title,
                    asset_ids=[item.asset_id],
@@ -26,7 +27,7 @@ class PurcheseRow(BasicRow):
                    offer_ids=[item.offer_id]
                     )
 
-    def add_to_row(self, item):
+    def add_to_row(self, item: PurchaseItem):
         '''adds an item to an existing row'''
         self.total_items += 1
         self.total_price += float(item.sold_price)
@@ -34,7 +35,7 @@ class PurcheseRow(BasicRow):
         self.offer_ids.append(item.offer_id)
 
 
-    def similar_to_item(self, item):
+    def similar_to_item(self, item: PurchaseItem) -> bool:
         '''returns wether an PurcheseItem has the same relevent attributes as the Purcheserow'''
         return item.title == self.title and item.sold_price == self.sold_price
 

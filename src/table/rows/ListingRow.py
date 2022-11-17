@@ -1,4 +1,5 @@
 '''ListingRow represents a certain amount of CS:GO item which is listed in DMarket'''
+from src.items.ListingItem import ListingItem
 from table.rows.BasicRow import BasicRow
 
 class ListingRow(BasicRow):
@@ -11,7 +12,7 @@ class ListingRow(BasicRow):
         self.tradable = tradable
 
     @classmethod
-    def item_to_row(cls, item):
+    def item_to_row(cls, item: ListingItem):
         '''creates a new ListingRow from an ListingItem'''
         return cls(title=item.title,
                          asset_ids=[item.asset_id],
@@ -21,14 +22,14 @@ class ListingRow(BasicRow):
                          offer_ids=[item.offer_id],
                          tradable=item.tradable)
 
-    def add_to_row(self, item):
+    def add_to_row(self, item: ListingItem):
         '''adds a ListingItem to an existing ListingRow'''
         self.total_items += 1
         self.total_price += float(item.listing_price)
         self.asset_ids.append(item.asset_id)
         self.offer_ids.append(item.offer_id)
 
-    def similar_to_item(self, item):
+    def similar_to_item(self, item: ListingItem) -> bool:
         '''returns wether an ListingItem has the same relevent attributes as the ListignRow'''
         return item.title == self.title and item.listing_price == self.listing_price and item.tradable == self.tradable
 
