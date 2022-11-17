@@ -1,6 +1,5 @@
 '''This module Is used to log the API requests'''
 import time
-import os
 import json
 import pprint
 from halo import Halo
@@ -18,7 +17,7 @@ def write_content(content: dict, func_name: str):
     '''Creates a file and loads all the json content into it'''
     fixed_json = []
     file_name = time.strftime(f"{func_name}-%Y-%m-%d_%H:%M:%S.json")
-    path_to_file = os.path.join(PROJECT_PATH, f'../logs/{file_name}')
+    path_to_file = PROJECT_PATH / f'logs/{file_name}'
     fixed_json = json.loads(json_fixer(str(content), JSON_DICTIONARY_FIXER))
     with open(path_to_file, "wb") as file:
         file.write((json_fixer(pprint.pformat(fixed_json), JSON_QOUTES_FIXER)).encode("UTF-8"))
@@ -29,7 +28,7 @@ def log(response: dict, func_name: str):
     logging_spinner = Halo(text='Logging API request', spinner='dots', color='green')
     logging_spinner.start()
     write_content(response, func_name)
-    logging_spinner.succeed(text="SUCCESSFUL - the API request was logged")
+    logging_spinner.info(text="API request was logged")
 
 
 def merge_dicts(responses: list) -> dict:
@@ -37,7 +36,6 @@ def merge_dicts(responses: list) -> dict:
     merged_dictionary = responses[0].json()
     for response in responses[1:]:
         merged_dictionary = combine_2_dict(merged_dictionary, response.json())
-        # merged_dictionary.update(response.json())
     return merged_dictionary
 
 

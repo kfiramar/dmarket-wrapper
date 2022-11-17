@@ -1,74 +1,71 @@
 '''This module contains the main loop of the program and prints'''
-import copy
-import os
 import time
+from types import NoneType
 from tabulate import tabulate
-from common.config import RAINBOW_TABLE, COLORS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION
+from common.config import MAXIMUM_ROWS, RAINBOW_TABLE, COLORS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION, TABLE_LINE, TABLEFMT, NUMALIGN, STRALIGN, FLOATFMT, SHOWINDEX, EMPTY_TABLE, CLEAR_SHELL
 
-
-def print_table(rows: list):
+def print_table(rows: list) -> None:
     '''Prints tables with headers and totals at the end'''
-    try:
-        total_items, total_price, table = 0, 0, []
+    if not rows:
+        raise IndexError(EMPTY_TABLE)
+    else:
+        total_items, total_price = 0, 0
+        table = []
         headers = rows[0].get_keys_list()
-        empty_list, dash_list = ['']*len(headers), ['------------']*len(headers)
+        colunm_count = len(headers)
         for row in rows:
             table.append(row.get_values_list())
             total_price += row.total_price
             total_items += row.total_items
-        last_row = copy.deepcopy(empty_list)
-        last_row[headers.index("total_items")] = total_items
-        last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
-        last_row[0] = "TOTAL:"
-        table.append(dash_list)
-        table.append(last_row)
-        if (len(table) < 15 and RAINBOW_TABLE == 'True'):
-            print_rainbow_loop(tabulate(table, headers=headers, tablefmt='psql',
-                               numalign='center', stralign='center',
-                               floatfmt=".2f", showindex='always'))
-        else:
-            print(tabulate(table, headers=headers, tablefmt='psql',
-                           numalign='center', stralign='center',
-                           floatfmt=".2f", showindex='always'))
-    except IndexError as error:
-        raise IndexError("The table is completely empty") from error
+        table.append([TABLE_LINE]*colunm_count)
+        table.append(create_last_row(headers, total_items, total_price))
+        print_table_tabulate(table, headers)
 
 
-def print_table_w_date_headers(rows: list, merge_by: str):
+def print_table_tabulate(table, headers) -> None:
+    '''print a table with a configuration from configparser'''
+    if (len(table) < MAXIMUM_ROWS and RAINBOW_TABLE):
+        print_rainbow_loop(tabulate(table, headers=headers, tablefmt=TABLEFMT,
+                        numalign=NUMALIGN, stralign=STRALIGN,
+                        floatfmt=FLOATFMT, showindex=SHOWINDEX))
+    else:
+        print(tabulate(table, headers=headers, tablefmt=TABLEFMT,
+                        numalign=NUMALIGN, stralign=STRALIGN,
+                        floatfmt=FLOATFMT, showindex=SHOWINDEX))
+
+
+def print_table_with_date_headers(rows: list, merge_by: str) -> None:
     '''Prints tables with date headers and totals at the end'''
-    try:
-        total_items, total_price, table, headers = 0, 0, [], rows[0].get_keys_list()
-        empty_list, dash_list = ['']*len(headers), ['------------']*len(headers)
+    if not rows:
+        raise IndexError(EMPTY_TABLE)
+    else:
+        total_items, total_price, table = 0, 0, []
+        headers = rows[0].get_keys_list()
+        devider_line = [TABLE_LINE]*len(headers)
         for i, row in enumerate(rows):
             if rows[i-1].offer_closed_at[:TIME_TABLE[merge_by]] != row.offer_closed_at[:TIME_TABLE[merge_by]]:
-                date_header_list = copy.deepcopy(empty_list)
-                date_header_list[0] = row.offer_closed_at[:TIME_TABLE[merge_by]]
-                table.append(dash_list)
-                table.append(date_header_list)
-                table.append(dash_list)
+                date_header_list = row.offer_closed_at[:TIME_TABLE[merge_by]]
+                table.append(devider_line)
+                table.append([date_header_list])
+                table.append(devider_line)
             table.append(row.get_values_list())
             total_price += row.total_price
             total_items += row.total_items
-        last_row = copy.deepcopy(empty_list)
-        last_row[headers.index("total_items")] = total_items
-        last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
-        last_row[0] = "TOTAL:"
-        table.append(dash_list)
-        table.append(last_row)
-        if (len(table) < 15 and RAINBOW_TABLE == 'True'):
-            print_rainbow_loop(tabulate(table, headers=headers, tablefmt='psql',
-                               numalign='center', stralign='center',
-                               floatfmt=".2f"))
-        else:
-            print(tabulate(table, headers=headers, tablefmt='psql',
-                           numalign='center', stralign='center',
-                           floatfmt=".2f"))
-    except IndexError as error:
-        raise IndexError("The table is completely empty") from error
+        table.append(devider_line)
+        table.append(create_last_row(headers, total_items, total_price))
+        print_table_tabulate(table, headers)
 
+
+def create_last_row(headers: list, total_items: int, total_price: int) -> list:
+    '''creates last row (the totals) of a table'''
+    last_row = ['']*len(headers)
+    last_row[0] = "TOTAL:"
+    last_row[headers.index("total_items")] = total_items
+    last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
+    return last_row
 
 def rainbow(text: str, pos: int) -> str:
-    '''paint rainbow fumction'''
+    '''turns text to rainbow text'''
     rainbow_text = ""
     for char in text:
         rainbow_text += COLORS[pos] + char
@@ -76,9 +73,8 @@ def rainbow(text: str, pos: int) -> str:
     return rainbow_text
 
 
-def print_rainbow_loop(text: str):
-    '''prints rainbow loop for 3 seconds'''
-    count = 0
+def print_rainbow_loop(text: str) -> None:
+    '''loop function that prints rainbow text'''
     for count in range(int(RAINBOW_SPEED*RAINBOW_DURATION)):
-        print("\033[H\033[J" + rainbow(text, count % (len(COLORS)-1)))
+        print(CLEAR_SHELL + rainbow(text, count % (len(COLORS)-1)))
         time.sleep(1/RAINBOW_SPEED)
