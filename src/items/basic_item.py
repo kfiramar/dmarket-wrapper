@@ -17,7 +17,14 @@ def parse_jsons_to_items_list(json_items):
     raise NotImplementedError
 
 def parse_name_dict_to_dict(json_dict):
+    '''
+    Parses a list of dictionaries from:
+                        {key - "Name":"tradeLock", value - "Value":"0"}, ...
+                    to: {key:"tradeLock":"0"}
+    Used only on InventoryItem
+    '''
     raise NotImplementedError
 
 def listing_error_parsing(responses: list) -> list:
+    '''parse errors from the response -> only on ListingItem'''
     raise NotImplementedError

@@ -1,5 +1,11 @@
-from src.items.InventoryItem import InventoryItem
-from table.rows.BasicRow import BasicRow
+'''
+This module contains the InventoryItemRow class (which is a subclass of BasicItem).
+InventoryItemRow is based on InventoryItem,
+Each row groups all the identical items into the same row.
+'''
+
+from items.inventory_item import InventoryItem
+from table.rows.basic_row import BasicRow
 
 
 class InventoryItemRow(BasicRow):

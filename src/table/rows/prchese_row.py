@@ -1,7 +1,14 @@
+'''
+This module contains the PurcheseRow class (which is a subclass of BasicItem).
+PurcheseRow is based on PurcheseItem,
+Each row groups all the identical items into the same row.
+'''
+
+
 from datetime import datetime
 from common.config import TIME_TABLE
-from src.items.PurchaseItem import PurchaseItem
-from table.rows.BasicRow import BasicRow
+from items.purchase_item import PurchaseItem
+from table.rows.basic_row import BasicRow
 
 
 class PurcheseRow(BasicRow):

@@ -1,4 +1,9 @@
-from items.BasicItem import BasicItem
+'''
+This module contains the ListingItem class (which is a subclass of BasicItem)
+ListingItem represends a listing of one item on DMarket
+'''
+
+from items.basic_item import BasicItem
 
 
 class ListingItem(BasicItem):
@@ -21,7 +26,7 @@ class ListingItem(BasicItem):
                     offer_id=json_dict['Offer']['OfferID'])
 
 def parse_jsons_to_items_list(jsons: dict) -> list:
-    '''uses parse_json_to_item to parse all the items from json'''
+    '''parses json items to ListingItem list'''
     listing_list = []
     for json_item in jsons['Items']:
         listing_list.append(ListingItem.parse_json_to_item(json_dict=json_item))

@@ -3,19 +3,18 @@
 from datetime import datetime
 from pathlib import Path
 import inspect
-import copy
 from types import NoneType
 import click
 from halo import Halo
-from simple_chalk import chalk
 from api_client.api_requests import (generic_request)
 from common.config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
-                    STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING, RECIVED_ITEMS, ZERO_ITEMS, BALANCE_TEXT, ATTEMPTING_GET_ITEMS )
-from table.tables.ListingTable import ListingTable
-from table.tables.InventoryItemTable import InventoryItemTable
-from table.tables.PurcheseTable import PurcheseTable
-from table.print import print_table, print_table_with_date_headers
+                    STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING, RECIVED_ITEMS, LISTING_ZERO_ITEMS, BALANCE_TEXT, ATTEMPTING_GET_ITEMS )
 from common.logger import log, merge_dicts
+from table.tables.listing_table import ListingTable
+from table.tables.inventory_item_table import InventoryItemTable
+from table.tables.purchese_table import PurcheseTable
+from table.print import print_table, print_table_with_date_headers
+
 
 func_name = Path(__file__).stem
 api_spinner = Halo(text=ATTEMPTING_GET_ITEMS, spinner='dots', animation='bounce', color='green')
@@ -40,11 +39,11 @@ def listings() -> None:
     '''Prints all the inventory found on DMarket'''
     api_spinner.start()
     current_listings = get_listings()
-    if not isinstance(current_listings.rows, NoneType):
+    if not isinstance(current_listings, NoneType):
         print_table(current_listings.rows)
         api_spinner.succeed(text=RECIVED_ITEMS)
     else:
-        api_spinner.fail(text=ZERO_ITEMS)
+        api_spinner.fail(text=LISTING_ZERO_ITEMS)
 
 
 @click.command()
@@ -97,8 +96,8 @@ def get_listings() -> None:
     response = generic_request(api_url_path=SELL_LISTINGS_ENDPOINT, method='GET')
     if LOGGING:
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
-    if response.json()['Total'] != '0':
-        return ListingTable.parse_jsons_to_table(response.json())
+    return ListingTable.parse_jsons_to_table(response.json())
+
 
 
 @click.command()

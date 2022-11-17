@@ -1,9 +1,14 @@
+'''
+This module contains the PurchaseItem class (which is a subclass of BasicItem)
+PurchaseItem represends a listing of one item on DMarket
+'''
+
 from datetime import datetime
-from items.BasicItem import BasicItem
+from items.basic_item import BasicItem
 
 
 class PurchaseItem(BasicItem):
-    '''InventoryItem represents a CS:GO item which is in DMarket inventory'''
+    '''PurchaseItem represents a purchased item on DMarket'''
     def __init__(self, asset_id, title, offer_closed_at,
                  offer_created_at,
                  sold_price, offer_id, market_price=''):
@@ -34,7 +39,7 @@ def epoch_time_convertor(epoch_time: str) -> str:
 
 
 def parse_jsons_to_items_list(json_purchases: dict) -> list:
-    '''uses parse_json_to_item to parse all the items from json'''
+    '''parses json items to PurchaseItem list'''
     purchase_list = []
     for json_purchase in json_purchases['Trades']:
         purchase_list.append(PurchaseItem.parse_json_to_item(json_dict=json_purchase))

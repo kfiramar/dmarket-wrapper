@@ -1,5 +1,9 @@
-from items.BasicItem import BasicItem
+'''
+This module contains the InventoryItem class (which is a subclass of BasicItem)
+InventoryItem represends an Inventory item on DMarket
+'''
 
+from items.basic_item import BasicItem
 
 class InventoryItem(BasicItem):
     '''InventoryItem represents a CS:GO item which is in DMarket inventory'''
@@ -26,7 +30,7 @@ class InventoryItem(BasicItem):
 
 
 def parse_jsons_to_items_list(json_items: dict) -> list:
-    '''bla'''
+    '''parses json items to InventoryItem list'''
     inventoryitem_list = []
     for json_item in json_items['Items']:
         inventoryitem_list.append(InventoryItem.parse_json_to_item(json_dict=json_item))

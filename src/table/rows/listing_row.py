@@ -1,6 +1,11 @@
-'''ListingRow represents a certain amount of CS:GO item which is listed in DMarket'''
-from src.items.ListingItem import ListingItem
-from table.rows.BasicRow import BasicRow
+'''
+This module contains the ListingRow class (which is a subclass of BasicItem).
+ListingRow is based on ListingItem,
+Each row groups all the identical items into the same row.
+'''
+
+from items.listing_item import ListingItem
+from table.rows.basic_row import BasicRow
 
 class ListingRow(BasicRow):
     '''ListingRow represents a certain amount of CS:GO item which are listed in DMarket'''

@@ -6,7 +6,7 @@ from common.config import MAXIMUM_ROWS, RAINBOW_TABLE, COLORS, TIME_TABLE, RAINB
 
 def print_table(rows: list) -> None:
     '''Prints tables with headers and totals at the end'''
-    if isinstance(rows, NoneType):
+    if not rows:
         raise IndexError(EMPTY_TABLE)
     else:
         total_items, total_price = 0, 0
@@ -36,7 +36,7 @@ def print_table_tabulate(table, headers) -> None:
 
 def print_table_with_date_headers(rows: list, merge_by: str) -> None:
     '''Prints tables with date headers and totals at the end'''
-    if isinstance(rows, NoneType):
+    if not rows:
         raise IndexError(EMPTY_TABLE)
     else:
         total_items, total_price, table = 0, 0, []
@@ -54,6 +54,7 @@ def print_table_with_date_headers(rows: list, merge_by: str) -> None:
         table.append(devider_line)
         table.append(create_last_row(headers, total_items, total_price))
         print_table_tabulate(table, headers)
+
 
 def create_last_row(headers: list, total_items: int, total_price: int) -> list:
     '''creates last row (the totals) of a table'''

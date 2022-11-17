@@ -1,17 +1,15 @@
 '''This module contains the main loop of the program and prints'''
 from pathlib import Path
 import inspect
-import copy
 from types import NoneType
 import click
-from simple_chalk import chalk
 from halo import Halo
 from api_client.api_requests import request_devider
-from common.config import DELETE_LISTING_ENDPOINT, LOGGING, CREATE_LISTINGS_ITEMS, REMOVE_LISTINGS_AMOUNT ,SUCSESSFULLY_DELETED ,UNSUCSESSFULLY_DELETED ,RECIVED_ITEMS ,ZERO_ITEMS, ATTEMPTING_GET_ITEMS, ATTEMPTING_DELETE
+from api_client.request_body import delete_listing_body
+from common.config import DELETE_LISTING_ENDPOINT, LOGGING, CREATE_LISTINGS_ITEMS, REMOVE_LISTINGS_AMOUNT ,SUCSESSFULLY_DELETED ,UNSUCSESSFULLY_DELETED ,RECIVED_ITEMS ,LISTING_ZERO_ITEMS, ATTEMPTING_GET_ITEMS, ATTEMPTING_DELETE
+from common.logger import log, merge_dicts
 from commands.view import get_listings
 from table.print import print_table
-from api_client.request_body import delete_listing_body
-from common.logger import log, merge_dicts
 
 func_name = Path(__file__).stem
 items_api_spinner = Halo(text=ATTEMPTING_GET_ITEMS, spinner='dots', animation='bounce', color='green')
@@ -28,7 +26,7 @@ def listing():
     '''Delete a listings on Dmarket'''
     items_api_spinner.start()
     listings_rows = get_listings().rows
-    if not isinstance(listings_rows, NoneType):
+    if listings_rows:
         items_api_spinner.succeed(text=RECIVED_ITEMS)
         print_table(listings_rows)
         row_number = click.prompt(CREATE_LISTINGS_ITEMS.format(len(listings_rows) - 1))
@@ -50,7 +48,7 @@ def listing():
         else:
             create_api_spinner.fail(text=UNSUCSESSFULLY_DELETED.format(len(merged_response['fail']), amount))
     else:
-        items_api_spinner.fail(text=ZERO_ITEMS)
+        items_api_spinner.fail(text=LISTING_ZERO_ITEMS)
 
 
 delete.add_command(listing)
