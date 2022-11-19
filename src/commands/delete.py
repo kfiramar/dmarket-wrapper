@@ -31,7 +31,7 @@ def listing():
         print_table(listings_rows)
         row_number = click.prompt(CREATE_LISTINGS_ITEMS.format(len(listings_rows) - 1))
         choosen_row = (vars(listings_rows[int(row_number)]))
-        amount = int(click.prompt(REMOVE_LISTINGS_AMOUNT.format(choosen_row["total_items"])))
+        amount = int(click.prompt(REMOVE_LISTINGS_AMOUNT.format(choosen_row["amount"])))
         create_api_spinner.start()
         responses = request_devider(
                 api_url_path=DELETE_LISTING_ENDPOINT,

@@ -18,7 +18,7 @@ def create_listing_body(amount: int, price: float, asset_ids: list) -> str:
 
 def delete_listing_body(amount: int, price: float, asset_ids: list, offer_ids: list) -> str:
     '''generate body for buy order'''
-    item_order = {
+    listings = {
          "force": True,
          "objects": []}
     for _ in range(amount):
@@ -30,5 +30,19 @@ def delete_listing_body(amount: int, price: float, asset_ids: list, offer_ids: l
                             "Amount": price
                             }
                 }
-        item_order['objects'].append(listing)
-    return item_order
+        listings['objects'].append(listing)
+    return listings
+
+def create_target_body(amount: int, price: float, title: str):
+    return {
+        
+        "GameID": "a8db",
+        "Targets": [{
+            "Amount": amount,
+            "Price": {
+                "Currency": "USD",
+                "Amount": price
+            },
+            "Title": title
+            }]
+    }

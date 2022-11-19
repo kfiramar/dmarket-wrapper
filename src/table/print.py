@@ -9,16 +9,16 @@ def print_table(rows: list) -> None:
     if not rows:
         raise IndexError(EMPTY_TABLE)
     else:
-        total_items, total_price = 0, 0
+        amount, total_price = 0, 0
         table = []
         headers = rows[0].get_keys_list()
         colunm_count = len(headers)
         for row in rows:
             table.append(row.get_values_list())
             total_price += row.total_price
-            total_items += row.total_items
+            amount += row.amount
         table.append([TABLE_LINE]*colunm_count)
-        table.append(create_last_row(headers, total_items, total_price))
+        table.append(create_last_row(headers, amount, total_price))
         print_table_tabulate(table, headers)
 
 
@@ -39,7 +39,7 @@ def print_table_with_date_headers(rows: list, merge_by: str) -> None:
     if not rows:
         raise IndexError(EMPTY_TABLE)
     else:
-        total_items, total_price, table = 0, 0, []
+        amount, total_price, table = 0, 0, []
         headers = rows[0].get_keys_list()
         devider_line = [TABLE_LINE]*len(headers)
         for i, row in enumerate(rows):
@@ -50,17 +50,17 @@ def print_table_with_date_headers(rows: list, merge_by: str) -> None:
                 table.append(devider_line)
             table.append(row.get_values_list())
             total_price += row.total_price
-            total_items += row.total_items
+            amount += row.amount
         table.append(devider_line)
-        table.append(create_last_row(headers, total_items, total_price))
+        table.append(create_last_row(headers, amount, total_price))
         print_table_tabulate(table, headers)
 
 
-def create_last_row(headers: list, total_items: int, total_price: int) -> list:
+def create_last_row(headers: list, amount: int, total_price: int) -> list:
     '''creates last row (the totals) of a table'''
     last_row = ['']*len(headers)
     last_row[0] = "TOTAL:"
-    last_row[headers.index("total_items")] = total_items
+    last_row[headers.index("amount")] = amount
     last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
     return last_row
 

@@ -13,9 +13,9 @@ from table.rows.basic_row import BasicRow
 
 class PurcheseRow(BasicRow):
     '''PurceseRow represents past purchese of a CS:GO item(s) which on DMarket'''
-    def __init__(self, title, asset_ids, offer_ids, total_items, total_price,
+    def __init__(self, title, asset_ids, offer_ids, amount, total_price,
                  sold_price, offer_closed_at, offer_created_at, market_price=''):
-        super().__init__(title, asset_ids, total_items, market_price, total_price)
+        super().__init__(title, asset_ids, amount, market_price, total_price)
         self.offer_ids = offer_ids
         self.sold_price = sold_price
         self.offer_closed_at = offer_closed_at
@@ -29,14 +29,14 @@ class PurcheseRow(BasicRow):
                    sold_price=item.sold_price,
                    offer_closed_at=item.offer_closed_at,
                    offer_created_at=item.offer_created_at,
-                   total_items=1,
+                   amount=1,
                    total_price=item.sold_price,
                    offer_ids=[item.offer_id]
                     )
 
     def add_to_row(self, item: PurchaseItem):
         '''adds an item to an existing row'''
-        self.total_items += 1
+        self.amount += 1
         self.total_price += float(item.sold_price)
         self.asset_ids.append(item.asset_id)
         self.offer_ids.append(item.offer_id)

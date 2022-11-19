@@ -4,10 +4,10 @@ from common.config import ROW_PRINT_MASKS
 
 class BasicRow:
     '''This class represents a row in a CLI chart'''
-    def __init__(self, title: str, asset_ids: list, total_items: int, market_price: float, total_price: float):
+    def __init__(self, title: str, asset_ids: list, amount: int, market_price: float, total_price: float):
         self.title = title
         self.asset_ids = asset_ids
-        self.total_items = total_items
+        self.amount = amount
         self.market_price = market_price
         self.total_price = total_price
 

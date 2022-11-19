@@ -12,14 +12,16 @@ def generic_request(api_url_path: str, method: str, body: str = None) -> request
     return response
 
 
-def request_devider(api_url_path: str, method: str, amount: int, body_func: Callable, price: str, asset_ids: list, offer_ids: list = None) -> list:
+def request_devider(api_url_path: str, method: str, amount: int, body_func: Callable, price: str,asset_ids: list = None,  offer_ids: list = None, title: str = None) -> list:
     '''splits requests to up to 100 items per request'''
     amount_array = devide_number_to_array(amount, devider= 100)
-    responses =  [generic_request(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids)) for number in amount_array] \
-            if not offer_ids else \
-                 [generic_request(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids, offer_ids)) for number in amount_array]
+    responses =  [generic_request(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids, offer_ids)) for number in amount_array] \
+            if offer_ids else \
+                 [generic_request(api_url_path=api_url_path, method=method, body=body_func(number, price, asset_ids)) for number in amount_array] \
+            if asset_ids else \
+                 [generic_request(api_url_path=api_url_path, method=method, body=body_func(number, price, title)) for number in amount_array]
     return responses
-
+    #How to inplement it generically?
 
 def devide_number_to_array(number: int, devider: int) -> list:
     '''devides the number by 100 and creates a list of 100s with leftovers'''

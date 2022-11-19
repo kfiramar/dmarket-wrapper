@@ -10,10 +10,10 @@ from table.rows.basic_row import BasicRow
 
 class InventoryItemRow(BasicRow):
     '''InventoryItemRow represents a certain amount of CS:GO item which is in DMarket inventory'''
-    def __init__(self, title, asset_ids, total_items,
+    def __init__(self, title, asset_ids, amount,
                  total_price, exterior, tradable, market_price):
 
-        super().__init__(title, asset_ids, total_items,
+        super().__init__(title, asset_ids, amount,
                          market_price, total_price)
         self.exterior = exterior
         self.tradable = tradable
@@ -25,17 +25,16 @@ class InventoryItemRow(BasicRow):
                    asset_ids=[item.asset_id],
                    exterior=item.exterior,
                    market_price=item.market_price,
-                   total_items=1,
+                   amount=1,
                    total_price=item.market_price,
                    tradable=item.tradable)
 
 
     def add_to_row(self, item: InventoryItem):
         '''adds an InventoryItem to an existing InventoryItemRow'''
-        self.total_items += 1
+        self.amount += 1
         self.total_price += float(item.market_price)
         self.asset_ids.append(item.asset_id)
-        self.total_price = float(self.total_price)
 
 
     def similar_to_item(self, item: InventoryItem):
