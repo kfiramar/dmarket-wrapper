@@ -14,7 +14,8 @@ class DMarketItem(BasicItem):
         self.exterior = exterior
         self.discount = discount
         self.amount = amount
-        super().__init__(asset_id, title, market_price)
+        self.asset_id = asset_id
+        super().__init__(title, market_price)
 
     @classmethod
     def parse_json_to_item(cls, json_dict: dict):

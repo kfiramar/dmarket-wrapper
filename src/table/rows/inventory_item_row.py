@@ -13,8 +13,10 @@ class InventoryItemRow(BasicRow):
     def __init__(self, title, asset_ids, amount,
                  total_price, exterior, tradable, market_price):
 
-        super().__init__(title, asset_ids, amount,
-                         market_price, total_price)
+        super().__init__(title, amount,
+                         market_price)
+        self.asset_ids = asset_ids
+        self.total_price = total_price
         self.exterior = exterior
         self.tradable = tradable
 

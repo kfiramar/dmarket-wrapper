@@ -13,7 +13,8 @@ class ListingItem(BasicItem):
         self.tradable = tradable
         self.offer_id = offer_id
         self.listing_price = listing_price
-        super().__init__(asset_id, title, market_price)
+        self.asset_id = asset_id
+        super().__init__(title, market_price)
 
     @classmethod
     def parse_json_to_item(cls, json_dict: dict):

@@ -11,7 +11,9 @@ class ListingRow(BasicRow):
     '''ListingRow represents a certain amount of CS:GO item which are listed in DMarket'''
     def __init__(self, title, asset_ids, offer_ids, amount, total_price,
                  listing_price, tradable, market_price=''):
-        super().__init__(title, asset_ids, amount, market_price, total_price)
+        super().__init__(title, amount, market_price)
+        self.asset_ids = asset_ids
+        self.total_price = total_price
         self.offer_ids = offer_ids
         self.listing_price = listing_price
         self.tradable = tradable

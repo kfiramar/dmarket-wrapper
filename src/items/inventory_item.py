@@ -13,7 +13,8 @@ class InventoryItem(BasicItem):
         self.item_type = item_type
         self.unlock_date = unlock_date
         self.exterior = exterior
-        super().__init__(asset_id, title, market_price)
+        self.asset_id = asset_id
+        super().__init__(title, market_price)
 
     @classmethod
     def parse_json_to_item(cls, json_dict: dict):

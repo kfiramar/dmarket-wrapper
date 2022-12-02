@@ -7,9 +7,11 @@ from types import NoneType
 import click
 from halo import Halo
 from api_client.api_requests import (generic_request)
-from common.config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, MARKET_ITEMS, PURCHASE_HISTORY_ENDPOINT,
-                    STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING, RECIVED_ITEMS, LISTING_ZERO_ITEMS, BALANCE_TEXT, ATTEMPTING_GET_ITEMS )
+from common.config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, MARKET_ITEMS_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
+                    STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING, RECIVED_ITEMS, LISTING_ZERO_ITEMS, BALANCE_TEXT, ATTEMPTING_GET_ITEMS, VIEW_TARGETS_ENDPOINT )
 from common.logger import log, merge_dicts
+from items.target_item import TargetItem
+from table.tables.target_item_table import TargetItemTable
 from table.tables.listing_table import ListingTable
 from table.tables.inventory_item_table import InventoryItemTable
 from table.tables.purchese_table import PurcheseTable
@@ -106,7 +108,7 @@ def get_inventory(inventory_source: str) -> list:
 
 def get_dmarket_items(title:str, items:int = 100, min_price: int = 0, max_price: int = 0) -> list:
     '''Prints all of your inventory'''
-    dm_response = generic_request(api_url_path=MARKET_ITEMS.format(title, items, min_price, max_price), method='GET')
+    dm_response = generic_request(api_url_path=MARKET_ITEMS_ENDPOINT.format(title, items, min_price, max_price), method='GET')
     if LOGGING:
         log(dm_response.json(), f"{func_name}_{inspect.stack()[0][3]}")
     dm_rows = DMarketItemTable.parse_jsons_to_table(dm_response.json())
@@ -121,6 +123,24 @@ def get_listings() -> None:
     return ListingTable.parse_jsons_to_table(response.json())
 
 
+def get_targets() -> None:
+    '''Prints all the listings on Dmarket'''
+    response = generic_request(api_url_path=VIEW_TARGETS_ENDPOINT, method='GET')
+    if LOGGING:
+        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
+    return TargetItemTable.parse_jsons_to_table(response.json())
+
+@click.command()
+def targets():
+    api_spinner.start()
+    current_listings = get_targets()
+    if not isinstance(current_listings, NoneType):
+        print_table(current_listings.rows)
+        api_spinner.succeed(text=RECIVED_ITEMS)
+    else:
+        api_spinner.fail(text=LISTING_ZERO_ITEMS)
+
+
 
 @click.command()
 def balance() -> None:
@@ -132,6 +152,7 @@ def balance() -> None:
 
 
 view.add_command(dmarket_items)
+view.add_command(targets)
 view.add_command(inventory)
 view.add_command(listings)
 view.add_command(balance)

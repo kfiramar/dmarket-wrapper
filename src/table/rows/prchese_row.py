@@ -15,7 +15,9 @@ class PurcheseRow(BasicRow):
     '''PurceseRow represents past purchese of a CS:GO item(s) which on DMarket'''
     def __init__(self, title, asset_ids, offer_ids, amount, total_price,
                  sold_price, offer_closed_at, offer_created_at, market_price=''):
-        super().__init__(title, asset_ids, amount, market_price, total_price)
+        super().__init__(title, amount, market_price)
+        self.asset_ids = asset_ids
+        self.total_price = total_price
         self.offer_ids = offer_ids
         self.sold_price = sold_price
         self.offer_closed_at = offer_closed_at

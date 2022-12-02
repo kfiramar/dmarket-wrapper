@@ -6,9 +6,9 @@ class BasicRow:
     '''This class represents a row in a CLI chart'''
     def __init__(self, title: str, asset_ids: list, amount: int, market_price: float, total_price: float):
         self.title = title
-        self.asset_ids = asset_ids
         self.amount = amount
         self.market_price = market_price
+        self.asset_ids = asset_ids
         self.total_price = total_price
 
     def get_values_list(self) -> list:
