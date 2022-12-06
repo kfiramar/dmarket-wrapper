@@ -14,9 +14,9 @@ class DMarketItemRow(BasicRow):
     def __init__(self, title, asset_ids, amount,
                  total_price, exterior, tradable, market_price, discount):
 
-        super().__init__(title, amount, market_price, total_price)
+        super().__init__(title, amount, market_price)
         self.asset_ids = asset_ids
-        self.total_price = 
+        self.total_price = total_price
         self.exterior = exterior
         self.tradable = tradable
         self.discount = discount

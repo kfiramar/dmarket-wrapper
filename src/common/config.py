@@ -7,7 +7,7 @@ JSON_QOUTES_FIXER = {"\'": "\""}
 JSON_DICTIONARY_FIXER = {"\'": "\"", 'True': '\"True\"', ' False': '\"False\"', 'None': '\"None\"'}
 TIME_TABLE = {'minute': -3, 'hour': -6, 'day': -9, 'month': -12, 'year': -15}
 COLORS = ['\u001b[32;1m', '\u001b[32;1m', '\u001b[31;1m', '\u001b[31;1m', '\u001b[32;0m', '\u001b[32;0m', '\u001b[31;0m', '\u001b[31;0m']
-ROW_PRINT_MASKS = {'InventoryItemRow': [0, 5, 3, 2, 4], 'ListingRow': [0, 6, 3, 2, 4], 'PurcheseRow': [0, 6, 2, 4], 'DMarketItemRow':[0,2,3,4] }
+ROW_PRINT_MASKS_WORDS = {'InventoryItemRow': ['title', 'market_price', 'amount','total_price'], 'ListingRow': ["title", "listing_price", "market_price", "amount", "total_price"], 'PurcheseRow': ["title", "sold_price", "amount", "total_price" ], 'DMarketItemRow':["title", "amount", "market_price", "discount"], "TargetItemRow":["title", "amount", "listing_price", "market_price", "total_price"]} 
 SIGNATURE_PREFIX = "dmar ed25519 "
 CLEAR_SHELL = "\033[H\033[J"
 

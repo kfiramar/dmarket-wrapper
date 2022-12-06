@@ -13,8 +13,7 @@ class InventoryItemRow(BasicRow):
     def __init__(self, title, asset_ids, amount,
                  total_price, exterior, tradable, market_price):
 
-        super().__init__(title, amount,
-                         market_price)
+        super().__init__(title, amount, market_price)
         self.asset_ids = asset_ids
         self.total_price = total_price
         self.exterior = exterior
@@ -38,10 +37,10 @@ class InventoryItemRow(BasicRow):
         self.total_price += float(item.market_price)
         self.asset_ids.append(item.asset_id)
 
-
     def similar_to_item(self, item: InventoryItem):
         '''returns wether an InventoryItem has the same relevent attributes as the InventoryItemRow'''
         return item.title == self.title and item.market_price == self.market_price and item.tradable == self.tradable
+
 
 def parse_items_list_to_rows(all_items: list) -> list:
     '''parses items from list(Items) to list(Rows)'''

@@ -9,6 +9,7 @@ def generic_request(api_url_path: str, method: str, body: str = None) -> request
     '''This is the most generic API request function with a body'''
     headers = create_headers(api_url_path, body=body, method=method)
     response = getattr(requests, method.lower())(API_URL + api_url_path, json=body, headers=headers)
+    response.raise_for_status()
     return response
 
 

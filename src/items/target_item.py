@@ -18,7 +18,7 @@ func_name = Path(__file__).stem
 def get_item_price(title:str) -> list:
     '''Prints all of your inventory'''
     dm_response = generic_request(api_url_path=MARKET_ITEMS_ENDPOINT.format(title, 1, 0, 0), method='GET')
-    price = DMarketItemTable.parse_jsons_to_table(dm_response.json()).rows['0'].market_price
+    price = DMarketItemTable.parse_jsons_to_table(dm_response.json()).rows[0].market_price
     return price
 
 
@@ -41,7 +41,7 @@ class TargetItem(BasicItem):
                    listing_price=json_dict['Price']['Amount'],
                    exterior=attributes_dictionary['exterior'],
                    market_price = get_item_price(json_dict['Title']),
-                   amount = json_dict['Amount'])
+                   amount = int(json_dict['Amount']))
 
 def parse_jsons_to_items_list(json_items: dict) -> list:
     '''parses json items to TargetItem list'''
