@@ -34,6 +34,7 @@ def delete_listing_body(amount: int, price: float, asset_ids: list, offer_ids: l
     return listings
 
 def create_target_body(amount: int, price: float, title: str):
+    '''generate create target json body'''
     return {
         
         "GameID": "a8db",

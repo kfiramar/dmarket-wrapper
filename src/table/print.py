@@ -2,7 +2,8 @@
 import time
 from types import NoneType
 from tabulate import tabulate
-from common.config import MAXIMUM_ROWS, RAINBOW_TABLE, COLORS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION, TABLE_LINE, TABLEFMT, NUMALIGN, STRALIGN, FLOATFMT, SHOWINDEX, EMPTY_TABLE, CLEAR_SHELL
+from common.config import MAXIMUM_ROWS, RAINBOW_TABLE, COLORS, ROW_PRINT_MASKS_WORDS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION, TABLE_LINE, TABLEFMT, NUMALIGN, STRALIGN, FLOATFMT, SHOWINDEX, EMPTY_TABLE, CLEAR_SHELL
+from common.formatting import format_floats_to_usd
 
 def print_table(rows: list) -> None:
     '''Prints tables with headers and totals at the end'''
@@ -11,10 +12,10 @@ def print_table(rows: list) -> None:
     else:
         amount, total_price = 0, 0
         table = []
-        headers = rows[0].get_keys_list()
+        headers = rows[0].get_rows_headers()
         colunm_count = len(headers)
         for row in rows:
-            table.append(row.get_values_list())
+            table.append(row.get_rows_values())
             total_price += row.total_price
             amount += row.amount
         table.append([TABLE_LINE]*colunm_count)
@@ -40,7 +41,7 @@ def print_table_with_date_headers(rows: list, merge_by: str) -> None:
         raise IndexError(EMPTY_TABLE)
     else:
         amount, total_price, table = 0, 0, []
-        headers = rows[0].get_keys_list()
+        headers = rows[0].get_rows_headers()
         devider_line = [TABLE_LINE]*len(headers)
         for i, row in enumerate(rows):
             if rows[i-1].offer_closed_at[:TIME_TABLE[merge_by]] != row.offer_closed_at[:TIME_TABLE[merge_by]]:
@@ -48,7 +49,7 @@ def print_table_with_date_headers(rows: list, merge_by: str) -> None:
                 table.append(devider_line)
                 table.append([date_header_list])
                 table.append(devider_line)
-            table.append(row.get_values_list())
+            table.append(row.get_rows_values())
             total_price += row.total_price
             amount += row.amount
         table.append(devider_line)
@@ -60,8 +61,9 @@ def create_last_row(headers: list, amount: int, total_price: int) -> list:
     '''creates last row (the totals) of a table'''
     last_row = ['']*len(headers)
     last_row[0] = "TOTAL:"
-    last_row[headers.index("amount")] = amount
-    last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
+    # last_row[headers.index("amount")] = amount
+    last_row = format_floats_to_usd(last_row)
+    # last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
     return last_row
 
 def rainbow(text: str, pos: int) -> str:

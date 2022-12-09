@@ -37,7 +37,21 @@ class DMarketItemRow(BasicRow):
                    discount = item.discount)
                               
                    
-        
+    def create_target_body(self, amount: int, price: float):
+        '''generate create target json body'''
+        title = self.title
+        return {
+            
+            "GameID": "a8db",
+            "Targets": [{
+                "Amount": amount,
+                "Price": {
+                    "Currency": "USD",
+                    "Amount": price
+                },
+                "Title": title
+                }]
+        }
 
 
     def add_to_row(self, item: DMarketItem):

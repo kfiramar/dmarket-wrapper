@@ -41,6 +41,7 @@ class TargetItemRow(BasicRow):
         '''returns wether an TargetItem has the same relevent attributes as the TargetItemRow'''
         return item.title == self.title and item.listing_price == self.listing_price and item.exterior == self.exterior
 
+
 def parse_items_list_to_rows(all_items: list) -> list:
     '''parses items from list(Items) to list(Rows)'''
     rows = []

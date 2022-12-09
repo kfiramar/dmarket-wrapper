@@ -38,7 +38,26 @@ class ListingRow(BasicRow):
 
     def similar_to_item(self, item: ListingItem) -> bool:
         '''returns wether an ListingItem has the same relevent attributes as the ListignRow'''
-        return item.title == self.title and item.listing_price == self.listing_price and item.tradable == self.tradable
+        return item.title == self.title and item.listing_price == self.listing_price
+
+    def delete_listing_json_body(self, amount: int, price: float) -> str:
+        '''generate body for buy order'''
+        asset_ids = self.asset_ids
+        offer_ids = self.offer_ids
+        listings = {
+            "force": True,
+            "objects": []}
+        for _ in range(amount):
+            listing = {
+                        "itemId": asset_ids.pop(0),
+                        "offerId": offer_ids.pop(0),
+                        "Price": {
+                                "Currency": "USD",
+                                "Amount": price
+                                }
+                    }
+            listings['objects'].append(listing)
+        return listings
 
 def parse_items_list_to_rows(all_items: list) -> list:
     '''parses items from list(Items) to list(Rows)'''
@@ -51,3 +70,5 @@ def parse_items_list_to_rows(all_items: list) -> list:
         else:
             rows.append(ListingRow.item_to_row(item))
     return rows
+
+

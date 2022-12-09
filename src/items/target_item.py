@@ -6,10 +6,9 @@ TargetItem represends an Inventory item on DMarket
 from items.basic_item import BasicItem
 # from commands.view import get_dmarket_items
 
-import inspect
 from pathlib import Path
 from api_client.api_requests import generic_request
-from common.config import LOGGING, MARKET_ITEMS_ENDPOINT
+from common.config import LOGGING, MARKET_ITEMS_REQUEST
 from common.logger import log
 from table.tables.dmarket_item_table import DMarketItemTable
 
@@ -17,7 +16,7 @@ func_name = Path(__file__).stem
 
 def get_item_price(title:str) -> list:
     '''Prints all of your inventory'''
-    dm_response = generic_request(api_url_path=MARKET_ITEMS_ENDPOINT.format(title, 1, 0, 0), method='GET')
+    dm_response = generic_request(url_endpoint=MARKET_ITEMS_REQUEST['ENDPOINT'].format(title, 1, 0, 0), method=MARKET_ITEMS_REQUEST['METHOD'])
     price = DMarketItemTable.parse_jsons_to_table(dm_response.json()).rows[0].market_price
     return price
 

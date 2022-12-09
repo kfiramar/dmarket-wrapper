@@ -39,8 +39,22 @@ class InventoryItemRow(BasicRow):
 
     def similar_to_item(self, item: InventoryItem):
         '''returns wether an InventoryItem has the same relevent attributes as the InventoryItemRow'''
-        return item.title == self.title and item.market_price == self.market_price and item.tradable == self.tradable
+        return item.title == self.title and item.market_price == self.market_price
 
+    def create_listing_json_body(self, amount: int, price: float) -> str:
+        '''generate body for buy order'''
+        asset_ids = self.asset_ids
+        item_order = {"Offers": []}
+        for _ in range(amount):
+            buy_order = {
+                        "AssetID": asset_ids.pop(0),
+                        "Price": {
+                                "Currency": "USD",
+                                "Amount": price
+                                }
+                    }
+            item_order['Offers'].append(buy_order)
+        return item_order
 
 def parse_items_list_to_rows(all_items: list) -> list:
     '''parses items from list(Items) to list(Rows)'''

@@ -1,6 +1,6 @@
 '''This module contains the row class which represents a row in a CLI chart'''
 
-from common.config import ROW_PRINT_MASKS, ROW_PRINT_MASKS_WORDS
+from common.config import ROW_PRINT_MASKS_WORDS
 from common.formatting import format_floats_to_usd
 
 class BasicRow:

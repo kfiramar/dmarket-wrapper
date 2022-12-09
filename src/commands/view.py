@@ -7,8 +7,8 @@ from types import NoneType
 import click
 from halo import Halo
 from api_client.api_requests import (generic_request)
-from common.config import (BALANCE_ENDPOINT, DM_INVENTORY_ENDPOINT, MARKET_ITEMS_ENDPOINT, PURCHASE_HISTORY_ENDPOINT,
-                    STEAM_INVENTORY_ENDPOINT, SELL_LISTINGS_ENDPOINT, LOGGING, RECIVED_ITEMS, LISTING_ZERO_ITEMS, BALANCE_TEXT, ATTEMPTING_GET_ITEMS, VIEW_TARGETS_ENDPOINT )
+from common.config import (BALANCE_REQUEST, DM_INVENTORY_REQUEST, MARKET_ITEMS_REQUEST, PURCHASE_HISTORY_REQUEST, SPINNER_CONF,
+                    STEAM_INVENTORY_REQUEST, SELL_LISTINGS_REQUEST, LOGGING, RECIVED_ITEMS, LISTING_ZERO_ITEMS, BALANCE_TEXT, GETTING_ITEMS, VIEW_TARGETS_REQUEST )
 from common.logger import log, merge_dicts
 from items.target_item import TargetItem
 from table.tables.target_item_table import TargetItemTable
@@ -20,7 +20,7 @@ from table.print import print_table, print_table_with_date_headers
 
 
 func_name = Path(__file__).stem
-api_spinner = Halo(text=ATTEMPTING_GET_ITEMS, spinner='dots', animation='bounce', color='green')
+api_spinner = Halo(text=GETTING_ITEMS, spinner=SPINNER_CONF['TYPE'], animation=SPINNER_CONF['ANIMATION'], color=SPINNER_CONF['COLOR'])
 
 
 @click.group()
@@ -66,7 +66,7 @@ def dmarket_items(items_name) -> None:
 def purchases(merge_by: str) -> None:
     '''Prints the purchases history'''
     api_spinner.start()
-    response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
+    response = generic_request(url_endpoint=PURCHASE_HISTORY_REQUEST['ENDPOINT'], method=PURCHASE_HISTORY_REQUEST['METHOD'])
     purchase_rows = PurcheseTable.parse_jsons_to_table(response.json())
     api_spinner.succeed(text=RECIVED_ITEMS)
     print_table_with_date_headers(purchase_rows.rows, merge_by)
@@ -80,7 +80,7 @@ def purchases_from(date: str) -> None:
     '''Prints the purchases history'''
     date = datetime.strptime(date, '%d/%m/%Y')
     api_spinner.start()
-    response = generic_request(api_url_path=f"{PURCHASE_HISTORY_ENDPOINT}", method='GET')
+    response = generic_request(url_endpoint=PURCHASE_HISTORY_REQUEST['ENDPOINT'], method=PURCHASE_HISTORY_REQUEST['METHOD'])
     purchase_rows = PurcheseTable.parse_jsons_to_purchese_table_from_date(response.json(), date)
     api_spinner.succeed(text=RECIVED_ITEMS)
     print_table(purchase_rows.rows)
@@ -92,12 +92,12 @@ def get_inventory(inventory_source: str) -> list:
     '''Prints all of your inventory'''
     returned_rows, responses = [], []
     if inventory_source in ('dm', 'all'):
-        dm_response = generic_request(api_url_path=f"{DM_INVENTORY_ENDPOINT}", method='GET')
+        dm_response = generic_request(url_endpoint=DM_INVENTORY_REQUEST['ENDPOINT'], method=DM_INVENTORY_REQUEST['METHOD'])
         dm_rows = InventoryItemTable.parse_jsons_to_table(dm_response.json())
         returned_rows.extend(dm_rows.rows)
         responses.append(dm_response)
     if inventory_source in ('steam', 'all'):
-        steam_response = generic_request(api_url_path=STEAM_INVENTORY_ENDPOINT, method='GET')
+        steam_response = generic_request(url_endpoint=STEAM_INVENTORY_REQUEST['ENDPOINT'], method=STEAM_INVENTORY_REQUEST['METHOD'])
         steam_rows = InventoryItemTable.parse_jsons_to_table(steam_response.json())
         returned_rows.extend(steam_rows.rows)
         responses.append(steam_response)
@@ -108,7 +108,7 @@ def get_inventory(inventory_source: str) -> list:
 
 def get_dmarket_items(title:str, items:int = 100, min_price: int = 0, max_price: int = 0) -> list:
     '''Prints all of your inventory'''
-    dm_response = generic_request(api_url_path=MARKET_ITEMS_ENDPOINT.format(title, items, min_price, max_price), method='GET')
+    dm_response = generic_request(url_endpoint=MARKET_ITEMS_REQUEST['ENDPOINT'].format(title, items, min_price, max_price), method=MARKET_ITEMS_REQUEST['METHOD'])
     if LOGGING:
         log(dm_response.json(), f"{func_name}_{inspect.stack()[0][3]}")
     dm_rows = DMarketItemTable.parse_jsons_to_table(dm_response.json())
@@ -117,7 +117,7 @@ def get_dmarket_items(title:str, items:int = 100, min_price: int = 0, max_price:
 
 def get_listings() -> None:
     '''Prints all the listings on Dmarket'''
-    response = generic_request(api_url_path=SELL_LISTINGS_ENDPOINT, method='GET')
+    response = generic_request(url_endpoint=SELL_LISTINGS_REQUEST['ENDPOINT'], method=SELL_LISTINGS_REQUEST['METHOD'])
     if LOGGING:
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
     return ListingTable.parse_jsons_to_table(response.json())
@@ -125,7 +125,7 @@ def get_listings() -> None:
 
 def get_targets() -> None:
     '''Prints all the listings on Dmarket'''
-    response = generic_request(api_url_path=VIEW_TARGETS_ENDPOINT, method='GET')
+    response = generic_request(url_endpoint=VIEW_TARGETS_REQUEST['ENDPOINT'], method=VIEW_TARGETS_REQUEST['METHOD'])
     if LOGGING:
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
     return TargetItemTable.parse_jsons_to_table(response.json())
@@ -145,7 +145,7 @@ def targets():
 @click.command()
 def balance() -> None:
     '''View your current Dmarket balance'''
-    response = generic_request(api_url_path=BALANCE_ENDPOINT, method='GET')
+    response = generic_request(url_endpoint=BALANCE_REQUEST['ENDPOINT'], method=BALANCE_REQUEST['METHOD'])
     click.echo(BALANCE_TEXT.format(str(float(response.json()['usd'])/100)))
     if LOGGING:
         log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")

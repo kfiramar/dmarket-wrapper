@@ -1,6 +1,6 @@
 '''This module contains the row class which represents a row in a CLI chart'''
 
-from src.common.formatting import format_floats_to_usd
+from common.formatting import format_floats_to_usd
 
 
 class BasicTable:

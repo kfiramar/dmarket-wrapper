@@ -1,7 +1,7 @@
 '''This module contains the row class which represents a row in a CLI chart'''
 
 from items.target_item import parse_jsons_to_items_list
-from src.common.formatting import format_floats_to_usd 
+from common.formatting import format_floats_to_usd 
 from table.tables.basic_table import BasicTable
 from table.rows.target_item_row import parse_items_list_to_rows
 
