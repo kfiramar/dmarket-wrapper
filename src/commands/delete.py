@@ -1,12 +1,11 @@
 '''This module contains the main loop of the program and prints'''
 from pathlib import Path
 import inspect
-from types import NoneType
 import click
 from halo import Halo
 from api_client.api_requests import request_devider
 from api_client.request_body import delete_listing_body
-from common.config import DELETE_LISTING_REQUEST, LOGGING, CREATE_LISTINGS_ITEMS, REMOVE_LISTING_AMOUNT ,REMOVE_LISTING_SUCCESSFULLY ,REMOVE_LISTING_UNSUCCESSFULLY ,RECIVED_ITEMS ,LISTING_ZERO_ITEMS, GETTING_ITEMS, ATTEMPTING_DELETE, SPINNER_CONF
+from common.config import DELETE_LISTING_REQUEST, LOGGING, CREATE_LISTINGS_ITEMS, REMOVE_LISTING_AMOUNT, REMOVE_LISTING_SUCCESSFULLY, REMOVE_LISTING_UNSUCCESSFULLY, RECIVED_ITEMS, LISTING_ZERO_ITEMS, GETTING_ITEMS, ATTEMPTING_DELETE, SPINNER_CONF
 from common.logger import log, merge_dicts
 from commands.view import get_listings, get_targets
 from table.print import print_table
@@ -40,7 +39,7 @@ def listing():
         if merged_response['fail'] is None:
             create_api_spinner.succeed(text=REMOVE_LISTING_SUCCESSFULLY.format(amount, choosen_row.title))
         else:
-            create_api_spinner.fail(text=REMOVE_LISTING_UNSUCCESSFULLY.format(error_list=merged_response['fail'], failed_count=len(merged_response['fail']), succeeded_amount= int(amount) - len(merged_response['fail'])))
+            create_api_spinner.fail(text=REMOVE_LISTING_UNSUCCESSFULLY.format(error_list=merged_response['fail'], failed_count=len(merged_response['fail']), succeeded_amount=int(amount) - len(merged_response['fail'])))
     else:
         items_api_spinner.fail(text=LISTING_ZERO_ITEMS)
 

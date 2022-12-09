@@ -1,9 +1,9 @@
 '''This module contains the main loop of the program and prints'''
 import time
-from types import NoneType
 from tabulate import tabulate
-from common.config import MAXIMUM_ROWS, RAINBOW_TABLE, COLORS, ROW_PRINT_MASKS_WORDS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION, TABLE_LINE, TABLEFMT, NUMALIGN, STRALIGN, FLOATFMT, SHOWINDEX, EMPTY_TABLE, CLEAR_SHELL
+from common.config import MAXIMUM_ROWS, RAINBOW_TABLE, COLORS, TIME_TABLE, RAINBOW_SPEED, RAINBOW_DURATION, TABLE_LINE, TABLEFMT, NUMALIGN, STRALIGN, FLOATFMT, SHOWINDEX, EMPTY_TABLE, CLEAR_SHELL
 from common.formatting import format_floats_to_usd
+
 
 def print_table(rows: list) -> None:
     '''Prints tables with headers and totals at the end'''
@@ -65,6 +65,7 @@ def create_last_row(headers: list, amount: int, total_price: int) -> list:
     last_row = format_floats_to_usd(last_row)
     # last_row[headers.index("total_price")] = f"{total_price:0.2f}$"
     return last_row
+
 
 def rainbow(text: str, pos: int) -> str:
     '''turns text to rainbow text'''

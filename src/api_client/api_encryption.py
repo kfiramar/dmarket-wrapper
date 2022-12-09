@@ -8,7 +8,7 @@ from common.config import SECRET_KEY, PUBLIC_KEY, SIGNATURE_PREFIX
 def create_headers(url_endpoint: str, method: str, body: str) -> dict:
     '''this function creates the headers for the API requests'''
     nonce = str(round(datetime.now().timestamp()))
-    string_to_sign =  (method + url_endpoint + nonce) if not body else (method + url_endpoint + json.dumps(body) + nonce)
+    string_to_sign = (method + url_endpoint + nonce) if not body else (method + url_endpoint + json.dumps(body) + nonce)
     encoded = string_to_sign.encode('utf-8')
     signature_bytes = crypto_sign(encoded, bytes.fromhex(SECRET_KEY))
     signature = signature_bytes[:64].hex()

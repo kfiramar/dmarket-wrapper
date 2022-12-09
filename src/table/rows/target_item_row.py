@@ -11,7 +11,7 @@ from table.rows.basic_row import BasicRow
 class TargetItemRow(BasicRow):
     '''TargetItemRow represents a certain amount of CS:GO item which is in DMarket inventory'''
     def __init__(self, title, amount,
-                 exterior, listing_price, market_price, total_price, target_ids = []):
+                 exterior, listing_price, market_price, total_price, target_ids=[]):
         self.exterior = exterior
         self.listing_price = listing_price
         self.target_ids = target_ids
@@ -21,13 +21,13 @@ class TargetItemRow(BasicRow):
     @classmethod
     def item_to_row(cls, item: TargetItem):
         '''creates a new TargetItemRow from an TargetItem'''
-        return cls(title = item.title,
-                   amount = item.amount,
-                   exterior = item.exterior,
-                   listing_price = item.listing_price,
-                   market_price = item.market_price,
-                   target_ids = [item.target_id],
-                   total_price = item.listing_price)
+        return cls(title=item.title,
+                   amount=item.amount,
+                   exterior=item.exterior,
+                   listing_price=item.listing_price,
+                   market_price=item.market_price,
+                   target_ids=[item.target_id],
+                   total_price=item.listing_price)
 
 
     def add_to_row(self, item: TargetItem):

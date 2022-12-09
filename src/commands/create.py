@@ -5,7 +5,6 @@ import inspect
 import click
 from halo import Halo
 from api_client.api_requests import request_devider
-from api_client.request_body import create_listing_body, create_target_body
 from common.config import ATTEMPTING_CREATE_ITEMS, GETTING_ITEMS, BUY_ORDER_REQUEST, CREATE_LISTINGS_AMOUNT, CREATE_LISTINGS_PRICE, CREATE_TARGET_REQUEST, LOGGING, CREATE_LISTINGS_ITEMS, SPINNER_CONF, SUCCESSFULLY_CREATED, UNSUCSESSFULLY_CREATED, INVENTORY_ZERO_ITEMS
 from common.logger import log, merge_dicts
 from items.listing_item import listing_error_parsing
@@ -38,7 +37,7 @@ def listing():
         if len(error_list) == 0:
             create_api_spinner.succeed(text=SUCCESSFULLY_CREATED.format(amount, choosen_row.title))
         else:
-            create_api_spinner.fail(text=UNSUCSESSFULLY_CREATED.format(error_list=error_list,failed_count=len(error_list), succeeded_amount= int(amount) - len(error_list)))
+            create_api_spinner.fail(text=UNSUCSESSFULLY_CREATED.format(error_list=error_list, failed_count=len(error_list), succeeded_amount=int(amount) - len(error_list)))
         if LOGGING:
             log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")
     else:
@@ -47,13 +46,13 @@ def listing():
 
 
 @click.command()
-@click.option("--items_name", required = True, type=str, prompt=True, help='item you wish to create target to')
+@click.option("--items_name", required=True, type=str, prompt=True, help='item you wish to create target to')
 def target(items_name: str):
     '''Creates target on Dmarket'''
-    target_item = get_dmarket_items(items_name, items = 1).rows
+    target_item = get_dmarket_items(items_name, items=1).rows
     while not target_item:
         items_name = click.prompt("Couldn't find any items, please retry")
-        target_item = get_dmarket_items(items_name, items = 1).rows
+        target_item = get_dmarket_items(items_name, items=1).rows
     target_item = target_item[0]
     price = click.prompt(f'For how much do you want to sell: {target_item.title}\nCurrent lowest offer is: {target_item.market_price}$')
     amount = click.prompt('How many of this item would you liek to purchase?', type=int)

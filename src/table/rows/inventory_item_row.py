@@ -56,6 +56,7 @@ class InventoryItemRow(BasicRow):
             item_order['Offers'].append(buy_order)
         return item_order
 
+
 def parse_items_list_to_rows(all_items: list) -> list:
     '''parses items from list(Items) to list(Rows)'''
     rows = []

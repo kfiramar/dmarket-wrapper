@@ -3,6 +3,7 @@
 from common.config import ROW_PRINT_MASKS_WORDS
 from common.formatting import format_floats_to_usd
 
+
 class BasicRow:
     '''This class represents a row in a CLI chart'''
     def __init__(self, title: str, amount: int, market_price):
@@ -20,7 +21,7 @@ class BasicRow:
                 relevent_values.insert(relevent_keys.index(key), val)
         # return relevent_values
         # relevent_values = [val for key, val in values_dict.items() if key in relevent_keys]
-        
+
         return format_floats_to_usd(relevent_values)
 
     def get_rows_headers(self) -> list:
@@ -39,6 +40,7 @@ class BasicRow:
     def similar_to_item(self, item):
         '''returns wether an Item has the same relevent attributes as the Row'''
         raise NotImplementedError
+
 
 def parse_items_list_to_rows(all_items: list, merge_by: str):
     '''parses items from list(Items) to list(Rows)'''

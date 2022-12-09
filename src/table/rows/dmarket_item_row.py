@@ -4,7 +4,6 @@ InventoryItemRow is based on InventoryItem,
 Each row groups all the identical items into the same row.
 '''
 
-from items.inventory_item import InventoryItem
 from items.dmrket_item import DMarketItem
 from table.rows.basic_row import BasicRow
 
@@ -21,27 +20,26 @@ class DMarketItemRow(BasicRow):
         self.tradable = tradable
         self.discount = discount
 
-        
+
 
     @classmethod
     def item_to_row(cls, item: DMarketItem):
         '''creates a new DMarketItemRow from an DMarketItem'''
         return cls(
-                   title = item.title,
-                   asset_ids = [item.asset_id],
-                   amount = item.amount,
-                   exterior = item.exterior,
-                   tradable = item.tradable,
-                   market_price = item.market_price,
-                   total_price = item.market_price*item.amount,
-                   discount = item.discount)
-                              
-                   
+                   title=item.title,
+                   asset_ids=[item.asset_id],
+                   amount=item.amount,
+                   exterior=item.exterior,
+                   tradable=item.tradable,
+                   market_price=item.market_price,
+                   total_price=item.market_price*item.amount,
+                   discount=item.discount)
+
+
     def create_target_body(self, amount: int, price: float):
         '''generate create target json body'''
         title = self.title
         return {
-            
             "GameID": "a8db",
             "Targets": [{
                 "Amount": amount,
@@ -64,6 +62,7 @@ class DMarketItemRow(BasicRow):
     def similar_to_item(self, item: DMarketItem):
         '''returns wether an DMarketItem has the same relevent attributes as the DMarketItemRow'''
         return item.title == self.title and item.market_price == self.market_price
+
 
 def parse_items_list_to_rows(all_items: list) -> list:
     '''parses items from list(Items) to list(Rows)'''
