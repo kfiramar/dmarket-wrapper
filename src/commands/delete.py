@@ -1,10 +1,10 @@
 '''This module contains the main loop of the program and prints'''
+import asyncio
 from pathlib import Path
 import inspect
 import click
 from halo import Halo
 from api_client.api_requests import request_devider
-from api_client.request_body import delete_listing_body
 from common.config import DELETE_LISTING_REQUEST, LOGGING, CREATE_LISTINGS_ITEMS, REMOVE_LISTING_AMOUNT, REMOVE_LISTING_SUCCESSFULLY, REMOVE_LISTING_UNSUCCESSFULLY, RECIVED_ITEMS, LISTING_ZERO_ITEMS, GETTING_ITEMS, ATTEMPTING_DELETE, SPINNER_CONF
 from common.logger import log, merge_dicts
 from commands.view import get_listings, get_targets
@@ -32,7 +32,7 @@ def listing():
         choosen_row = (listings_rows[int(row_number)])
         amount = int(click.prompt(REMOVE_LISTING_AMOUNT.format(choosen_row.amount)))
         create_api_spinner.start()
-        responses = request_devider(url_endpoint=DELETE_LISTING_REQUEST['ENDPOINT'], method=DELETE_LISTING_REQUEST['METHOD'], amount=int(amount), price=choosen_row.market_price, row=choosen_row)
+        responses = asyncio.run(request_devider(url_endpoint=DELETE_LISTING_REQUEST['ENDPOINT'], method=DELETE_LISTING_REQUEST['METHOD'], amount=int(amount), price=choosen_row.market_price, row=choosen_row))
         merged_response = merge_dicts(responses)
         if LOGGING:
             log(merged_response, f"{func_name}_{inspect.stack()[0][3]}")
@@ -56,14 +56,7 @@ def target():
         choosen_row = (vars(listings_rows[int(row_number)]))
         amount = int(click.prompt(REMOVE_LISTING_AMOUNT.format(choosen_row["amount"])))
         create_api_spinner.start()
-        responses = request_devider(url_endpoint=DELETE_LISTING_REQUEST['ENDPOINT'], method=DELETE_LISTING_REQUEST['METHOD'], amount=int(amount), price=choosen_row.market_price, row=choosen_row)
-        responses = request_devider(
-                url_endpoint=DELETE_LISTING_REQUEST['ENDPOINT'],
-                method=DELETE_LISTING_REQUEST['METHOD'], amount=int(amount),
-                body_func=delete_listing_body,
-                price=choosen_row['market_price'],
-                asset_ids=choosen_row["asset_ids"],
-                offer_ids=choosen_row["offer_ids"])
+        responses = asyncio.run(request_devider(url_endpoint=DELETE_LISTING_REQUEST['ENDPOINT'], method=DELETE_LISTING_REQUEST['METHOD'], amount=int(amount), price=choosen_row.market_price, row=choosen_row))
         merged_response = merge_dicts(responses)
         if LOGGING:
             log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")

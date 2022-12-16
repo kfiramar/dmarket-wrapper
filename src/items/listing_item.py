@@ -37,8 +37,8 @@ def parse_jsons_to_items_list(jsons: dict) -> list:
 def listing_error_parsing(responses: list) -> list:
     '''parse list if responses to an error list'''
     error_list = []
-    for response in responses:
-        for listing in response.json()['Result']:
+    for response_content in responses:
+        for listing in response_content['Result']:
             if listing['Error'] is not None:
                 error_list.append({listing['Error']['Message']})
     return error_list

@@ -66,12 +66,12 @@ def dmarket_items(items_name) -> None:
 def purchases(merge_by: str) -> None:
     '''Prints the purchases history'''
     api_spinner.start()
-    response = generic_request(url_endpoint=PURCHASE_HISTORY_REQUEST['ENDPOINT'], method=PURCHASE_HISTORY_REQUEST['METHOD'])
-    purchase_rows = PurcheseTable.parse_jsons_to_table(response.json())
+    response_content = generic_request(url_endpoint=PURCHASE_HISTORY_REQUEST['ENDPOINT'], method=PURCHASE_HISTORY_REQUEST['METHOD'])
+    purchase_rows = PurcheseTable.parse_jsons_to_table(response_content)
     api_spinner.succeed(text=RECIVED_ITEMS)
     print_table_with_date_headers(purchase_rows.rows, merge_by)
     if LOGGING:
-        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
+        log(response_content, f"{func_name}_{inspect.stack()[0][3]}")
 
 
 @click.command()
@@ -80,27 +80,27 @@ def purchases_from(date: str) -> None:
     '''Prints the purchases history'''
     date = datetime.strptime(date, '%d/%m/%Y')
     api_spinner.start()
-    response = generic_request(url_endpoint=PURCHASE_HISTORY_REQUEST['ENDPOINT'], method=PURCHASE_HISTORY_REQUEST['METHOD'])
-    purchase_rows = PurcheseTable.parse_jsons_to_purchese_table_from_date(response.json(), date)
+    response_content = generic_request(url_endpoint=PURCHASE_HISTORY_REQUEST['ENDPOINT'], method=PURCHASE_HISTORY_REQUEST['METHOD'])
+    purchase_rows = PurcheseTable.parse_jsons_to_purchese_table_from_date(response_content, date)
     api_spinner.succeed(text=RECIVED_ITEMS)
     print_table(purchase_rows.rows)
     if LOGGING:
-        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
+        log(response_content, f"{func_name}_{inspect.stack()[0][3]}")
 
 
 def get_inventory(inventory_source: str) -> list:
     '''Prints all of your inventory'''
     returned_rows, responses = [], []
     if inventory_source in ('dm', 'all'):
-        dm_response = generic_request(url_endpoint=DM_INVENTORY_REQUEST['ENDPOINT'], method=DM_INVENTORY_REQUEST['METHOD'])
-        dm_rows = InventoryItemTable.parse_jsons_to_table(dm_response.json())
+        dm_response_content = generic_request(url_endpoint=DM_INVENTORY_REQUEST['ENDPOINT'], method=DM_INVENTORY_REQUEST['METHOD'])
+        dm_rows = InventoryItemTable.parse_jsons_to_table(dm_response_content)
         returned_rows.extend(dm_rows.rows)
-        responses.append(dm_response)
+        responses.append(dm_response_content)
     if inventory_source in ('steam', 'all'):
-        steam_response = generic_request(url_endpoint=STEAM_INVENTORY_REQUEST['ENDPOINT'], method=STEAM_INVENTORY_REQUEST['METHOD'])
-        steam_rows = InventoryItemTable.parse_jsons_to_table(steam_response.json())
+        steam_response_content = generic_request(url_endpoint=STEAM_INVENTORY_REQUEST['ENDPOINT'], method=STEAM_INVENTORY_REQUEST['METHOD'])
+        steam_rows = InventoryItemTable.parse_jsons_to_table(steam_response_content)
         returned_rows.extend(steam_rows.rows)
-        responses.append(steam_response)
+        responses.append(steam_response_content)
     if LOGGING:
         log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")
     return returned_rows
@@ -108,27 +108,27 @@ def get_inventory(inventory_source: str) -> list:
 
 def get_dmarket_items(title:str, items:int = 100, min_price: int = 0, max_price: int = 0) -> list:
     '''Prints all of your inventory'''
-    dm_response = generic_request(url_endpoint=MARKET_ITEMS_REQUEST['ENDPOINT'].format(title, items, min_price, max_price), method=MARKET_ITEMS_REQUEST['METHOD'])
+    dm_response_content = generic_request(url_endpoint=MARKET_ITEMS_REQUEST['ENDPOINT'].format(title, items, min_price, max_price), method=MARKET_ITEMS_REQUEST['METHOD'])
     if LOGGING:
-        log(dm_response.json(), f"{func_name}_{inspect.stack()[0][3]}")
-    dm_rows = DMarketItemTable.parse_jsons_to_table(dm_response.json())
+        log(dm_response_content, f"{func_name}_{inspect.stack()[0][3]}")
+    dm_rows = DMarketItemTable.parse_jsons_to_table(dm_response_content)
     return dm_rows
 
 
 def get_listings() -> None:
     '''Prints all the listings on Dmarket'''
-    response = generic_request(url_endpoint=SELL_LISTINGS_REQUEST['ENDPOINT'], method=SELL_LISTINGS_REQUEST['METHOD'])
+    response_content = generic_request(url_endpoint=SELL_LISTINGS_REQUEST['ENDPOINT'], method=SELL_LISTINGS_REQUEST['METHOD'])
     if LOGGING:
-        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
-    return ListingTable.parse_jsons_to_table(response.json())
+        log(response_content, f"{func_name}_{inspect.stack()[0][3]}")
+    return ListingTable.parse_jsons_to_table(response_content)
 
 
 def get_targets() -> None:
     '''Prints all the listings on Dmarket'''
-    response = generic_request(url_endpoint=VIEW_TARGETS_REQUEST['ENDPOINT'], method=VIEW_TARGETS_REQUEST['METHOD'])
+    response_content = generic_request(url_endpoint=VIEW_TARGETS_REQUEST['ENDPOINT'], method=VIEW_TARGETS_REQUEST['METHOD'])
     if LOGGING:
-        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
-    return TargetItemTable.parse_jsons_to_table(response.json())
+        log(response_content, f"{func_name}_{inspect.stack()[0][3]}")
+    return TargetItemTable.parse_jsons_to_table(response_content)
 
 @click.command()
 def targets():
@@ -145,10 +145,10 @@ def targets():
 @click.command()
 def balance() -> None:
     '''View your current Dmarket balance'''
-    response = generic_request(url_endpoint=BALANCE_REQUEST['ENDPOINT'], method=BALANCE_REQUEST['METHOD'])
-    click.echo(BALANCE_TEXT.format(str(float(response.json()['usd'])/100)))
+    response_content = generic_request(url_endpoint=BALANCE_REQUEST['ENDPOINT'], method=BALANCE_REQUEST['METHOD'])
+    click.echo(BALANCE_TEXT.format(str(float(response_content['usd'])/100)))
     if LOGGING:
-        log(response.json(), f"{func_name}_{inspect.stack()[0][3]}")
+        log(response_content, f"{func_name}_{inspect.stack()[0][3]}")
 
 
 view.add_command(dmarket_items)

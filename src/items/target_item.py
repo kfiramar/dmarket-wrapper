@@ -16,8 +16,8 @@ func_name = Path(__file__).stem
 
 def get_item_price(title:str) -> list:
     '''Prints all of your inventory'''
-    dm_response = generic_request(url_endpoint=MARKET_ITEMS_REQUEST['ENDPOINT'].format(title, 1, 0, 0), method=MARKET_ITEMS_REQUEST['METHOD'])
-    price = DMarketItemTable.parse_jsons_to_table(dm_response.json()).rows[0].market_price
+    dm_response_content = generic_request(url_endpoint=MARKET_ITEMS_REQUEST['ENDPOINT'].format(title, 1, 0, 0), method=MARKET_ITEMS_REQUEST['METHOD'])
+    price = DMarketItemTable.parse_jsons_to_table(dm_response_content).rows[0].market_price
     return price
 
 

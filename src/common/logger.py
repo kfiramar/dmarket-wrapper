@@ -1,4 +1,4 @@
-'''This module Is used to log the API requests'''
+'''This module Is used to log the API aiohttp'''
 import os
 import time
 import json
@@ -26,19 +26,20 @@ def write_content(content: dict, func_name: str):
         file.write((json_fixer(pprint.pformat(fixed_json), JSON_QOUTES_FIXER)).encode("UTF-8"))
 
 
-def log(response: dict, func_name: str):
+def log(response_content: dict, func_name: str):
     '''logging of an API json with animation wrapping'''
     logging_spinner = Halo(text='Logging API request', spinner=SPINNER_CONF['TYPE'], animation=SPINNER_CONF['ANIMATION'], color=SPINNER_CONF['COLOR'])
     logging_spinner.start()
-    write_content(response, func_name)
+    write_content(response_content, func_name)
     logging_spinner.info(text="API request was logged")
 
 
 def merge_dicts(responses: list) -> dict:
     '''merge a list of dictionary to one'''
-    merged_dictionary = responses[0].json()
-    for response in responses[1:]:
-        merged_dictionary = combine_2_dict(merged_dictionary, response.json())
+    # responses[0]._coro.cr_code._result.ATTRS.content._buffer
+    merged_dictionary = responses[0]
+    for response_content in responses[1:]:
+        merged_dictionary = combine_2_dict(merged_dictionary, response_content)
     return merged_dictionary
 
 
