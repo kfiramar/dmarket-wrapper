@@ -5,7 +5,6 @@ from commands.view import view
 from commands.delete import delete
 from commands.create import create
 
-
 @click.group()
 def commands():
     '''This is an API wrapper to DMarket. \n

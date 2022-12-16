@@ -9,3 +9,4 @@ TODO.txt
 .VSCodeCounter*
 test.py
 *.pyc*
+.vscode

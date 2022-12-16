@@ -13,7 +13,8 @@ class ListingItem(BasicItem):
         self.tradable = tradable
         self.offer_id = offer_id
         self.listing_price = listing_price
-        super().__init__(asset_id, title, market_price)
+        self.asset_id = asset_id
+        super().__init__(title, market_price)
 
     @classmethod
     def parse_json_to_item(cls, json_dict: dict):
@@ -36,8 +37,8 @@ def parse_jsons_to_items_list(jsons: dict) -> list:
 def listing_error_parsing(responses: list) -> list:
     '''parse list if responses to an error list'''
     error_list = []
-    for response in responses:
-        for listing in response.json()['Result']:
+    for response_content in responses:
+        for listing in response_content['Result']:
             if listing['Error'] is not None:
                 error_list.append({listing['Error']['Message']})
     return error_list

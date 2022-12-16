@@ -16,7 +16,8 @@ class PurchaseItem(BasicItem):
         self.offer_closed_at = offer_closed_at
         self.offer_created_at = offer_created_at
         self.sold_price = sold_price
-        super().__init__(asset_id, title, market_price)
+        self.asset_id = asset_id
+        super().__init__(title, market_price)
 
 
     @classmethod
