@@ -27,28 +27,19 @@ async def async_generic_request(url_endpoint: str, method: str, session=aiohttp.
     return response
 
 
-async def request_devider(
-    url_endpoint: str,
-    method: str,
-    amount: int,
-    price: str,
-    row: Union[DMarketItemRow, InventoryItemRow, ListingRow],
-    session: aiohttp.ClientSession,
-) -> list:
-    """Splits aiohttp requests to up to 100 items per request."""
+async def request_devider(url_endpoint: str, method: str, amount: int, price: str, row) -> list:
+    '''splits aiohttp to up to 100 items per request'''
     amount_array = devide_number_to_array(amount, divisor=100)
-    async with asyncio.TaskGroup() as tasks:
-        tasks = [
-            tasks.create_task(
-                generic_request(
-                    url_endpoint=url_endpoint,
-                    method=method,
-                    session=session,
-                    body=create_body(row, number, price),
-                )
-            )
-            for number in amount_array
-        ]
+    async with aiohttp.ClientSession() as session:
+        async with asyncio.TaskGroup() as tg:
+            tasks = [
+                tg.create_task(
+                    async_generic_request(url_endpoint=url_endpoint,
+                                          method=method,
+                                          session=session,
+                                          body=create_body(row, number, price)))
+                for number in amount_array
+            ]
         results = [await (await task) for task in asyncio.as_completed(tasks)]
     return results
 
