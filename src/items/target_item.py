@@ -7,18 +7,8 @@ from items.basic_item import BasicItem
 # from commands.view import get_dmarket_items
 
 from pathlib import Path
-from api_client.api_requests import generic_request
-from common.config import LOGGING, MARKET_ITEMS_REQUEST
-from common.logger import log
-from table.tables.dmarket_item_table import DMarketItemTable
 
 func_name = Path(__file__).stem
-
-def get_item_price(title:str) -> list:
-    '''Prints all of your inventory'''
-    dm_response_content = generic_request(url_endpoint=MARKET_ITEMS_REQUEST['ENDPOINT'].format(title, 1, 0, 0), method=MARKET_ITEMS_REQUEST['METHOD'])
-    price = DMarketItemTable.parse_jsons_to_table(dm_response_content).rows[0].market_price
-    return price
 
 
 class TargetItem(BasicItem):
@@ -34,13 +24,16 @@ class TargetItem(BasicItem):
     def parse_json_to_item(cls, json_dict: dict):
         '''parses a JSON into an TargetItem'''
         attributes_dictionary = parse_name_dict_to_dict(json_dict['Attributes'])
-        return cls(
+        item = cls(
                    target_id = json_dict['TargetID'],
                    title=json_dict['Title'],
                    listing_price=json_dict['Price']['Amount'],
                    exterior=attributes_dictionary['exterior'],
-                   market_price = get_item_price(json_dict['Title']),
+                   market_price = None,
                    amount = int(json_dict['Amount']))
+        item.update_item_price()
+        return item
+        
 
 def parse_jsons_to_items_list(json_items: dict) -> list:
     '''parses json items to TargetItem list'''

@@ -33,6 +33,9 @@ class BasicRow:
         '''creates a new row from an item'''
         raise NotImplementedError
 
+    def change_state_body(self, amount: int, price: float):
+        raise NotImplementedError
+
     def add_to_row(self, item):
         '''adds an item to an existing Row'''
         raise NotImplementedError

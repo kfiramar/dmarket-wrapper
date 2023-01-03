@@ -52,22 +52,23 @@ def target():
     if listings_rows:
         items_api_spinner.succeed(text=RECIVED_ITEMS)
         print_table(listings_rows)
-        row_number = click.prompt(CREATE_LISTINGS_ITEMS.format(len(listings_rows) - 1))
-        choosen_row = (vars(listings_rows[int(row_number)]))
-        amount = int(click.prompt(REMOVE_LISTING_AMOUNT.format(choosen_row["amount"])))
+        row_number = click.prompt(CREATE_LISTINGS_ITEMS.format(len(listings_rows) - 1), type=int)
+        choosen_row = listings_rows[row_number]
+        amount = int(click.prompt(REMOVE_LISTING_AMOUNT.format(choosen_row.amount)))
         create_api_spinner.start()
         responses = asyncio.run(request_devider(url_endpoint=DELETE_LISTING_REQUEST['ENDPOINT'], method=DELETE_LISTING_REQUEST['METHOD'], amount=int(amount), price=choosen_row.market_price, row=choosen_row))
         merged_response = merge_dicts(responses)
         if LOGGING:
             log(merge_dicts(responses), f"{func_name}_{inspect.stack()[0][3]}")
         if merged_response['fail'] is None:
-            create_api_spinner.succeed(text=REMOVE_LISTING_SUCCESSFULLY.format(amount, choosen_row['title']))
+            create_api_spinner.succeed(text=REMOVE_LISTING_SUCCESSFULLY.format(amount, choosen_row.title))
         else:
             create_api_spinner.fail(text=REMOVE_LISTING_UNSUCCESSFULLY.format(len(merged_response['fail']), amount))
     else:
         items_api_spinner.fail(text=LISTING_ZERO_ITEMS)
 
 
+delete.add_command(target)
 delete.add_command(listing)
 
 

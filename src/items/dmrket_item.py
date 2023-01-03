@@ -24,7 +24,7 @@ class DMarketItem(BasicItem):
                    amount = json_dict['amount'],
                    asset_id = str(json_dict['extra']['inGameAssetID']),
                    title = json_dict['title'],
-                   market_price = float(json_dict['price']['USD'])/100,
+                   market_price = float(json_dict['suggestedPrice']['USD'])/100,
                    tradable = not bool(json_dict['extra']['tradeLockDuration']),
                    item_type = json_dict['extra']['itemType'],
                    discount = json_dict['discount'])

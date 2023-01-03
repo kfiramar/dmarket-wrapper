@@ -1,14 +1,9 @@
 '''This module sends all the API aiohttp'''
 import aiohttp
 import asyncio
-import click
 import requests
-from typing import Callable, List, Optional, Union
 from api_client.api_encryption import create_headers
 from common.config import API_URL, SPINNER_CONF
-from table.rows.dmarket_item_row import DMarketItemRow
-from table.rows.inventory_item_row import InventoryItemRow
-from table.rows.listing_row import ListingRow
 
 
 
@@ -29,33 +24,26 @@ async def async_generic_request(url_endpoint: str, method: str, session=aiohttp.
 
 async def request_devider(url_endpoint: str, method: str, amount: int, price: str, row) -> list:
     '''splits aiohttp to up to 100 items per request'''
+    # Divide the amount into chunks of up to 100 items
     amount_array = devide_number_to_array(amount, divisor=100)
+    
+    # Create an HTTP session
     async with aiohttp.ClientSession() as session:
+        # Create a task group to track the tasks
         async with asyncio.TaskGroup() as tg:
+            # Create a task for each chunk of items
             tasks = [
                 tg.create_task(
                     async_generic_request(url_endpoint=url_endpoint,
                                           method=method,
                                           session=session,
-                                          body=create_body(row, number, price)))
+                                          body=row.change_state_body(number, price)))
                 for number in amount_array
             ]
-        results = [await (await task) for task in asyncio.as_completed(tasks)]
-    return results
-
-
-def create_body(
-    row: Union[DMarketItemRow, InventoryItemRow, ListingRow],
-    number: int,
-    price: str,
-) -> Optional[dict]:
-    """Creates the body for the API request based on the type of row."""
-    if isinstance(row, InventoryItemRow):
-        return row.create_listing_json_body(number, price)
-    elif isinstance(row, ListingRow):
-        return row.delete_listing_json_body(number, price)
-    elif isinstance(row, DMarketItemRow):
-        return row.create_target_body(number, price)
+        # Wait for all the tasks to be completed and store the results in a list
+        response_contents = [await (await task).json() for task in tasks]
+        # response_contents = await asyncio.gather(*[result.json() for result in await asyncio.gather(*tasks)])
+    return response_contents
 
 
 def devide_number_to_array(number: int, divisor: int) -> list:

@@ -36,8 +36,8 @@ class DMarketItemRow(BasicRow):
                    discount=item.discount)
 
 
-    def create_target_body(self, amount: int, price: float):
-        '''generate create target json body'''
+    def change_state_body(self, amount: int, price: float):
+        '''create a target json body'''
         title = self.title
         return {
             "GameID": "a8db",

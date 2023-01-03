@@ -4,14 +4,29 @@ InventoryItemRow is based on InventoryItem,
 Each row groups all the identical items into the same row.
 '''
 
+import typing
+
 from items.inventory_item import InventoryItem
+# from table.rows.inventory_item_row import InventoryItemRow
 from table.rows.basic_row import BasicRow
 
 
 class InventoryItemRow(BasicRow):
-    '''InventoryItemRow represents a certain amount of CS:GO item which is in DMarket inventory'''
-    def __init__(self, title, asset_ids, amount,
-                 total_price, exterior, tradable, market_price):
+    '''
+    InventoryItemRow represents a certain amount of CS:GO item which is in DMarket inventory.
+    
+    Parameters:
+    - title (str): Title of the item.
+    - asset_ids (list[str]): List of asset IDs belonging to this item.
+    - amount (int): Number of items in this row.
+    - total_price (float): Total price of all items in this row.
+    - exterior (str): Exterior quality of the items in this row.
+    - tradable (bool): Whether the items in this row are tradable or not.
+    - market_price (float): Market price of the items in this row.
+    '''
+
+    def __init__(self, title: str, asset_ids: list[str], amount: int,
+                 total_price: float, exterior: str, tradable: bool, market_price: float):
 
         super().__init__(title, amount, market_price)
         self.asset_ids = asset_ids
@@ -30,34 +45,33 @@ class InventoryItemRow(BasicRow):
                    total_price=item.market_price,
                    tradable=item.tradable)
 
-
     def add_to_row(self, item: InventoryItem):
         '''adds an InventoryItem to an existing InventoryItemRow'''
         self.amount += 1
         self.total_price += float(item.market_price)
         self.asset_ids.append(item.asset_id)
 
-    def similar_to_item(self, item: InventoryItem):
-        '''returns wether an InventoryItem has the same relevent attributes as the InventoryItemRow'''
+    def similar_to_item(self, item: InventoryItem) -> bool:
+        '''returns whether an InventoryItem has the same relevant attributes as the InventoryItemRow'''
         return item.title == self.title and item.market_price == self.market_price
 
-    def create_listing_json_body(self, amount: int, price: float) -> str:
-        '''generate body for buy order'''
+    def change_state_bodyx(self, amount: int, price: float) -> dict:
+        '''generate body to create a listing'''
         asset_ids = self.asset_ids
         item_order = {"Offers": []}
         for _ in range(amount):
             buy_order = {
-                        "AssetID": asset_ids.pop(0),
-                        "Price": {
-                                "Currency": "USD",
-                                "Amount": price
-                                }
-                    }
+                "AssetID": asset_ids.pop(0),
+                "Price": {
+                    "Currency": "USD",
+                    "Amount": price
+                }
+            }
             item_order['Offers'].append(buy_order)
         return item_order
 
 
-def parse_items_list_to_rows(all_items: list) -> list:
+def parse_items_list_to_rows(all_items: typing.List[InventoryItem]) -> typing.List[InventoryItemRow]:
     '''parses items from list(Items) to list(Rows)'''
     rows = []
     for item in all_items:

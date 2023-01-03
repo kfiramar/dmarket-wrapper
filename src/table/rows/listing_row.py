@@ -40,8 +40,10 @@ class ListingRow(BasicRow):
         '''returns wether an ListingItem has the same relevent attributes as the ListignRow'''
         return item.title == self.title and item.listing_price == self.listing_price
 
-    def delete_listing_json_body(self, amount: int, price: float) -> str:
-        '''generate body for buy order'''
+
+    # How can I remove this variable and keep everything generic?
+    def change_state_body(self, amount: int, price: float) -> str:
+        '''generate body for to delete a listing'''
         asset_ids = self.asset_ids
         offer_ids = self.offer_ids
         listings = {
@@ -54,6 +56,7 @@ class ListingRow(BasicRow):
                         "Price": {
                                 "Currency": "USD",
                                 "Amount": price
+                                # "Amount": self.listing_price can be used instead
                                 }
                     }
             listings['objects'].append(listing)
