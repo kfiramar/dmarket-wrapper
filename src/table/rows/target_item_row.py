@@ -41,6 +41,25 @@ class TargetItemRow(BasicRow):
         '''returns wether an TargetItem has the same relevent attributes as the TargetItemRow'''
         return item.title == self.title and item.listing_price == self.listing_price and item.exterior == self.exterior
 
+    def delete_target_body(self, amount: int, price: float) -> str:
+        '''generate body for buy order'''
+        target_ids = self.target_ids
+        asset_ids = self.asset_ids
+        listings = {
+            "force": True,
+            "objects": []}
+        for _ in range(amount):
+            listing = {
+                        "itemId": asset_ids.pop(0),
+                        "offerId": target_ids.pop(0),
+                        "Price": {
+                                "Currency": "USD",
+                                "Amount": price
+                                }
+                    }
+            listings['objects'].append(listing)
+        return listings
+
 
 def parse_items_list_to_rows(all_items: list) -> list:
     '''parses items from list(Items) to list(Rows)'''
@@ -53,3 +72,5 @@ def parse_items_list_to_rows(all_items: list) -> list:
         else:
             rows.append(TargetItemRow.item_to_row(item))
     return rows
+
+

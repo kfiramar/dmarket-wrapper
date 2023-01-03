@@ -1,16 +1,14 @@
 '''This module sends all the API aiohttp'''
 import aiohttp
 import asyncio
-import click
 import requests
 from typing import Callable, List, Optional, Union
 from api_client.api_encryption import create_headers
 from common.config import API_URL, SPINNER_CONF
 from table.rows.dmarket_item_row import DMarketItemRow
+# from table.rows.target_item_row import TargetItemRow
 from table.rows.inventory_item_row import InventoryItemRow
 from table.rows.listing_row import ListingRow
-
-
 
 def generic_request(url_endpoint: str, method: str, session=requests.Session(), body: str = None):
     '''This is the most generic API request function with a body'''
@@ -56,6 +54,8 @@ def create_body(
         return row.delete_listing_json_body(number, price)
     elif isinstance(row, DMarketItemRow):
         return row.create_target_body(number, price)
+    else:
+        return row.delete_target_body(number, price)
 
 
 def devide_number_to_array(number: int, divisor: int) -> list:

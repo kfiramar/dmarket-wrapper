@@ -1,5 +1,5 @@
 aiohttp==3.8.3
-click==8.0.3
+typer==8.0.3
 configobj==5.0.6
 halo==0.0.31
 nacl==0.0.0
