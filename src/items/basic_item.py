@@ -2,8 +2,6 @@
 
 from api_client.api_requests import generic_request
 from common.config import MARKET_ITEMS_REQUEST
-# from src.table.tables.dmarket_item_table import DMarketItemTable
-# from table.tables.dmarket_item_table import DMarketItemTable
 
 
 class BasicItem:
@@ -23,6 +21,7 @@ class BasicItem:
         dm_response_content = generic_request(url_endpoint=MARKET_ITEMS_REQUEST['ENDPOINT'].format(
             self.title, 1, 0, 0), method=MARKET_ITEMS_REQUEST['METHOD'])
         self.market_price = get_price_from_json(dm_response_content)
+
 
 def get_price_from_json(json_dict):
     return float(json_dict['objects'][0]['suggestedPrice']['USD'])/100

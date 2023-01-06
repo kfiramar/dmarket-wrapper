@@ -8,6 +8,7 @@ from items.basic_item import BasicItem
 
 class ListingItem(BasicItem):
     '''ListingItem represents a CS:GO item which is listed in DMarket'''
+
     def __init__(self, asset_id, title, tradable, listing_price,
                  offer_id, market_price=''):
         self.tradable = tradable
@@ -20,17 +21,19 @@ class ListingItem(BasicItem):
     def parse_json_to_item(cls, json_dict: dict):
         '''parses a JSON into an ListingItem'''
         return cls(
-                    asset_id=json_dict['AssetID'],
-                    title=json_dict['Title'],
-                    tradable=str(json_dict['Tradable']),
-                    listing_price=float(json_dict['Offer']['Price']['Amount']),
-                    offer_id=json_dict['Offer']['OfferID'])
+            asset_id=json_dict['AssetID'],
+            title=json_dict['Title'],
+            tradable=str(json_dict['Tradable']),
+            listing_price=float(json_dict['Offer']['Price']['Amount']),
+            offer_id=json_dict['Offer']['OfferID'])
+
 
 def parse_jsons_to_items_list(jsons: dict) -> list:
     '''parses json items to ListingItem list'''
     listing_list = []
     for json_item in jsons['Items']:
-        listing_list.append(ListingItem.parse_json_to_item(json_dict=json_item))
+        listing_list.append(
+            ListingItem.parse_json_to_item(json_dict=json_item))
     return listing_list
 
 

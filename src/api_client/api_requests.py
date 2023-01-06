@@ -6,11 +6,11 @@ from api_client.api_encryption import create_headers
 from common.config import API_URL, SPINNER_CONF
 
 
-
 def generic_request(url_endpoint: str, method: str, session=requests.Session(), body: str = None):
     '''This is the most generic API request function with a body'''
     headers = create_headers(url_endpoint, body=body, method=method)
-    response = session.request(method.lower(), API_URL + url_endpoint, json=body, headers=headers)
+    response = session.request(
+        method.lower(), API_URL + url_endpoint, json=body, headers=headers)
     response.raise_for_status()
     return response.json()
 
@@ -26,7 +26,7 @@ async def request_devider(url_endpoint: str, method: str, amount: int, price: st
     '''splits aiohttp to up to 100 items per request'''
     # Divide the amount into chunks of up to 100 items
     amount_array = devide_number_to_array(amount, divisor=100)
-    
+
     # Create an HTTP session
     async with aiohttp.ClientSession() as session:
         # Create a task group to track the tasks

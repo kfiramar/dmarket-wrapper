@@ -10,6 +10,7 @@ from table.rows.basic_row import BasicRow
 
 class TargetItemRow(BasicRow):
     '''TargetItemRow represents a certain amount of CS:GO item which is in DMarket inventory'''
+
     def __init__(self, title, amount,
                  exterior, listing_price, market_price, total_price, target_ids=[]):
         self.exterior = exterior
@@ -29,18 +30,15 @@ class TargetItemRow(BasicRow):
                    target_ids=[item.target_id],
                    total_price=item.listing_price)
 
-
     def add_to_row(self, item: TargetItem):
         '''adds an TargetItem to an existing TargetItemRow'''
         self.amount += item.amount
         self.total_price += float(item.listing_price)
         self.target_ids.append(item.target_id)
 
-
     def similar_to_item(self, item: TargetItem):
         '''returns wether an TargetItem has the same relevent attributes as the TargetItemRow'''
         return item.title == self.title and item.listing_price == self.listing_price and item.exterior == self.exterior
-
 
     def change_state_body(self, amount: int, price: float) -> str:
         '''generate body for delete target body'''
@@ -51,13 +49,13 @@ class TargetItemRow(BasicRow):
             "objects": []}
         for _ in range(amount):
             listing = {
-                        "itemId": asset_ids.pop(0),
-                        "offerId": target_ids.pop(0),
-                        "Price": {
-                                "Currency": "USD",
-                                "Amount": price
-                                }
-                    }
+                "itemId": asset_ids.pop(0),
+                "offerId": target_ids.pop(0),
+                "Price": {
+                    "Currency": "USD",
+                    "Amount": price
+                }
+            }
             listings['objects'].append(listing)
         return listings
 

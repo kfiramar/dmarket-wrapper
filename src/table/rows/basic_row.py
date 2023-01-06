@@ -6,6 +6,7 @@ from common.formatting import format_floats_to_usd
 
 class BasicRow:
     '''This class represents a row in a CLI chart'''
+
     def __init__(self, title: str, amount: int, market_price):
         self.title = title
         self.amount = amount
@@ -19,9 +20,6 @@ class BasicRow:
         for key, val in values_dict.items():
             if key in relevent_keys:
                 relevent_values.insert(relevent_keys.index(key), val)
-        # return relevent_values
-        # relevent_values = [val for key, val in values_dict.items() if key in relevent_keys]
-
         return format_floats_to_usd(relevent_values)
 
     def get_rows_headers(self) -> list:

@@ -1,8 +1,9 @@
 '''This module contains the row class which represents a row in a CLI chart'''
 
-from items.inventory_item import parse_jsons_to_items_list 
+from items.inventory_item import parse_jsons_to_items_list
 from table.tables.basic_table import BasicTable
 from table.rows.inventory_item_row import parse_items_list_to_rows
+
 
 class InventoryItemTable(BasicTable):
     '''InventoryItemTable represents a table (which is a list of InventoryItemRows)'''

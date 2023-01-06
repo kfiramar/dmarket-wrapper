@@ -14,7 +14,7 @@ from table.rows.basic_row import BasicRow
 class InventoryItemRow(BasicRow):
     '''
     InventoryItemRow represents a certain amount of CS:GO item which is in DMarket inventory.
-    
+
     Parameters:
     - title (str): Title of the item.
     - asset_ids (list[str]): List of asset IDs belonging to this item.

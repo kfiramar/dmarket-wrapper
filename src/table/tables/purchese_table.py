@@ -16,7 +16,6 @@ class PurcheseTable(BasicTable):
         dm_rows.sort(key=lambda row: getattr(row, 'offer_closed_at'))
         return cls(dm_rows)
 
-
     @classmethod
     def parse_jsons_to_purchese_table_from_date(cls, content: dict, date) -> list:
         '''This function is used to parse jsons to a table, but only including purchases from the stated date'''
@@ -24,4 +23,3 @@ class PurcheseTable(BasicTable):
         dm_rows = parse_items_list_to_rows_from_date(dm_items, date)
         dm_rows.sort(key=lambda row: getattr(row, 'offer_closed_at'))
         return cls(dm_rows)
-    

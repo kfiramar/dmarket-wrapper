@@ -4,23 +4,20 @@ from pathlib import Path
 from configobj import ConfigObj
 
 JSON_QOUTES_FIXER = {"\'": "\""}
-JSON_DICTIONARY_FIXER = {"\'": "\"", 'True': '\"True\"', ' False': '\"False\"', 'None': '\"None\"'}
+JSON_DICTIONARY_FIXER = {"\'": "\"", 'True': '\"True\"',
+                         ' False': '\"False\"', 'None': '\"None\"'}
 TIME_TABLE = {'minute': -3, 'hour': -6, 'day': -9, 'month': -12, 'year': -15}
-COLORS = ['\u001b[32;1m', '\u001b[32;1m', '\u001b[31;1m', '\u001b[31;1m', '\u001b[32;0m', '\u001b[32;0m', '\u001b[31;0m', '\u001b[31;0m']
-ROW_PRINT_MASKS_WORDS = {'InventoryItemRow': ['title', 'market_price', 'amount', 'total_price'], 'ListingRow': ["title", "listing_price", "market_price", "amount", "total_price"], 'PurcheseRow': ["title", "sold_price", "amount", "total_price"], 'DMarketItemRow': ["title", "amount", "market_price", "discount"], "TargetItemRow": ["title", "amount", "listing_price", "market_price", "total_price"]}
+COLORS = ['\u001b[32;1m', '\u001b[32;1m', '\u001b[31;1m', '\u001b[31;1m',
+          '\u001b[32;0m', '\u001b[32;0m', '\u001b[31;0m', '\u001b[31;0m']
+ROW_PRINT_MASKS_WORDS = {'InventoryItemRow': ['title', 'market_price', 'amount', 'total_price'], 'ListingRow': ["title", "listing_price", "market_price", "amount", "total_price"], 'PurcheseRow': [
+    "title", "sold_price", "amount", "total_price"], 'DMarketItemRow': ["title", "amount", "market_price", "discount"], "TargetItemRow": ["title", "amount", "listing_price", "market_price", "total_price"]}
 SIGNATURE_PREFIX = "dmar ed25519 "
 CLEAR_SHELL = "\033[H\033[J"
-
-# config = keys_config = configparser.ConfigParser()
-# PROJECT_PATH = Path(__file__).parents[2]
-# config.read(PROJECT_PATH / 'config.ini',  encoding='utf-8')
-# keys_config.read(PROJECT_PATH / 'keys.ini',  encoding='utf-8')
 
 
 PROJECT_PATH = Path(__file__).parents[2]
 config = ConfigObj(str(PROJECT_PATH / 'config_obj.ini'),  encoding='utf-8')
 keys_config = ConfigObj(str(PROJECT_PATH / 'keys.ini'),  encoding='utf-8')
-
 
 
 API_URL = config['URLS']['API_URL']
@@ -45,7 +42,7 @@ VALID_INVENTORY_ARGUMENTS = config['GENERAL']['VALID_INVENTORY_ARGUMENTS']
 VALID_TIME_ARGUMENTS = config['GENERAL']['VALID_TIME_ARGUMENTS']
 
 
-TABLEFMT =  config['TABLE']['APPEARANCE']['TABLEFMT']
+TABLEFMT = config['TABLE']['APPEARANCE']['TABLEFMT']
 NUMALIGN = config['TABLE']['APPEARANCE']['NUMALIGN']
 STRALIGN = config['TABLE']['APPEARANCE']['STRALIGN']
 FLOATFMT = config['TABLE']['APPEARANCE']['FLOATFMT']

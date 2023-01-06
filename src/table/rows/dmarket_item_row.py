@@ -10,6 +10,7 @@ from table.rows.basic_row import BasicRow
 
 class DMarketItemRow(BasicRow):
     '''InventoryItemRow represents a certain amount of CS:GO item which is in DMarket inventory'''
+
     def __init__(self, title, asset_ids, amount,
                  total_price, exterior, tradable, market_price, discount):
 
@@ -20,21 +21,18 @@ class DMarketItemRow(BasicRow):
         self.tradable = tradable
         self.discount = discount
 
-
-
     @classmethod
     def item_to_row(cls, item: DMarketItem):
         '''creates a new DMarketItemRow from an DMarketItem'''
         return cls(
-                   title=item.title,
-                   asset_ids=[item.asset_id],
-                   amount=item.amount,
-                   exterior=item.exterior,
-                   tradable=item.tradable,
-                   market_price=item.market_price,
-                   total_price=item.market_price*item.amount,
-                   discount=item.discount)
-
+            title=item.title,
+            asset_ids=[item.asset_id],
+            amount=item.amount,
+            exterior=item.exterior,
+            tradable=item.tradable,
+            market_price=item.market_price,
+            total_price=item.market_price*item.amount,
+            discount=item.discount)
 
     def change_state_body(self, amount: int, price: float):
         '''create a target json body'''
@@ -48,16 +46,14 @@ class DMarketItemRow(BasicRow):
                     "Amount": price
                 },
                 "Title": title
-                }]
+            }]
         }
-
 
     def add_to_row(self, item: DMarketItem):
         '''adds an DMarketItem to an existing DMarketItemRow'''
         self.amount += item.amount
         self.total_price += item.market_price
         self.asset_ids.append(item.asset_id)
-
 
     def similar_to_item(self, item: DMarketItem):
         '''returns wether an DMarketItem has the same relevent attributes as the DMarketItemRow'''

@@ -9,6 +9,7 @@ from items.basic_item import BasicItem
 
 class PurchaseItem(BasicItem):
     '''PurchaseItem represents a purchased item on DMarket'''
+
     def __init__(self, asset_id, title, offer_closed_at,
                  offer_created_at,
                  sold_price, offer_id, market_price=''):
@@ -19,17 +20,16 @@ class PurchaseItem(BasicItem):
         self.asset_id = asset_id
         super().__init__(title, market_price)
 
-
     @classmethod
     def parse_json_to_item(cls, json_dict: dict):
         '''parses a JSON into a PurchaseItem'''
         return cls(
-                    asset_id=json_dict['AssetID'],
-                    title=json_dict['Title'],
-                    offer_id=json_dict['OfferID'],
-                    sold_price=float(json_dict['Price']['Amount']),
-                    offer_closed_at=epoch_time_convertor(json_dict['OfferClosedAt']),
-                    offer_created_at=epoch_time_convertor(json_dict['OfferCreatedAt']))
+            asset_id=json_dict['AssetID'],
+            title=json_dict['Title'],
+            offer_id=json_dict['OfferID'],
+            sold_price=float(json_dict['Price']['Amount']),
+            offer_closed_at=epoch_time_convertor(json_dict['OfferClosedAt']),
+            offer_created_at=epoch_time_convertor(json_dict['OfferCreatedAt']))
 
 
 def epoch_time_convertor(epoch_time: str) -> str:
@@ -43,5 +43,6 @@ def parse_jsons_to_items_list(json_purchases: dict) -> list:
     '''parses json items to PurchaseItem list'''
     purchase_list = []
     for json_purchase in json_purchases['Trades']:
-        purchase_list.append(PurchaseItem.parse_json_to_item(json_dict=json_purchase))
+        purchase_list.append(
+            PurchaseItem.parse_json_to_item(json_dict=json_purchase))
     return purchase_list
