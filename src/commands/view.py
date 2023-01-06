@@ -4,11 +4,11 @@ from datetime import datetime
 from pathlib import Path
 import inspect
 from types import NoneType
-import click
+import typer
 from halo import Halo
 from api_client.api_requests import (generic_request)
 from common.config import (BALANCE_REQUEST, DM_INVENTORY_REQUEST, MARKET_ITEMS_REQUEST, PURCHASE_HISTORY_REQUEST, SPINNER_CONF,
-                    STEAM_INVENTORY_REQUEST, SELL_LISTINGS_REQUEST, LOGGING, RECIVED_ITEMS, LISTING_ZERO_ITEMS, BALANCE_TEXT, GETTING_ITEMS, VIEW_TARGETS_REQUEST )
+                    STEAM_INVENTORY_REQUEST, SELL_LISTINGS_REQUEST, LOGGING, RECIVED_ITEMS, LISTING_ZERO_ITEMS, BALANCE_TEXT, GETTING_ITEMS, VALID_INVENTORY_ARGUMENTS, VIEW_TARGETS_REQUEST )
 from common.logger import log, merge_dicts
 from items.target_item import TargetItem
 from table.tables.target_item_table import TargetItemTable
@@ -23,21 +23,22 @@ func_name = Path(__file__).stem
 api_spinner = Halo(text=GETTING_ITEMS, spinner=SPINNER_CONF['TYPE'], animation=SPINNER_CONF['ANIMATION'], color=SPINNER_CONF['COLOR'])
 
 
-@click.group()
-def view() -> None:
-    '''viewing listings, inventory -all, dm inventory and steam inventory'''
+view = typer.Typer(rich_markup_mode="markdown")
 
+def validate_inventory_source(source):
+    if source not in VALID_INVENTORY_ARGUMENTS:
+        raise typer.BadParameter(f"Invalid source: {source}")
+    return source
 
-@click.command()
-@click.option('--inventory_source', required = True, type=click.Choice(['dm', 'steam','all']), prompt=True, help='choose inventory_source: dm, steamm, all.')
-def inventory(inventory_source: str) -> None:
+@view.command()
+def inventory(inventory_source: str = typer.Option(..., prompt=True, callback=validate_inventory_source, help="choose inventory_source: dm, steamm, all.", rich_help_panel="Customization and Utils")) -> None:
     '''Prints all the inventory found on DMarket'''
     api_spinner.start()
     print_table(get_inventory(inventory_source))
     api_spinner.succeed(text=RECIVED_ITEMS)
 
 
-@click.command()
+@view.command()
 def listings() -> None:
     '''Prints all the inventory found on DMarket'''
     api_spinner.start()
@@ -48,9 +49,9 @@ def listings() -> None:
     else:
         api_spinner.fail(text=LISTING_ZERO_ITEMS)
 
-@click.command()
-@click.option("--items_name", required = True, type=str, prompt=True, help='item you wish to create target to')
-def dmarket_items(items_name) -> None:
+@view.command()
+# @app_test.option("--items_name", required = True, type=str, prompt=True, )
+def dmarket_items(items_name: str = typer.Option(..., prompt=True, help='item you wish to create target to')) -> None:
     '''Prints all the inventory found on DMarket'''
     api_spinner.start()
     items = get_dmarket_items(title=items_name).rows
@@ -61,8 +62,8 @@ def dmarket_items(items_name) -> None:
         api_spinner.fail(text=LISTING_ZERO_ITEMS)
 
 
-@click.command()
-@click.option('--merge_by', default='day',type=click.Choice(['minute', 'hour', 'day', 'month', 'year']), help='a period of time which you want to merge your purcheses by.')
+@view.command()
+# @app_test.option('--merge_by', default='day',type=app_test.Choice(['minute', 'hour', 'day', 'month', 'year']), help='a period of time which you want to merge your purcheses by.')
 def purchases(merge_by: str) -> None:
     '''Prints the purchases history'''
     api_spinner.start()
@@ -74,8 +75,9 @@ def purchases(merge_by: str) -> None:
         log(response_content, f"{func_name}_{inspect.stack()[0][3]}")
 
 
-@click.command()
-@click.option('--date', required=True, prompt=True, help='Date from which you want to see your purchase history (%d/%m/%Y).')
+# @click.command()
+# @click.option('--date', required=True, prompt=True, help='Date from which you want to see your purchase history (%d/%m/%Y).')
+@view.command()
 def purchases_from(date: str) -> None:
     '''Prints the purchases history'''
     date = datetime.strptime(date, '%d/%m/%Y')
@@ -130,35 +132,36 @@ def get_targets() -> None:
         log(response_content, f"{func_name}_{inspect.stack()[0][3]}")
     return TargetItemTable.parse_jsons_to_table(response_content)
 
-@click.command()
+@view.command()
 def targets():
+    """test"""
     api_spinner.start()
-    current_listings = get_targets()
-    if not isinstance(current_listings, NoneType):
-        print_table(current_listings.rows)
+    current_targets = get_targets()
+    if not isinstance(current_targets, NoneType):
+        print_table(current_targets.rows)
         api_spinner.succeed(text=RECIVED_ITEMS)
     else:
         api_spinner.fail(text=LISTING_ZERO_ITEMS)
 
 
 
-@click.command()
+@view.command()
 def balance() -> None:
     '''View your current Dmarket balance'''
     response_content = generic_request(url_endpoint=BALANCE_REQUEST['ENDPOINT'], method=BALANCE_REQUEST['METHOD'])
-    click.echo(BALANCE_TEXT.format(str(float(response_content['usd'])/100)))
+    typer.echo(BALANCE_TEXT.format(str(float(response_content['usd'])/100)))
     if LOGGING:
         log(response_content, f"{func_name}_{inspect.stack()[0][3]}")
 
 
-view.add_command(dmarket_items)
-view.add_command(targets)
-view.add_command(inventory)
-view.add_command(listings)
-view.add_command(balance)
-view.add_command(purchases)
-view.add_command(purchases_from)
+# view.add_command(dmarket_items)
+# view.add_command(targets)
+# view.add_command(inventory)
+# view.add_command(listings)
+# view.add_command(balance)
+# view.add_command(purchases)
+# view.add_command(purchases_from)
 
 
-if __name__ == '__main__':
-    view()
+# if __name__ == '__main__':
+#     view()
