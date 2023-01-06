@@ -55,7 +55,7 @@ class InventoryItemRow(BasicRow):
         '''returns whether an InventoryItem has the same relevant attributes as the InventoryItemRow'''
         return item.title == self.title and item.market_price == self.market_price
 
-    def change_state_bodyx(self, amount: int, price: float) -> dict:
+    def change_state_body(self, amount: int, price: float) -> dict:
         '''generate body to create a listing'''
         asset_ids = self.asset_ids
         item_order = {"Offers": []}
